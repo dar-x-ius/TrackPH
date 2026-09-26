@@ -2,6 +2,7 @@ package ph.trackph.milestone.config;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -29,13 +30,20 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                                     @NonNull FilterChain chain)
             throws ServletException, IOException {
 
+        String token = null;
         String header = request.getHeader("Authorization");
-        if (header == null || !header.startsWith("Bearer ")) {
+        if (header != null && header.startsWith("Bearer ")) {
+            token = header.substring(7);
+        } else if (request.getCookies() != null) {
+            for (Cookie c : request.getCookies()) {
+                if ("trackph-jwt".equals(c.getName())) { token = c.getValue(); break; }
+            }
+        }
+
+        if (token == null) {
             chain.doFilter(request, response);
             return;
         }
-
-        String token = header.substring(7);
         if (!jwtUtil.isValid(token)) {
             chain.doFilter(request, response);
             return;

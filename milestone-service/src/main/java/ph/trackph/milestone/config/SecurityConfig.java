@@ -1,5 +1,6 @@
 package ph.trackph.milestone.config;
 
+import jakarta.servlet.http.Cookie;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -39,15 +40,17 @@ public class SecurityConfig {
                 .anyRequest().authenticated()
             )
             .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
-            .formLogin(form -> form
-                .loginPage("/login")
-                .loginProcessingUrl("/auth/login-form")
-                .defaultSuccessUrl("/dashboard", true)
-                .failureUrl("/login?error")
-                .permitAll()
+            .exceptionHandling(e -> e
+                .authenticationEntryPoint((req, res, ex) -> res.sendRedirect("/login"))
             )
             .logout(logout -> logout
                 .logoutUrl("/auth/logout")
+                .addLogoutHandler((req, res, auth) -> {
+                    Cookie c = new Cookie("trackph-jwt", "");
+                    c.setMaxAge(0);
+                    c.setPath("/");
+                    res.addCookie(c);
+                })
                 .logoutSuccessUrl("/login?logout")
                 .permitAll()
             )

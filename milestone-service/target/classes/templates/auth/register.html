@@ -52,6 +52,7 @@
             .then(r => r.json())
             .then(data => {
                 if (data.status === 'success') {
+                    document.cookie = 'trackph-jwt=' + data.data.token + '; path=/; SameSite=Strict';
                     localStorage.setItem('trackph-token', data.data.token);
                     window.location.href = '/dashboard';
                 } else {
