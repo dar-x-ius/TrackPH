@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: layout(pageTitle='Home', content=~{::main})}">
+<body>
+<main>
+    <div style="text-align:center; padding: 4rem 0;">
+        <h1 style="color: var(--primary); font-size: 2.5rem; margin-bottom: 0.5rem;">TrackPH</h1>
+        <p style="color: var(--text-muted); font-size: 1.1rem; margin-bottom: 2rem;">
+            Government Project Implementation &amp; Monitoring
+        </p>
+        <a th:href="@{/login}" class="btn btn-primary">Get Started</a>
+    </div>
+</main>
+</body>
+</html>

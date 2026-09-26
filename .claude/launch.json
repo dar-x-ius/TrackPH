@@ -1,0 +1,12 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "milestone-service",
+      "runtimeExecutable": "mvn",
+      "runtimeArgs": ["-f", "milestone-service/pom.xml", "spring-boot:run"],
+      "port": 8081,
+      "url": "http://localhost:8081"
+    }
+  ]
+}

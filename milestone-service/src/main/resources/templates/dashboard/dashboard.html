@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: layout(pageTitle='Dashboard', content=~{::main})}">
+<body>
+<main>
+    <h2 style="color: var(--primary); margin-bottom: 1.5rem;">Dashboard</h2>
+
+    <div id="stats-row" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
+        <div class="card" style="text-align:center;">
+            <div style="font-size:2rem; font-weight:700; color: var(--primary);" id="stat-total">—</div>
+            <div style="color: var(--text-muted); font-size:0.85rem; margin-top:0.25rem;">Total Projects</div>
+        </div>
+        <div class="card" style="text-align:center;">
+            <div style="font-size:2rem; font-weight:700; color: var(--info);" id="stat-inprogress">—</div>
+            <div style="color: var(--text-muted); font-size:0.85rem; margin-top:0.25rem;">In Progress</div>
+        </div>
+        <div class="card" style="text-align:center;">
+            <div style="font-size:2rem; font-weight:700; color: var(--danger);" id="stat-delayed">—</div>
+            <div style="color: var(--text-muted); font-size:0.85rem; margin-top:0.25rem;">Delayed</div>
+        </div>
+        <div class="card" style="text-align:center;">
+            <div style="font-size:2rem; font-weight:700; color: var(--warning);" id="stat-alerts">—</div>
+            <div style="color: var(--text-muted); font-size:0.85rem; margin-top:0.25rem;">Unread Alerts</div>
+        </div>
+    </div>
+
+    <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+        <div>
+            <h3 style="margin-top:0;">Quick Links</h3>
+            <div class="card">
+                <a th:href="@{/projects}" class="btn btn-primary btn-sm" style="margin-right:0.5rem;">View Projects</a>
+                <a th:href="@{/alerts}" class="btn btn-secondary btn-sm">View Alerts</a>
+            </div>
+        </div>
+        <div>
+            <h3 style="margin-top:0;">System Status</h3>
+            <div class="card">
+                <p style="margin:0; color: var(--text-muted); font-size:0.9rem;">
+                    Milestone alert scan runs daily at midnight.<br/>
+                    All user actions are automatically logged.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const token = localStorage.getItem('trackph-token') || '';
+        const headers = token ? {'Authorization': 'Bearer ' + token} : {};
+
+        fetch('/api/v1/dashboard', { headers })
+            .then(r => r.json())
+            .then(data => {
+                if (data.status !== 'success') return;
+                const d = data.data;
+                document.getElementById('stat-total').textContent      = d.totalProjects;
+                document.getElementById('stat-inprogress').textContent = d.inProgressProjects;
+                document.getElementById('stat-delayed').textContent    = d.delayedProjects;
+                document.getElementById('stat-alerts').textContent     = d.unreadAlerts;
+            });
+    </script>
+</main>
+</body>
+</html>

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: layout(pageTitle='Audit Logs', content=~{::main})}">
+<body>
+<main>
+    <h2 style="color: var(--primary); margin-bottom: 1.5rem;">Audit Logs</h2>
+
+    <div class="card" style="padding:0; overflow:hidden;">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Time</th>
+                    <th>User</th>
+                    <th>Action</th>
+                    <th>Entity</th>
+                    <th>IP</th>
+                </tr>
+            </thead>
+            <tbody id="audit-body">
+                <tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:2rem;">Loading...</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        const token = localStorage.getItem('trackph-token') || '';
+        const headers = {'Authorization': 'Bearer ' + token};
+
+        fetch('/api/v1/audit-logs?size=100&sort=createdAt,desc', { headers })
+            .then(r => r.json())
+            .then(data => {
+                const logs = data.data?.content ?? [];
+                const tbody = document.getElementById('audit-body');
+                if (!logs.length) {
+                    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:2rem;">No logs yet.</td></tr>';
+                    return;
+                }
+                tbody.innerHTML = logs.map(l => `
+                    <tr>
+                        <td style="font-size:0.8rem; color:var(--text-muted);">${new Date(l.createdAt).toLocaleString()}</td>
+                        <td>${l.username ?? '—'}</td>
+                        <td><code style="font-size:0.8rem;">${l.action}</code></td>
+                        <td style="font-size:0.85rem;">${l.entityType ? l.entityType + ' #' + l.entityId : '—'}</td>
+                        <td style="font-size:0.8rem; color:var(--text-muted);">${l.ipAddress ?? '—'}</td>
+                    </tr>
+                `).join('');
+            });
+    </script>
+</main>
+</body>
+</html>
