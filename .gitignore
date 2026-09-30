@@ -2,3 +2,5 @@ graphify-out/
 target/
 bin/
 .claude/settings.local.json
+
+.settings/

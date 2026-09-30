@@ -31,7 +31,7 @@ public class DashboardService {
     @Transactional
     public DashboardResponse updateSettings(Long userId, DashboardSettingsRequest request) {
         DashboardConfig config = dashboardConfigRepository.findByUserId(userId).orElseGet(() -> defaultConfig(userId));
-        config.setWidgetConfig(request.getWidgetConfig());
+        config.setWidgetConfig(request.widgetConfig());
         dashboardConfigRepository.save(config);
         return getDashboard(userId);
     }

@@ -71,14 +71,6 @@ public class AuditLog {
         this.action = action;
     }
 
-    public void setEntityType(final String entityType) {
-        this.entityType = entityType;
-    }
-
-    public void setEntityId(final Long entityId) {
-        this.entityId = entityId;
-    }
-
     public void setDetails(final String details) {
         this.details = details;
     }
@@ -89,8 +81,5 @@ public class AuditLog {
 
     public void setCreatedAt(final LocalDateTime createdAt) {
         this.createdAt = createdAt;
-    }
-
-    public AuditLog() {
     }
 }

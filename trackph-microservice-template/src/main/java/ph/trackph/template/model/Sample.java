@@ -65,7 +65,4 @@ public class Sample {
     public void setUpdatedAt(final LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
     }
-
-    public Sample() {
-    }
 }

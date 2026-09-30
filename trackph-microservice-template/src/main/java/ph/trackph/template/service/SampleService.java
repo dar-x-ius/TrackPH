@@ -24,16 +24,16 @@ public class SampleService {
     @Transactional
     public SampleResponse create(SampleRequest request) {
         Sample entity = new Sample();
-        entity.setName(request.getName());
-        entity.setDescription(request.getDescription());
+        entity.setName(request.name());
+        entity.setDescription(request.description());
         return SampleResponse.from(repository.save(entity));
     }
 
     @Transactional
     public SampleResponse update(Long id, SampleRequest request) {
         Sample entity = getOrThrow(id);
-        entity.setName(request.getName());
-        entity.setDescription(request.getDescription());
+        entity.setName(request.name());
+        entity.setDescription(request.description());
         return SampleResponse.from(repository.save(entity));
     }
 

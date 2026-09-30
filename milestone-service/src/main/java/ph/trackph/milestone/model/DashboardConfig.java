@@ -50,7 +50,4 @@ public class DashboardConfig {
     public void setUpdatedAt(final LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
     }
-
-    public DashboardConfig() {
-    }
 }

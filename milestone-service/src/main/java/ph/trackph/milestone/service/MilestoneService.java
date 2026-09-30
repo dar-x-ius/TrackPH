@@ -41,7 +41,7 @@ public class MilestoneService {
         Milestone milestone = getOrThrow(id);
         Milestone.Status previousStatus = milestone.getStatus();
         applyRequest(milestone, request);
-        if (request.getStatus() != null && request.getStatus() != previousStatus) {
+        if (request.status() != null && request.status() != previousStatus) {
             alertService.createAlert(milestone.getProject(), milestone, Alert.AlertType.STATUS_CHANGE, "Milestone \'" + milestone.getTitle() + "\' changed to " + milestone.getStatus(), Alert.Severity.LOW);
         }
         return MilestoneResponse.from(milestoneRepository.save(milestone));
@@ -62,12 +62,12 @@ public class MilestoneService {
     }
 
     private void applyRequest(Milestone milestone, MilestoneRequest req) {
-        milestone.setTitle(req.getTitle());
-        if (req.getDescription() != null) milestone.setDescription(req.getDescription());
-        milestone.setDueDate(req.getDueDate());
-        milestone.setSequenceOrder(req.getSequenceOrder());
-        if (req.getStatus() != null) milestone.setStatus(req.getStatus());
-        if (req.getCompletedDate() != null) milestone.setCompletedDate(req.getCompletedDate());
+        milestone.setTitle(req.title());
+        if (req.description() != null) milestone.setDescription(req.description());
+        milestone.setDueDate(req.dueDate());
+        milestone.setSequenceOrder(req.sequenceOrder());
+        if (req.status() != null) milestone.setStatus(req.status());
+        if (req.completedDate() != null) milestone.setCompletedDate(req.completedDate());
     }
 
     private Milestone getOrThrow(Long id) {

@@ -43,7 +43,7 @@ public class Project {
 
 
     public enum Status {
-        PLANNED, IN_PROGRESS, DELAYED, COMPLETED, CANCELLED;
+        PLANNED, IN_PROGRESS, DELAYED, COMPLETED, CANCELLED
     }
 
     public Long getId() {
@@ -130,18 +130,11 @@ public class Project {
         this.budget = budget;
     }
 
-    public void setMilestones(final List<Milestone> milestones) {
-        this.milestones = milestones;
-    }
-
     public void setCreatedAt(final LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
 
     public void setUpdatedAt(final LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
-    }
-
-    public Project() {
     }
 }

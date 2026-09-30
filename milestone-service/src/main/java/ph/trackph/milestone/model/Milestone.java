@@ -45,7 +45,7 @@ public class Milestone {
 
 
     public enum Status {
-        PENDING, IN_PROGRESS, COMPLETED, OVERDUE;
+        PENDING, IN_PROGRESS, COMPLETED, OVERDUE
     }
 
     public Long getId() {
@@ -126,8 +126,5 @@ public class Milestone {
 
     public void setUpdatedAt(final LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
-    }
-
-    public Milestone() {
     }
 }

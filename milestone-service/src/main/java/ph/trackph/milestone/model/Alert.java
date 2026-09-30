@@ -32,12 +32,12 @@ public class Alert {
 
 
     public enum AlertType {
-        DEADLINE_MISSED, DELAY_DETECTED, STATUS_CHANGE, REPORT_SUBMITTED;
+        DEADLINE_MISSED, DELAY_DETECTED, STATUS_CHANGE, REPORT_SUBMITTED
     }
 
 
     public enum Severity {
-        LOW, MEDIUM, HIGH, CRITICAL;
+        LOW, MEDIUM, HIGH, CRITICAL
     }
 
     public Long getId() {
@@ -98,12 +98,5 @@ public class Alert {
 
     public void setRead(final boolean read) {
         this.read = read;
-    }
-
-    public void setTriggeredAt(final LocalDateTime triggeredAt) {
-        this.triggeredAt = triggeredAt;
-    }
-
-    public Alert() {
     }
 }

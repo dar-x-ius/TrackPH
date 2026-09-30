@@ -52,13 +52,13 @@ public class ProjectService {
     }
 
     private void applyRequest(Project project, ProjectRequest req) {
-        project.setName(req.getName());
-        project.setDescription(req.getDescription());
-        project.setStartDate(req.getStartDate());
-        project.setEndDate(req.getEndDate());
-        project.setLocation(req.getLocation());
-        project.setBudget(req.getBudget());
-        if (req.getStatus() != null) project.setStatus(req.getStatus());
+        project.setName(req.name());
+        project.setDescription(req.description());
+        project.setStartDate(req.startDate());
+        project.setEndDate(req.endDate());
+        project.setLocation(req.location());
+        project.setBudget(req.budget());
+        if (req.status() != null) project.setStatus(req.status());
     }
 
     private Project getOrThrow(Long id) {

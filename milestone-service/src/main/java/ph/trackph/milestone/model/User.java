@@ -35,7 +35,7 @@ public class User {
 
 
     public enum Role {
-        ADMIN, AGENCY, MANAGER, PUBLIC;
+        ADMIN, AGENCY, MANAGER, PUBLIC
     }
 
     public Long getId() {
@@ -46,20 +46,12 @@ public class User {
         return this.username;
     }
 
-    public String getEmail() {
-        return this.email;
-    }
-
     public String getPasswordHash() {
         return this.passwordHash;
     }
 
     public Role getRole() {
         return this.role;
-    }
-
-    public String getFullName() {
-        return this.fullName;
     }
 
     public String getAgencyName() {
@@ -106,18 +98,11 @@ public class User {
         this.agencyName = agencyName;
     }
 
-    public void setActive(final boolean active) {
-        this.active = active;
-    }
-
     public void setCreatedAt(final LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
 
     public void setUpdatedAt(final LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
-    }
-
-    public User() {
     }
 }
