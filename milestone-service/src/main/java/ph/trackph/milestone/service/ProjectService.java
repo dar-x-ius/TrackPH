@@ -1,6 +1,5 @@
 package ph.trackph.milestone.service;
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -14,9 +13,7 @@ import ph.trackph.milestone.repository.ProjectRepository;
 import ph.trackph.milestone.repository.UserRepository;
 
 @Service
-@RequiredArgsConstructor
 public class ProjectService {
-
     private final ProjectRepository projectRepository;
     private final UserRepository userRepository;
 
@@ -34,9 +31,7 @@ public class ProjectService {
 
     @Transactional
     public ProjectResponse create(Long agencyUserId, ProjectRequest request) {
-        User agency = userRepository.findById(agencyUserId)
-                .orElseThrow(() -> new ResourceNotFoundException("User", agencyUserId));
-
+        User agency = userRepository.findById(agencyUserId).orElseThrow(() -> new ResourceNotFoundException("User", agencyUserId));
         Project project = new Project();
         applyRequest(project, request);
         project.setAgency(agency);
@@ -67,7 +62,11 @@ public class ProjectService {
     }
 
     private Project getOrThrow(Long id) {
-        return projectRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Project", id));
+        return projectRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Project", id));
+    }
+
+    public ProjectService(final ProjectRepository projectRepository, final UserRepository userRepository) {
+        this.projectRepository = projectRepository;
+        this.userRepository = userRepository;
     }
 }

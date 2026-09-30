@@ -1,12 +1,9 @@
 package ph.trackph.template.util;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import lombok.Getter;
 
-@Getter
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ApiResponse<T> {
-
     private final String status;
     private final String message;
     private final T data;
@@ -27,5 +24,17 @@ public class ApiResponse<T> {
 
     public static <T> ApiResponse<T> error(String message) {
         return new ApiResponse<>("error", message, null);
+    }
+
+    public String getStatus() {
+        return this.status;
+    }
+
+    public String getMessage() {
+        return this.message;
+    }
+
+    public T getData() {
+        return this.data;
     }
 }

@@ -1,6 +1,5 @@
 package ph.trackph.template.service;
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ph.trackph.template.dto.request.SampleRequest;
@@ -8,19 +7,14 @@ import ph.trackph.template.dto.response.SampleResponse;
 import ph.trackph.template.exception.ResourceNotFoundException;
 import ph.trackph.template.model.Sample;
 import ph.trackph.template.repository.SampleRepository;
-
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor
 public class SampleService {
-
     private final SampleRepository repository;
 
     public List<SampleResponse> findAll() {
-        return repository.findAll().stream()
-                .map(SampleResponse::from)
-                .toList();
+        return repository.findAll().stream().map(SampleResponse::from).toList();
     }
 
     public SampleResponse findById(Long id) {
@@ -50,7 +44,10 @@ public class SampleService {
     }
 
     private Sample getOrThrow(Long id) {
-        return repository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Sample", id));
+        return repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Sample", id));
+    }
+
+    public SampleService(final SampleRepository repository) {
+        this.repository = repository;
     }
 }

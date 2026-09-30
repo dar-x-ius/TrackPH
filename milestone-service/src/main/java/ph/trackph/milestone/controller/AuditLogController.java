@@ -2,7 +2,6 @@ package ph.trackph.milestone.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -13,10 +12,8 @@ import ph.trackph.milestone.util.ApiResponse;
 
 @RestController
 @RequestMapping("/api/v1/audit-logs")
-@RequiredArgsConstructor
 @Tag(name = "Audit Logs", description = "Immutable user action trail (ADMIN/AGENCY only)")
 public class AuditLogController {
-
     private final AuditLogService auditLogService;
 
     @GetMapping
@@ -27,8 +24,11 @@ public class AuditLogController {
 
     @GetMapping("/user/{userId}")
     @Operation(summary = "List audit logs for a specific user")
-    public ResponseEntity<ApiResponse<Page<AuditLogResponse>>> byUser(@PathVariable Long userId,
-                                                                        Pageable pageable) {
+    public ResponseEntity<ApiResponse<Page<AuditLogResponse>>> byUser(@PathVariable Long userId, Pageable pageable) {
         return ResponseEntity.ok(ApiResponse.success(auditLogService.findByUser(userId, pageable)));
+    }
+
+    public AuditLogController(final AuditLogService auditLogService) {
+        this.auditLogService = auditLogService;
     }
 }

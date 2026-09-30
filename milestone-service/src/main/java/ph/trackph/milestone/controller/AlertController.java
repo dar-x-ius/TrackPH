@@ -2,7 +2,6 @@ package ph.trackph.milestone.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -10,15 +9,12 @@ import org.springframework.web.bind.annotation.*;
 import ph.trackph.milestone.dto.response.AlertResponse;
 import ph.trackph.milestone.service.AlertService;
 import ph.trackph.milestone.util.ApiResponse;
-
 import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/alerts")
-@RequiredArgsConstructor
 @Tag(name = "Alerts", description = "System alert notifications")
 public class AlertController {
-
     private final AlertService alertService;
 
     @GetMapping
@@ -37,5 +33,9 @@ public class AlertController {
     @Operation(summary = "Mark an alert as read")
     public ResponseEntity<ApiResponse<AlertResponse>> markRead(@PathVariable Long id) {
         return ResponseEntity.ok(ApiResponse.success("Marked as read", alertService.markRead(id)));
+    }
+
+    public AlertController(final AlertService alertService) {
+        this.alertService = alertService;
     }
 }

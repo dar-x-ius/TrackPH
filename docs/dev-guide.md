@@ -41,23 +41,16 @@ Each microservice folder is a complete, self-contained Maven project.
 
 ---
 
-## Eclipse Setup (Lombok required)
+## Eclipse Setup
 
-The code uses [Lombok](https://projectlombok.org) (`@Getter`, `@Data`, `@RequiredArgsConstructor`, `@Slf4j`, ...), which generates getters, setters, constructors and `log` at compile time. Maven handles this through `pom.xml`, but **Eclipse does not until Lombok is installed into it**. Without it you get hundreds of false errors such as `log cannot be resolved`, `getName() is undefined`, and `blank final field may not have been initialized` — and Eclipse writes broken classes into `target/classes`, which then crash the app at startup with `Unresolved compilation problem`.
+No plugins needed — the project does **not** use Lombok, so write getters, setters, constructors and loggers by hand.
 
-One-time setup per machine:
+1. **File → Import → Existing Maven Projects**, one service at a time (not the repo root).
+2. Select the project → **Maven → Update Project** (Alt+F5, tick *Force update*).
+3. Run the `@SpringBootApplication` class with **Run As → Java Application** (JDK 17+ under Window → Preferences → Java → Installed JREs).
+4. If you see `Unresolved compilation problem` at runtime, delete the service's `target/` folder and rebuild.
 
-1. Close Eclipse.
-2. Run the installer (uses the jar Maven already downloaded; run `mvn compile` once first if it is missing):
-   ```bash
-   java -jar ~/.m2/repository/org/projectlombok/lombok/1.18.48/lombok-1.18.48.jar install "<path-to>/eclipse.exe"
-   ```
-   Or run the jar with no arguments for the GUI and use "Specify location". This adds a `-javaagent:lombok.jar` line to `eclipse.ini`.
-3. Start Eclipse, import each service via **File → Import → Existing Maven Projects** (not the repo root).
-4. Select the projects → **Maven → Update Project** (Alt+F5, tick *Force update*), then **Project → Clean**.
-5. Run the `@SpringBootApplication` class with **Run As → Java Application** (needs a JDK 17+ registered under Window → Preferences → Java → Installed JREs).
-
-If you still see `Unresolved compilation problem` at runtime, delete the service's `target/` folder and rebuild. Not using Eclipse? `mvn spring-boot:run` in the service folder needs none of this.
+Not using Eclipse? `mvn spring-boot:run` in the service folder works too.
 
 ---
 
@@ -179,3 +172,4 @@ Follow this order — skipping steps causes JPA startup failures:
 - Do not write inline styles in Thymeleaf templates — use `theme.css` variables.
 - Do not call `AuditLogService` from controllers — the interceptor handles it.
 - Do not create a new `theme.css` — every service shares the same one from the template.
+- Do not add Lombok — write getters, setters and constructors by hand.

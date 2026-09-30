@@ -1,6 +1,5 @@
 package ph.trackph.milestone.service;
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ph.trackph.milestone.dto.request.DashboardSettingsRequest;
@@ -14,30 +13,24 @@ import ph.trackph.milestone.repository.ProjectRepository;
 import ph.trackph.milestone.repository.UserRepository;
 
 @Service
-@RequiredArgsConstructor
 public class DashboardService {
-
     private final DashboardConfigRepository dashboardConfigRepository;
     private final ProjectRepository projectRepository;
     private final AlertRepository alertRepository;
     private final UserRepository userRepository;
 
     public DashboardResponse getDashboard(Long userId) {
-        DashboardConfig config = dashboardConfigRepository.findByUserId(userId)
-                .orElseGet(() -> defaultConfig(userId));
-
+        DashboardConfig config = dashboardConfigRepository.findByUserId(userId).orElseGet(() -> defaultConfig(userId));
         long total = projectRepository.count();
         long inProgress = projectRepository.countByStatus(Project.Status.IN_PROGRESS);
         long delayed = projectRepository.countByStatus(Project.Status.DELAYED);
         long unread = alertRepository.countByReadFalse();
-
         return new DashboardResponse(userId, config.getWidgetConfig(), total, inProgress, delayed, unread);
     }
 
     @Transactional
     public DashboardResponse updateSettings(Long userId, DashboardSettingsRequest request) {
-        DashboardConfig config = dashboardConfigRepository.findByUserId(userId)
-                .orElseGet(() -> defaultConfig(userId));
+        DashboardConfig config = dashboardConfigRepository.findByUserId(userId).orElseGet(() -> defaultConfig(userId));
         config.setWidgetConfig(request.getWidgetConfig());
         dashboardConfigRepository.save(config);
         return getDashboard(userId);
@@ -48,5 +41,12 @@ public class DashboardService {
         userRepository.findById(userId).ifPresent(config::setUser);
         config.setWidgetConfig("{\"widgets\":[\"projects\",\"alerts\",\"milestones\"]}");
         return dashboardConfigRepository.save(config);
+    }
+
+    public DashboardService(final DashboardConfigRepository dashboardConfigRepository, final ProjectRepository projectRepository, final AlertRepository alertRepository, final UserRepository userRepository) {
+        this.dashboardConfigRepository = dashboardConfigRepository;
+        this.projectRepository = projectRepository;
+        this.alertRepository = alertRepository;
+        this.userRepository = userRepository;
     }
 }
