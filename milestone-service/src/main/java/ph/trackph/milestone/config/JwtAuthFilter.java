@@ -1,5 +1,7 @@
 package ph.trackph.milestone.config;
 
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
@@ -44,13 +46,16 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             chain.doFilter(request, response);
             return;
         }
-        if (!jwtUtil.isValid(token)) {
+        Claims claims;
+        try {
+            claims = jwtUtil.parseToken(token);
+        } catch (JwtException | IllegalArgumentException e) {
             chain.doFilter(request, response);
             return;
         }
 
-        Long userId = jwtUtil.getUserId(token);
-        String role = jwtUtil.getRole(token);
+        Long userId = Long.parseLong(claims.getSubject());
+        String role = claims.get("role", String.class);
 
         var auth = new UsernamePasswordAuthenticationToken(
                 userId, null, List.of(new SimpleGrantedAuthority("ROLE_" + role)));

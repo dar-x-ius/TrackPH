@@ -7,5 +7,6 @@ import ph.trackph.milestone.model.Project;
 
 public interface ProjectRepository extends JpaRepository<Project, Long> {
     Page<Project> findByAgencyId(Long agencyId, Pageable pageable);
+    long countByStatus(Project.Status status);
     Page<Project> findByStatus(Project.Status status, Pageable pageable);
 }

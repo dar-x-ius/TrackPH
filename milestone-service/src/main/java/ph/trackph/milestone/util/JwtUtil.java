@@ -1,7 +1,6 @@
 package ph.trackph.milestone.util;
 
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
@@ -40,22 +39,5 @@ public class JwtUtil {
                 .build()
                 .parseSignedClaims(token)
                 .getPayload();
-    }
-
-    public boolean isValid(String token) {
-        try {
-            parseToken(token);
-            return true;
-        } catch (JwtException | IllegalArgumentException e) {
-            return false;
-        }
-    }
-
-    public Long getUserId(String token) {
-        return Long.parseLong(parseToken(token).getSubject());
-    }
-
-    public String getRole(String token) {
-        return parseToken(token).get("role", String.class);
     }
 }

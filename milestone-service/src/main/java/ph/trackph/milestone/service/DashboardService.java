@@ -27,8 +27,8 @@ public class DashboardService {
                 .orElseGet(() -> defaultConfig(userId));
 
         long total = projectRepository.count();
-        long inProgress = projectRepository.findByStatus(Project.Status.IN_PROGRESS, org.springframework.data.domain.Pageable.unpaged()).getTotalElements();
-        long delayed = projectRepository.findByStatus(Project.Status.DELAYED, org.springframework.data.domain.Pageable.unpaged()).getTotalElements();
+        long inProgress = projectRepository.countByStatus(Project.Status.IN_PROGRESS);
+        long delayed = projectRepository.countByStatus(Project.Status.DELAYED);
         long unread = alertRepository.countByReadFalse();
 
         return new DashboardResponse(userId, config.getWidgetConfig(), total, inProgress, delayed, unread);
