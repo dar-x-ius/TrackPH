@@ -118,6 +118,15 @@ Not using Eclipse? `mvn spring-boot:run` in the service folder works too.
 
 ---
 
+## Page Routing (Thymeleaf)
+
+- `PageController` is the only controller allowed to return view names (page routes like `/projects`, `/dashboard`).
+- It injects nothing and calls no services — every page loads its data client-side via the REST API (`fetch` calls to `ApiResponse<T>` endpoints).
+- Adding a page = add one `@GetMapping` method returning the template path, plus the Thymeleaf template itself under `templates/`.
+- Do not put `@RestController` logic or DB/service calls in `PageController` — that belongs in the REST controllers.
+
+---
+
 ## How to Add a New Entity (Step-by-Step)
 
 Follow this order — skipping steps causes JPA startup failures:
@@ -173,3 +182,14 @@ Follow this order — skipping steps causes JPA startup failures:
 - Do not call `AuditLogService` from controllers — the interceptor handles it.
 - Do not create a new `theme.css` — every service shares the same one from the template.
 - Do not add Lombok — write getters, setters and constructors by hand.
+
+---
+
+## Maintaining This Documentation
+
+- **`docs/dev-guide.md` (this file) is the single source of truth.** Everything platform-wide goes here, once.
+- Every other doc file — root and per-service `CLAUDE.md`, `AGENTS.md`, `GEMINI.md`, `.cursorrules`, `.github/copilot-instructions.md` — is a **thin wrapper**: a few lines pointing back here, plus (for a service folder) a short "service-specific notes" section for facts that don't apply platform-wide (port number, DFD-to-controller mapping, etc).
+- **When something platform-wide changes** (new convention, new anti-pattern, new step in a workflow): edit only this file. Do not copy the change into the wrapper files — they just link here.
+- **When something service-specific changes** (new endpoint, new scheduled job, new port): update that service's wrapper files' "Key facts" / "Service-Specific Notes" section. Keep the wording short — one line per fact — and keep all of a service's wrappers (CLAUDE.md, AGENTS.md, GEMINI.md, .cursorrules, copilot-instructions.md) saying the same thing, just at different lengths (CLAUDE.md can be the fullest; the rest are condensed).
+- **When adding a new microservice**: copy the wrapper files from `trackph-microservice-template/`, not from `milestone-service/` (the template's wrappers have the clone checklist; milestone's have milestone-specific facts you don't want). Fix the relative path to `dev-guide.md` if your new service lives somewhere other than directly under the repo root.
+- **Never** let a wrapper file grow past ~10 lines. If you need more than that, the content belongs in this file instead, with the wrapper just linking to the relevant section.

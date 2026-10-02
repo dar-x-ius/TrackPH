@@ -1,6 +1,7 @@
 package ph.trackph.milestone.config;
 
 import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -20,7 +21,15 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.csrf(AbstractHttpConfigurer::disable).sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS)).authorizeHttpRequests(auth -> auth.requestMatchers("/", "/login", "/register", "/error").permitAll().requestMatchers("/api/v1/auth/**").permitAll().requestMatchers(HttpMethod.GET, "/api/v1/projects", "/api/v1/projects/{id}").permitAll().requestMatchers("/css/**", "/js/**", "/images/**").permitAll().requestMatchers("/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**").permitAll().requestMatchers("/h2-console/**").permitAll().requestMatchers("/api/v1/dev/**").permitAll().requestMatchers("/admin/**", "/api/v1/admin/**").hasAnyRole("ADMIN").requestMatchers("/api/v1/audit-logs/**").hasAnyRole("ADMIN", "AGENCY").requestMatchers(HttpMethod.POST, "/api/v1/milestones/*/report").hasAnyRole("MANAGER", "AGENCY", "ADMIN").anyRequest().authenticated()).addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class).exceptionHandling(e -> e.authenticationEntryPoint((req, res, ex) -> res.sendRedirect("/login"))).logout(logout -> logout.logoutUrl("/auth/logout").addLogoutHandler((req, res, auth) -> {
+        http.csrf(AbstractHttpConfigurer::disable).sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS)).authorizeHttpRequests(auth -> auth.requestMatchers("/", "/login", "/register", "/error").permitAll().requestMatchers("/api/v1/auth/**").permitAll().requestMatchers(HttpMethod.GET, "/api/v1/projects", "/api/v1/projects/{id}").permitAll().requestMatchers("/css/**", "/js/**", "/images/**").permitAll().requestMatchers("/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**").permitAll().requestMatchers("/h2-console/**").permitAll().requestMatchers("/api/v1/dev/**").permitAll().requestMatchers("/admin/**", "/api/v1/admin/**").hasAnyRole("ADMIN").requestMatchers("/api/v1/audit-logs/**").hasAnyRole("ADMIN", "AGENCY").requestMatchers(HttpMethod.POST, "/api/v1/milestones/*/report").hasAnyRole("MANAGER", "AGENCY", "ADMIN").anyRequest().authenticated()).addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class).exceptionHandling(e -> e.authenticationEntryPoint((req, res, ex) -> {
+            if (req.getRequestURI().startsWith("/api/")) {
+                res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                res.setContentType("application/json");
+                res.getWriter().write("{\"status\":\"error\",\"message\":\"Authentication required\"}");
+            } else {
+                res.sendRedirect("/login");
+            }
+        })).logout(logout -> logout.logoutUrl("/auth/logout").addLogoutHandler((req, res, auth) -> {
             Cookie c = new Cookie("trackph-jwt", "");
             c.setMaxAge(0);
             c.setPath("/");

@@ -23,6 +23,9 @@ public class PageController {
     @GetMapping("/projects")
     public String projectList() { return "projects/list"; }
 
+    @GetMapping("/projects/new")
+    public String projectNew() { return "projects/new"; }
+
     @GetMapping("/projects/{id}")
     public String projectDetail(@PathVariable Long id) { return "projects/detail"; }
 

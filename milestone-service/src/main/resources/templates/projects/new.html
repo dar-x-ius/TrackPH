@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: layout(pageTitle='New Project', content=~{::main})}">
+<body>
+<main>
+    <h2 style="margin-top:0; color: var(--primary);">New Project</h2>
+
+    <div class="card" style="max-width:600px;">
+        <form id="new-project-form">
+            <label>Name<br/><input type="text" id="name" required style="width:100%;"/></label><br/><br/>
+            <label>Description<br/><textarea id="description" style="width:100%;"></textarea></label><br/><br/>
+            <label>Location<br/><input type="text" id="location" style="width:100%;"/></label><br/><br/>
+            <label>Start Date<br/><input type="date" id="startDate"/></label><br/><br/>
+            <label>End Date<br/><input type="date" id="endDate"/></label><br/><br/>
+            <label>Budget<br/><input type="number" id="budget" step="0.01"/></label><br/><br/>
+            <div id="error" style="color: var(--danger, red); display:none; margin-bottom:1rem;"></div>
+            <button type="submit" class="btn btn-primary">Create Project</button>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('new-project-form').addEventListener('submit', function (e) {
+            e.preventDefault();
+            const token = localStorage.getItem('trackph-token') || '';
+            const errorEl = document.getElementById('error');
+            errorEl.style.display = 'none';
+
+            fetch('/api/v1/projects', {
+                method: 'POST',
+                headers: token
+                    ? {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token}
+                    : {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    name: document.getElementById('name').value,
+                    description: document.getElementById('description').value,
+                    location: document.getElementById('location').value,
+                    startDate: document.getElementById('startDate').value || null,
+                    endDate: document.getElementById('endDate').value || null,
+                    budget: document.getElementById('budget').value || null
+                })
+            })
+                .then(r => r.json().then(body => ({ ok: r.ok, body })))
+                .then(({ ok, body }) => {
+                    if (!ok) throw new Error(body.message || 'Failed to create project');
+                    window.location.href = '/projects/' + body.data.id;
+                })
+                .catch(err => {
+                    errorEl.textContent = err.message;
+                    errorEl.style.display = 'block';
+                });
+        });
+    </script>
+</main>
+</body>
+</html>
