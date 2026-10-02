@@ -1,3 +1,0 @@
-TrackPH — Spring Boot microservice platform for Philippine government project monitoring.
-
-Read docs/dev-guide.md before writing any code. It covers architecture, conventions, auth, audit logging, Flyway migration rules, the CSS theme system, and anti-patterns specific to this project.

@@ -21,7 +21,3 @@ Read [docs/dev-guide.md](docs/dev-guide.md) before writing any code. It covers t
 ## Tech Stack
 
 Java 21 · Spring Boot 3.x · MySQL 8 · Flyway · Thymeleaf · JWT auth · SpringDoc OpenAPI
-
-## AI Coding Assistants
-
-This repo is tool-agnostic — `CLAUDE.md`, `AGENTS.md`, `GEMINI.md`, `.cursorrules`, and `.github/copilot-instructions.md` all point back to `docs/dev-guide.md`, which is the single source of truth. See its "Maintaining This Documentation" section before editing any of these.

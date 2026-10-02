@@ -4,3 +4,9 @@ bin/
 .claude/settings.local.json
 
 .settings/
+
+# AI-tool wrapper docs other than CLAUDE.md — kept out of the repo for optics
+AGENTS.md
+GEMINI.md
+.cursorrules
+copilot-instructions.md

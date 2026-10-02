@@ -1,3 +1,0 @@
-TrackPH Milestone & Timeline Monitoring microservice — Spring Boot 3.x, port 8081.
-
-Read ../docs/dev-guide.md before writing any code. AuditInterceptor auto-logs all mutations — never call AuditLogService from controllers. AlertScheduler runs at midnight; dev trigger: POST /api/v1/dev/alerts/trigger.
