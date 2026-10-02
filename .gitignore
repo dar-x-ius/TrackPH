@@ -5,7 +5,6 @@ bin/
 
 .settings/
 
-# AI-tool wrapper docs — kept out of the repo for optics, local-machine only
 AGENTS.md
 GEMINI.md
 .cursorrules
