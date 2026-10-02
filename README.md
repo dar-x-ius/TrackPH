@@ -20,7 +20,7 @@ Read [docs/dev-guide.md](docs/dev-guide.md) before writing any code. It covers t
 
 ## Tech Stack
 
-Java 17 · Spring Boot 3.x · MySQL 8 · Flyway · Thymeleaf · JWT auth · SpringDoc OpenAPI
+Java 21 · Spring Boot 3.x · MySQL 8 · Flyway · Thymeleaf · JWT auth · SpringDoc OpenAPI
 
 ## AI Coding Assistants
 

@@ -14,7 +14,7 @@ TrackPH is a modular platform for monitoring Philippine government project imple
 
 | Layer | Technology |
 |---|---|
-| Language | Java 17 |
+| Language | Java 21 |
 | Framework | Spring Boot 3.x |
 | Build | Maven |
 | Database | MySQL 8 |
@@ -47,7 +47,7 @@ No plugins needed — the project does **not** use Lombok, so write getters, set
 
 1. **File → Import → Existing Maven Projects**, one service at a time (not the repo root).
 2. Select the project → **Maven → Update Project** (Alt+F5, tick *Force update*).
-3. Run the `@SpringBootApplication` class with **Run As → Java Application** (JDK 17+ under Window → Preferences → Java → Installed JREs).
+3. Run the `@SpringBootApplication` class with **Run As → Java Application** (JDK 21+ under Window → Preferences → Java → Installed JREs).
 4. If you see `Unresolved compilation problem` at runtime, delete the service's `target/` folder and rebuild.
 
 Not using Eclipse? `mvn spring-boot:run` in the service folder works too.
