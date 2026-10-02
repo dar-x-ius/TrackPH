@@ -31,13 +31,13 @@ TrackPH is a modular platform for monitoring Philippine government project imple
 
 ```
 TrackPH/
-├── docs/                          ← you are here
 ├── trackph-microservice-template/ ← clone this to start a new service
+│   └── docs/                      ← you are here
 ├── milestone-service/             ← Milestone & Timeline Tracking
 └── <future-services>/
 ```
 
-Each microservice folder is a complete, self-contained Maven project.
+Each microservice folder is a complete, self-contained Maven project. This guide lives inside the template (not at the repo root) so the template folder is self-contained when handed off to another team on its own — see "Maintaining This Documentation" below.
 
 ---
 
@@ -115,6 +115,7 @@ Not using Eclipse? `mvn spring-boot:run` in the service folder works too.
 - Dark mode is toggled by setting `data-theme="dark"` on `<html>`. The `theme-toggle.js` script handles this and persists to `localStorage`.
 - **Do not add a second theme toggle** — `layout.html` already has one in the navbar.
 - All Thymeleaf pages must extend `layout.html` via `th:replace` or `th:insert`. Do not write standalone HTML pages.
+- **Cross-service consistency**: `trackph-microservice-template/src/main/resources/static/css/theme.css` is the canonical copy. Every service's `theme.css` is a copy of it, not an independent file — edit the template's copy, then run `./scripts/sync-theme.sh` from the repo root to push the change to every service. Run `./scripts/sync-theme.sh --check` to verify no service has drifted (fails with a diff if one has).
 
 ---
 
@@ -187,9 +188,9 @@ Follow this order — skipping steps causes JPA startup failures:
 
 ## Maintaining This Documentation
 
-- **`docs/dev-guide.md` (this file) is the single source of truth, and the only doc file tracked in git.** Everything platform-wide goes here, once.
+- **This file (`trackph-microservice-template/docs/dev-guide.md`) is the single source of truth, and the only doc file tracked in git.** Everything platform-wide goes here, once. It lives inside the template, not at the repo root, so that handing off just the `trackph-microservice-template/` folder to another team gives them the whole guide too — no separate `docs/` folder to remember to include. Other services (e.g. `milestone-service/`) link to it with a relative path (`../trackph-microservice-template/docs/dev-guide.md`); they do not get their own copy.
 - `CLAUDE.md` (root and per-service) is a **thin wrapper**: a few lines pointing back here, plus (for a service folder) a short "service-specific notes" section for facts that don't apply platform-wide (port number, DFD-to-controller mapping, etc). It exists on disk for local AI-assistant use only — it, along with `AGENTS.md`, `GEMINI.md`, `.cursorrules`, and `.github/copilot-instructions.md`, is gitignored (see `.gitignore`) so the repo doesn't track or visibly advertise which AI tools were used, and so it doesn't need re-syncing across machines.
 - **When something platform-wide changes** (new convention, new anti-pattern, new step in a workflow): edit only this file. Do not copy the change into `CLAUDE.md`.
 - **When something service-specific changes** (new endpoint, new scheduled job, new port): update that service's local `CLAUDE.md` "Service-Specific Notes" section. Keep it short — one line per fact.
-- **When adding a new microservice**: base its `CLAUDE.md` on `trackph-microservice-template/`'s (has the clone checklist), not `milestone-service/`'s (has milestone-specific facts you don't want). Fix the relative path to `dev-guide.md` if your new service lives somewhere other than directly under the repo root.
+- **When adding a new microservice**: base its `CLAUDE.md` on `trackph-microservice-template/`'s (has the clone checklist), not `milestone-service/`'s (has milestone-specific facts you don't want). Its link to the dev guide should read `../trackph-microservice-template/docs/dev-guide.md`, same as `milestone-service/CLAUDE.md` — unless your new service lives somewhere other than directly under the repo root, in which case adjust the `../` count.
 - **Never** let `CLAUDE.md` grow past ~10 lines. If you need more than that, the content belongs in this file instead, with `CLAUDE.md` just linking to the relevant section.
