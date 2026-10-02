@@ -2,6 +2,7 @@ graphify-out/
 target/
 bin/
 .claude/
+/.project
 
 .settings/
 
