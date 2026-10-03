@@ -7,8 +7,10 @@ A modular platform for monitoring Philippine government project implementation (
 ```
 TrackPH/
 ├── trackph-microservice-template/ ← clone/hand off this to start a new service
-│   └── docs/dev-guide.md          ← full developer guide: architecture, conventions, auth, Flyway, theme, anti-patterns
+│   ├── docs/dev-guide.md          ← full developer guide: architecture, conventions, auth, Flyway, theme, anti-patterns
+│   └── research-paper/            ← this service's capstone research paper
 ├── milestone-service/             ← Milestone & Timeline Monitoring (port 8081) — first deliverable
+│   └── research-paper/            ← this service's capstone research paper
 └── <future-services>/
 ```
 
