@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: layout(pageTitle='Register', content=~{::main})}">
+<body>
+<main>
+    <div style="max-width: 480px; margin: 3rem auto;">
+        <div class="card">
+            <h2 style="margin-top:0; color: var(--primary);">Create Account</h2>
+            <form id="reg-form">
+                <div class="form-group">
+                    <label class="form-label">Username</label>
+                    <input id="username" type="text" class="form-control" required/>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Email</label>
+                    <input id="email" type="email" class="form-control" required/>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Full Name</label>
+                    <input id="fullName" type="text" class="form-control"/>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Agency / Organization</label>
+                    <input id="agencyName" type="text" class="form-control"/>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Password</label>
+                    <input id="password" type="password" class="form-control" required/>
+                </div>
+                <div id="reg-error" class="alert alert-danger" style="display:none;"></div>
+                <button type="submit" class="btn btn-primary" style="width:100%; margin-top:0.5rem;">Register</button>
+            </form>
+            <p style="text-align:center; margin-top:1rem; font-size:0.9rem; color: var(--text-muted);">
+                Already have an account? <a th:href="@{/login}">Sign in</a>
+            </p>
+        </div>
+    </div>
+    <script>
+        document.getElementById('reg-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            fetch('/api/v1/auth/register', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    username: document.getElementById('username').value,
+                    email: document.getElementById('email').value,
+                    fullName: document.getElementById('fullName').value,
+                    agencyName: document.getElementById('agencyName').value,
+                    password: document.getElementById('password').value
+                })
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    document.cookie = 'trackph-jwt=' + data.data.token + '; path=/; SameSite=Strict';
+                    localStorage.setItem('trackph-token', data.data.token);
+                    window.location.href = '/';
+                } else {
+                    const err = document.getElementById('reg-error');
+                    err.textContent = data.message;
+                    err.style.display = 'block';
+                }
+            });
+        });
+    </script>
+</main>
+</body>
+</html>

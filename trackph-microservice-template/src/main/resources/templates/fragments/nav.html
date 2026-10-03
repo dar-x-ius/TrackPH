@@ -9,6 +9,7 @@
 -->
 <ul class="navbar-links" th:fragment="links">
     <li sec:authorize="!isAuthenticated()"><a th:href="@{/login}">Sign in</a></li>
+    <li sec:authorize="!isAuthenticated()"><a th:href="@{/register}">Register</a></li>
     <li sec:authorize="isAuthenticated()"><a th:href="@{/auth/logout}">Sign out</a></li>
 </ul>
 </body>

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: layout(pageTitle='Sign In', content=~{::main})}">
+<body>
+<main>
+    <div style="max-width: 400px; margin: 3rem auto;">
+        <div class="card">
+            <h2 style="margin-top:0; color: var(--primary);">Sign In</h2>
+
+            <div th:if="${param.logout}" class="alert alert-success">You have been signed out.</div>
+            <div id="login-error" class="alert alert-danger" style="display:none;"></div>
+
+            <form id="login-form">
+                <div class="form-group">
+                    <label class="form-label" for="username">Username</label>
+                    <input id="username" name="username" type="text" class="form-control"
+                           autocomplete="username" required/>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="password">Password</label>
+                    <input id="password" name="password" type="password" class="form-control"
+                           autocomplete="current-password" required/>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width:100%; margin-top:0.5rem;">Sign In</button>
+            </form>
+            <p style="text-align:center; margin-top:1rem; font-size:0.9rem; color: var(--text-muted);">
+                No account? <a th:href="@{/register}">Register</a>
+            </p>
+        </div>
+    </div>
+    <script>
+        document.getElementById('login-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            fetch('/api/v1/auth/login', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    username: document.getElementById('username').value,
+                    password: document.getElementById('password').value
+                })
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    document.cookie = 'trackph-jwt=' + data.data.token + '; path=/; SameSite=Strict';
+                    localStorage.setItem('trackph-token', data.data.token);
+                    window.location.href = '/';
+                } else {
+                    const err = document.getElementById('login-error');
+                    err.textContent = data.message || 'Invalid credentials';
+                    err.style.display = 'block';
+                }
+            })
+            .catch(() => {
+                const err = document.getElementById('login-error');
+                err.textContent = 'Network error. Please try again.';
+                err.style.display = 'block';
+            });
+        });
+    </script>
+</main>
+</body>
+</html>

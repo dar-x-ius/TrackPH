@@ -1,0 +1,4 @@
+package ph.trackph.template.dto.response;
+
+public record AuthResponse(String token, String username, String role, Long userId) {
+}
