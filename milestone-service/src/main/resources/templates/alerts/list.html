@@ -58,6 +58,12 @@
         }
 
         loadAlerts();
+
+        // Live push: new alerts refresh the table immediately instead of waiting for a manual reload
+        if (token) {
+            const alertStream = new EventSource('/api/v1/alerts/stream?token=' + encodeURIComponent(token));
+            alertStream.addEventListener('alert', loadAlerts);
+        }
     </script>
 </main>
 </body>

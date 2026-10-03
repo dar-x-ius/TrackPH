@@ -6,12 +6,49 @@
     <a th:href="@{/projects}" style="color:var(--text-muted); font-size:0.9rem;">&larr; Back to Projects</a>
 
     <div id="project-header" style="margin: 1.5rem 0;">
-        <h2 id="proj-name" style="color: var(--primary); margin:0 0 0.25rem;">Loading...</h2>
-        <span id="proj-status" class="badge"></span>
+        <div style="display:flex; align-items:center; gap:0.75rem; flex-wrap:wrap;">
+            <h2 id="proj-name" style="color: var(--primary); margin:0;">Loading...</h2>
+            <span id="proj-status" class="badge"></span>
+            <button class="btn btn-secondary btn-sm" onclick="toggleEditProject()">Edit</button>
+            <button class="btn btn-secondary btn-sm" onclick="deleteProject()">Delete</button>
+        </div>
         <p id="proj-desc" style="color: var(--text-muted); margin-top:0.5rem;"></p>
     </div>
 
-    <h3>Milestone Timeline</h3>
+    <form id="edit-project-form" class="card" style="display:none; max-width:600px; margin-bottom:1.5rem;" onsubmit="saveProject(event)">
+        <label>Name<br/><input type="text" id="edit-name" required style="width:100%;"/></label><br/><br/>
+        <label>Description<br/><textarea id="edit-description" style="width:100%;"></textarea></label><br/><br/>
+        <label>Location<br/><input type="text" id="edit-location" style="width:100%;"/></label><br/><br/>
+        <label>Start Date<br/><input type="date" id="edit-startDate"/></label><br/><br/>
+        <label>End Date<br/><input type="date" id="edit-endDate"/></label><br/><br/>
+        <label>Budget<br/><input type="number" id="edit-budget" step="0.01"/></label><br/><br/>
+        <label>Status<br/>
+            <select id="edit-status">
+                <option value="PLANNED">PLANNED</option>
+                <option value="IN_PROGRESS">IN_PROGRESS</option>
+                <option value="DELAYED">DELAYED</option>
+                <option value="COMPLETED">COMPLETED</option>
+                <option value="CANCELLED">CANCELLED</option>
+            </select>
+        </label><br/><br/>
+        <button type="submit" class="btn btn-primary btn-sm">Save</button>
+        <button type="button" class="btn btn-secondary btn-sm" onclick="toggleEditProject()">Cancel</button>
+    </form>
+
+    <div style="display:flex; justify-content:space-between; align-items:center;">
+        <h3 style="margin-bottom:0;">Milestone Timeline</h3>
+        <button class="btn btn-primary btn-sm" onclick="toggleAddMilestone()">+ Add Milestone</button>
+    </div>
+
+    <form id="add-milestone-form" class="card" style="display:none; margin:1rem 0;" onsubmit="addMilestone(event)">
+        <label>Title<br/><input type="text" id="ms-title" required style="width:100%;"/></label><br/><br/>
+        <label>Description<br/><textarea id="ms-description" style="width:100%;"></textarea></label><br/><br/>
+        <label>Due Date<br/><input type="date" id="ms-dueDate" required/></label><br/><br/>
+        <label>Sequence Order<br/><input type="number" id="ms-sequenceOrder" value="0"/></label><br/><br/>
+        <button type="submit" class="btn btn-primary btn-sm">Add</button>
+        <button type="button" class="btn btn-secondary btn-sm" onclick="toggleAddMilestone()">Cancel</button>
+    </form>
+
     <div id="milestones-container">
         <div class="card" style="color: var(--text-muted); text-align:center; padding:2rem;">Loading milestones...</div>
     </div>
@@ -20,6 +57,7 @@
         const projectId = window.location.pathname.split('/').pop();
         const token = localStorage.getItem('trackph-token') || '';
         const headers = token ? {'Authorization': 'Bearer ' + token} : {};
+        const jsonHeaders = Object.assign({'Content-Type': 'application/json'}, headers);
 
         const statusBadge = {
             PLANNED: 'badge-secondary', IN_PROGRESS: 'badge-info',
@@ -30,41 +68,174 @@
             COMPLETED: 'badge-success', OVERDUE: 'badge-danger'
         };
 
-        fetch(`/api/v1/projects/${projectId}`, { headers })
-            .then(r => r.json())
-            .then(data => {
-                const p = data.data;
-                document.getElementById('proj-name').textContent = p.name;
-                document.getElementById('proj-desc').textContent = p.description ?? '';
-                const badge = document.getElementById('proj-status');
-                badge.textContent = p.status;
-                badge.className = 'badge ' + (statusBadge[p.status] || 'badge-secondary');
-            });
+        let currentProject = null;
 
-        fetch(`/api/v1/projects/${projectId}/milestones`, { headers })
-            .then(r => r.json())
-            .then(data => {
-                const milestones = data.data ?? [];
-                const container = document.getElementById('milestones-container');
-                if (!milestones.length) {
-                    container.innerHTML = '<div class="card" style="color:var(--text-muted);text-align:center;padding:2rem;">No milestones yet.</div>';
-                    return;
-                }
-                container.innerHTML = milestones.map((m, i) => `
-                    <div class="card" style="margin-bottom:1rem; display:flex; align-items:flex-start; gap:1rem;">
-                        <div style="background:var(--primary); color:#fff; border-radius:50%; width:32px; height:32px; display:flex; align-items:center; justify-content:center; font-weight:700; flex-shrink:0;">${i + 1}</div>
-                        <div style="flex:1;">
-                            <div style="display:flex; align-items:center; gap:0.5rem; margin-bottom:0.25rem;">
-                                <strong>${m.title}</strong>
-                                <span class="badge ${msBadge[m.status] || 'badge-secondary'}">${m.status}</span>
-                                ${m.delayDays > 0 ? `<span class="badge badge-danger">${m.delayDays}d overdue</span>` : ''}
+        function loadProject() {
+            fetch(`/api/v1/projects/${projectId}`, { headers })
+                .then(r => r.json())
+                .then(data => {
+                    currentProject = data.data;
+                    document.getElementById('proj-name').textContent = currentProject.name;
+                    document.getElementById('proj-desc').textContent = currentProject.description ?? '';
+                    const badge = document.getElementById('proj-status');
+                    badge.textContent = currentProject.status;
+                    badge.className = 'badge ' + (statusBadge[currentProject.status] || 'badge-secondary');
+                });
+        }
+
+        function toggleEditProject() {
+            const form = document.getElementById('edit-project-form');
+            if (form.style.display !== 'none') { form.style.display = 'none'; return; }
+            const p = currentProject;
+            document.getElementById('edit-name').value = p.name ?? '';
+            document.getElementById('edit-description').value = p.description ?? '';
+            document.getElementById('edit-location').value = p.location ?? '';
+            document.getElementById('edit-startDate').value = p.startDate ?? '';
+            document.getElementById('edit-endDate').value = p.endDate ?? '';
+            document.getElementById('edit-budget').value = p.budget ?? '';
+            document.getElementById('edit-status').value = p.status;
+            form.style.display = 'block';
+        }
+
+        function saveProject(e) {
+            e.preventDefault();
+            fetch(`/api/v1/projects/${projectId}`, {
+                method: 'PUT',
+                headers: jsonHeaders,
+                body: JSON.stringify({
+                    name: document.getElementById('edit-name').value,
+                    description: document.getElementById('edit-description').value,
+                    location: document.getElementById('edit-location').value,
+                    startDate: document.getElementById('edit-startDate').value || null,
+                    endDate: document.getElementById('edit-endDate').value || null,
+                    budget: document.getElementById('edit-budget').value || null,
+                    status: document.getElementById('edit-status').value
+                })
+            })
+                .then(r => r.json().then(body => ({ ok: r.ok, body })))
+                .then(({ ok, body }) => {
+                    if (!ok) throw new Error(body.message || 'Failed to update project');
+                    document.getElementById('edit-project-form').style.display = 'none';
+                    loadProject();
+                })
+                .catch(err => alert(err.message));
+        }
+
+        function deleteProject() {
+            if (!confirm('Delete this project? This cannot be undone.')) return;
+            fetch(`/api/v1/projects/${projectId}`, { method: 'DELETE', headers })
+                .then(r => r.json().then(body => ({ ok: r.ok, body })))
+                .then(({ ok, body }) => {
+                    if (!ok) throw new Error(body.message || 'Failed to delete project');
+                    window.location.href = '/projects';
+                })
+                .catch(err => alert(err.message));
+        }
+
+        function loadMilestones() {
+            fetch(`/api/v1/projects/${projectId}/milestones`, { headers })
+                .then(r => r.json())
+                .then(data => {
+                    const milestones = data.data ?? [];
+                    const container = document.getElementById('milestones-container');
+                    if (!milestones.length) {
+                        container.innerHTML = '<div class="card" style="color:var(--text-muted);text-align:center;padding:2rem;">No milestones yet.</div>';
+                        return;
+                    }
+                    container.innerHTML = milestones.map((m, i) => `
+                        <div class="card" style="margin-bottom:1rem; display:flex; align-items:flex-start; gap:1rem;">
+                            <div style="background:var(--primary); color:#fff; border-radius:50%; width:32px; height:32px; display:flex; align-items:center; justify-content:center; font-weight:700; flex-shrink:0;">${i + 1}</div>
+                            <div style="flex:1;">
+                                <div style="display:flex; align-items:center; gap:0.5rem; margin-bottom:0.25rem; flex-wrap:wrap;">
+                                    <strong>${m.title}</strong>
+                                    <span class="badge ${msBadge[m.status] || 'badge-secondary'}">${m.status}</span>
+                                    ${m.delayDays > 0 ? `<span class="badge badge-danger">${m.delayDays}d overdue</span>` : ''}
+                                    <select onchange="updateMilestoneStatus(${m.id}, this.value)" style="margin-left:auto;">
+                                        ${Object.keys(msBadge).map(s => `<option value="${s}" ${s === m.status ? 'selected' : ''}>${s}</option>`).join('')}
+                                    </select>
+                                    <button class="btn btn-secondary btn-sm" onclick="toggleReportForm(${m.id})">Submit Report</button>
+                                </div>
+                                <div style="font-size:0.85rem; color:var(--text-muted);">Due: ${m.dueDate}${m.completedDate ? ' · Completed: ' + m.completedDate : ''}</div>
+                                ${m.description ? `<p style="margin: 0.5rem 0 0; font-size:0.9rem;">${m.description}</p>` : ''}
+                                <form id="report-form-${m.id}" style="display:none; margin-top:0.75rem;" onsubmit="submitReport(event, ${m.id})">
+                                    <textarea id="report-desc-${m.id}" placeholder="Progress notes..." style="width:100%;" rows="2">${m.description ?? ''}</textarea>
+                                    <button type="submit" class="btn btn-primary btn-sm" style="margin-top:0.5rem;">Save Report</button>
+                                </form>
                             </div>
-                            <div style="font-size:0.85rem; color:var(--text-muted);">Due: ${m.dueDate}${m.completedDate ? ' · Completed: ' + m.completedDate : ''}</div>
-                            ${m.description ? `<p style="margin: 0.5rem 0 0; font-size:0.9rem;">${m.description}</p>` : ''}
                         </div>
-                    </div>
-                `).join('');
-            });
+                    `).join('');
+                });
+        }
+
+        function updateMilestoneStatus(id, status) {
+            fetch(`/api/v1/milestones/${id}`, { headers })
+                .then(r => r.json())
+                .then(data => {
+                    const m = data.data;
+                    const body = {
+                        title: m.title, description: m.description, dueDate: m.dueDate,
+                        sequenceOrder: m.sequenceOrder, status,
+                        completedDate: status === 'COMPLETED' ? new Date().toISOString().slice(0, 10) : m.completedDate
+                    };
+                    return fetch(`/api/v1/milestones/${id}`, { method: 'PUT', headers: jsonHeaders, body: JSON.stringify(body) });
+                })
+                .then(r => r.json().then(b => ({ ok: r.ok, b })))
+                .then(({ ok, b }) => { if (!ok) throw new Error(b.message || 'Failed to update status'); loadMilestones(); })
+                .catch(err => alert(err.message));
+        }
+
+        function toggleReportForm(id) {
+            const form = document.getElementById(`report-form-${id}`);
+            form.style.display = form.style.display === 'none' ? 'block' : 'none';
+        }
+
+        function submitReport(e, id) {
+            e.preventDefault();
+            fetch(`/api/v1/milestones/${id}`, { headers })
+                .then(r => r.json())
+                .then(data => {
+                    const m = data.data;
+                    const body = {
+                        title: m.title, description: document.getElementById(`report-desc-${id}`).value,
+                        dueDate: m.dueDate, sequenceOrder: m.sequenceOrder, status: m.status, completedDate: m.completedDate
+                    };
+                    return fetch(`/api/v1/milestones/${id}/report`, { method: 'POST', headers: jsonHeaders, body: JSON.stringify(body) });
+                })
+                .then(r => r.json().then(b => ({ ok: r.ok, b })))
+                .then(({ ok, b }) => { if (!ok) throw new Error(b.message || 'Failed to submit report'); loadMilestones(); })
+                .catch(err => alert(err.message));
+        }
+
+        function toggleAddMilestone() {
+            const form = document.getElementById('add-milestone-form');
+            form.style.display = form.style.display === 'none' ? 'block' : 'none';
+        }
+
+        function addMilestone(e) {
+            e.preventDefault();
+            fetch(`/api/v1/projects/${projectId}/milestones`, {
+                method: 'POST',
+                headers: jsonHeaders,
+                body: JSON.stringify({
+                    title: document.getElementById('ms-title').value,
+                    description: document.getElementById('ms-description').value,
+                    dueDate: document.getElementById('ms-dueDate').value,
+                    sequenceOrder: Number(document.getElementById('ms-sequenceOrder').value) || 0,
+                    status: 'PENDING'
+                })
+            })
+                .then(r => r.json().then(body => ({ ok: r.ok, body })))
+                .then(({ ok, body }) => {
+                    if (!ok) throw new Error(body.message || 'Failed to add milestone');
+                    document.getElementById('add-milestone-form').reset();
+                    document.getElementById('add-milestone-form').style.display = 'none';
+                    loadMilestones();
+                })
+                .catch(err => alert(err.message));
+        }
+
+        loadProject();
+        loadMilestones();
     </script>
 </main>
 </body>

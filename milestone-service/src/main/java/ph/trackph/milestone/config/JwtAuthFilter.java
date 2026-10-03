@@ -36,6 +36,10 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 }
             }
         }
+        if (token == null && "/api/v1/alerts/stream".equals(request.getRequestURI())) {
+            // EventSource can't set an Authorization header, so this one streaming endpoint accepts the token as a query param instead.
+            token = request.getParameter("token");
+        }
         if (token == null) {
             chain.doFilter(request, response);
             return;

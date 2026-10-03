@@ -22,7 +22,7 @@
             <span id="unread-badge" style="background:var(--primary-light);color:#fff;border-radius:999px;padding:1px 7px;font-size:0.75rem;margin-left:4px;display:none;"></span>
         </a></li>
         <li sec:authorize="hasAnyRole('ADMIN','AGENCY')"><a th:href="@{/admin/audit-logs}">Audit Logs</a></li>
-        <li sec:authorize="isAuthenticated()"><a th:href="@{/auth/logout}">Sign out</a></li>
+        <li sec:authorize="isAuthenticated()"><a th:href="@{/auth/logout}" onclick="localStorage.removeItem('trackph-token')">Sign out</a></li>
         <li sec:authorize="!isAuthenticated()"><a th:href="@{/login}">Sign in</a></li>
     </ul>
     <button id="theme-toggle-btn" class="theme-toggle" onclick="toggleTheme()">☾ Dark</button>
@@ -42,9 +42,10 @@
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         initTheme();
-        // Poll unread count every 60s for authenticated users
+        const token = localStorage.getItem('trackph-token') || '';
+        // Poll unread count every 60s for authenticated users (and once more right away on any pushed alert)
         function refreshUnread() {
-            fetch('/api/v1/alerts/unread-count')
+            fetch('/api/v1/alerts/unread-count', { headers: { 'Authorization': 'Bearer ' + token } })
                 .then(r => r.ok ? r.json() : null)
                 .then(data => {
                     if (!data) return;
@@ -58,6 +59,12 @@
         }
         refreshUnread();
         setInterval(refreshUnread, 60000);
+
+        // Live push: new alerts refresh the badge immediately instead of waiting for the next poll
+        if (token) {
+            const alertStream = new EventSource('/api/v1/alerts/stream?token=' + encodeURIComponent(token));
+            alertStream.addEventListener('alert', refreshUnread);
+        }
     });
 </script>
 <th:block th:replace="${extraScript} ?: ~{}"/>
