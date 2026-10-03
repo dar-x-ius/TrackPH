@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<body>
+<!--
+  Per-service navbar links. layout.html includes this file directly, so it is NOT
+  passed as a fragment parameter and does NOT need editing on every page template.
+  Add your service's authenticated-only links here (see dev-guide.md "Theme & UI").
+-->
+<ul class="navbar-links" th:fragment="links">
+    <li sec:authorize="!isAuthenticated()"><a th:href="@{/login}">Sign in</a></li>
+    <li sec:authorize="isAuthenticated()"><a th:href="@{/auth/logout}">Sign out</a></li>
+</ul>
+</body>
+</html>

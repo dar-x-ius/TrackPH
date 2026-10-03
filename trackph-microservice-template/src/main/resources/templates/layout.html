@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      th:fragment="layout(pageTitle, content)">
 <head>
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
@@ -13,7 +14,7 @@
             } catch (_) {}
         })();
     </script>
-    <title th:text="${pageTitle} + ' | TrackPH'">TrackPH</title>
+    <title th:text="${pageTitle} + ' | ' + (${appName} ?: 'TrackPH')">TrackPH</title>
     <link rel="stylesheet" th:href="@{/css/theme.css}"/>
     <script th:src="@{/js/theme-toggle.js}"></script>
     <th:block th:replace="${extraHead} ?: ~{}"/>
@@ -30,26 +31,7 @@
             <rect x="2" y="21" width="20" height="1.5" fill="currentColor"/>
         </svg>TrackPH
     </a>
-    <ul class="navbar-links">
-        <li sec:authorize="isAuthenticated()">
-            <a th:href="@{/dashboard}">Dashboard</a>
-        </li>
-        <li sec:authorize="isAuthenticated()">
-            <a th:href="@{/projects}">Projects</a>
-        </li>
-        <li sec:authorize="isAuthenticated()">
-            <a th:href="@{/alerts}">Alerts</a>
-        </li>
-        <li sec:authorize="hasAnyRole('ADMIN','AGENCY')">
-            <a th:href="@{/admin/audit-logs}">Audit Logs</a>
-        </li>
-        <li sec:authorize="isAuthenticated()">
-            <a th:href="@{/auth/logout}">Sign out</a>
-        </li>
-        <li sec:authorize="!isAuthenticated()">
-            <a th:href="@{/login}">Sign in</a>
-        </li>
-    </ul>
+    <ul class="navbar-links" th:replace="~{fragments/nav :: links}"></ul>
     <button id="theme-toggle-btn" class="theme-toggle" onclick="toggleTheme()">☾ Dark</button>
 </nav>
 
@@ -63,7 +45,7 @@
 </div>
 
 <footer class="footer">
-    <span>TrackPH &copy; 2025, Government Project Monitoring Platform</span>
+    <span th:text="'TrackPH © 2025, ' + (${appTagline} ?: 'Government Project Monitoring Platform')">TrackPH &copy; 2025, Government Project Monitoring Platform</span>
 </footer>
 
 <script>

@@ -113,10 +113,15 @@ Not using Eclipse? `mvn spring-boot:run` in the service folder works too.
   - `--primary-dark`
   - `--bg`, `--surface`, `--text`, `--border`
 - Dark mode is toggled by setting `data-theme="dark"` on `<html>`. The `theme-toggle.js` script handles this and persists to `localStorage` under the `trackph-theme` key.
-- **Avoiding a flash of the wrong theme on page load**: this is a server-rendered multi-page app, so every navigation is a full page load/repaint, not client-side routing. `theme-toggle.js`'s `initTheme()` only runs on `DOMContentLoaded`, which is too late to prevent a flash of the default light `--bg` before it fires. `layout.html`'s `<head>` therefore has a small inline `<script>`, placed before the `theme.css` link, that reads `localStorage` synchronously and sets `data-theme` on `<html>` before first paint. Keep this inline script in sync across every service's `layout.html` (it is not covered by `sync-theme.sh`, which only syncs `theme.css`) — do not remove it or move it after the CSS link.
+- **Avoiding a flash of the wrong theme on page load**: this is a server-rendered multi-page app, so every navigation is a full page load/repaint, not client-side routing. `theme-toggle.js`'s `initTheme()` only runs on `DOMContentLoaded`, which is too late to prevent a flash of the default light `--bg` before it fires. `layout.html`'s `<head>` therefore has a small inline `<script>`, placed before the `theme.css` link, that reads `localStorage` synchronously and sets `data-theme` on `<html>` before first paint. Do not remove it or move it after the CSS link.
 - **Do not add a second theme toggle** — `layout.html` already has one in the navbar.
 - All Thymeleaf pages must extend `layout.html` via `th:replace` or `th:insert`. Do not write standalone HTML pages.
-- **Cross-service consistency**: `trackph-microservice-template/src/main/resources/static/css/theme.css` is the canonical copy. Every service's `theme.css` is a copy of it, not an independent file — edit the template's copy, then run `./scripts/sync-theme.sh` from the repo root to push the change to every service. Run `./scripts/sync-theme.sh --check` to verify no service has drifted (fails with a diff if one has).
+- **Cross-service consistency**: `trackph-microservice-template/src/main/resources/static/css/theme.css` and `theme-toggle.js` are the canonical copies — every service's copy must be byte-identical, there's no legitimate reason to diverge. Edit the template's copy, then run `./scripts/sync-theme.sh` from the repo root to push the change to every service. Run `./scripts/sync-theme.sh --check` to verify no service has drifted (fails with a diff if one has).
+- **`layout.html` is shared structure, not a shared file** — it is deliberately *not* byte-synced, because a service is allowed to add its own global script to it (e.g. `milestone-service` appends an alert-badge poller after `initTheme()`). What must stay identical is the *structure*, which `sync-theme.sh --check` also verifies:
+  - It must declare `th:fragment="layout(pageTitle, content)"` on the `<html>` tag — without this the service's own pages fail to resolve the fragment at all.
+  - Its navbar links must come from `th:replace="~{fragments/nav :: links}"`, not be hardcoded inline. Each service owns its own `templates/fragments/nav.html` (not synced — it's meant to differ) defining its actual links; the template's copy ships a generic sign-in/sign-out-only default. **Do not hardcode nav `<li>` entries directly into `layout.html` again** — that was the original bug that made the template's navbar break for any team whose service doesn't have `/dashboard`, `/projects`, `/alerts`, `/admin/audit-logs` routes.
+  - Brand name and footer tagline come from the `appName` / `appTagline` model attributes (used via `${appName} ?: 'TrackPH'` so a missing bean still degrades gracefully) rather than hardcoded text, supplied per service by a small `@ControllerAdvice` class — see `config/BrandConfig.java`. Edit its two constants for your service instead of editing strings in `layout.html`.
+- **Landing pages / public marketing content are not part of the shared template.** `theme.css` ships generic, reusable primitives for building one (`.hero`, `.features`, `.recent-projects`, `.cta-band`, etc.) but the template's own `index.html` stays a minimal generic placeholder. A service's actual landing page (see `milestone-service/.../index.html` for an example) will usually fetch from that service's own domain API, so it isn't portable as-is — build your own content on top of the shared CSS classes rather than copying another service's `index.html` wholesale.
 
 ---
 
@@ -183,6 +188,8 @@ Follow this order — skipping steps causes JPA startup failures:
 - Do not write inline styles in Thymeleaf templates — use `theme.css` variables.
 - Do not call `AuditLogService` from controllers — the interceptor handles it.
 - Do not create a new `theme.css` — every service shares the same one from the template.
+- Do not hardcode navbar links directly into `layout.html` — add them to your service's `templates/fragments/nav.html`.
+- Do not hardcode the brand name or footer tagline into `layout.html` — edit the constants in `config/BrandConfig.java`.
 - Do not add Lombok — write getters, setters and constructors by hand.
 
 ---

@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<body>
+<ul class="navbar-links" th:fragment="links">
+    <li sec:authorize="isAuthenticated()"><a th:href="@{/dashboard}">Dashboard</a></li>
+    <li sec:authorize="isAuthenticated()"><a th:href="@{/projects}">Projects</a></li>
+    <li sec:authorize="isAuthenticated()"><a th:href="@{/alerts}">
+        Alerts
+        <span id="unread-badge" class="nav-badge"></span>
+    </a></li>
+    <li sec:authorize="hasAnyRole('ADMIN','AGENCY')"><a th:href="@{/admin/audit-logs}">Audit Logs</a></li>
+    <li sec:authorize="isAuthenticated()"><a th:href="@{/auth/logout}" onclick="localStorage.removeItem('trackph-token')">Sign out</a></li>
+    <li sec:authorize="!isAuthenticated()"><a th:href="@{/login}">Sign in</a></li>
+</ul>
+</body>
+</html>
