@@ -4,6 +4,15 @@
 <head>
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <!-- Sets data-theme before first paint so navigating between pages doesn't flash light-mode white -->
+    <script>
+        (function () {
+            try {
+                var t = localStorage.getItem('trackph-theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+                document.documentElement.setAttribute('data-theme', t);
+            } catch (_) {}
+        })();
+    </script>
     <title th:text="${pageTitle} + ' | TrackPH'">TrackPH</title>
     <link rel="stylesheet" th:href="@{/css/theme.css}"/>
     <script th:src="@{/js/theme-toggle.js}"></script>

@@ -109,10 +109,11 @@ Not using Eclipse? `mvn spring-boot:run` in the service folder works too.
 
 - CSS variables are defined in `static/css/theme.css`.
 - Use only these variables in your styles — no hardcoded hex colors:
-  - `--primary` (TrackPH red `#C0392B`)
+  - `--primary` (TrackPH red `#DA1219`)
   - `--primary-dark`
   - `--bg`, `--surface`, `--text`, `--border`
-- Dark mode is toggled by setting `data-theme="dark"` on `<html>`. The `theme-toggle.js` script handles this and persists to `localStorage`.
+- Dark mode is toggled by setting `data-theme="dark"` on `<html>`. The `theme-toggle.js` script handles this and persists to `localStorage` under the `trackph-theme` key.
+- **Avoiding a flash of the wrong theme on page load**: this is a server-rendered multi-page app, so every navigation is a full page load/repaint, not client-side routing. `theme-toggle.js`'s `initTheme()` only runs on `DOMContentLoaded`, which is too late to prevent a flash of the default light `--bg` before it fires. `layout.html`'s `<head>` therefore has a small inline `<script>`, placed before the `theme.css` link, that reads `localStorage` synchronously and sets `data-theme` on `<html>` before first paint. Keep this inline script in sync across every service's `layout.html` (it is not covered by `sync-theme.sh`, which only syncs `theme.css`) — do not remove it or move it after the CSS link.
 - **Do not add a second theme toggle** — `layout.html` already has one in the navbar.
 - All Thymeleaf pages must extend `layout.html` via `th:replace` or `th:insert`. Do not write standalone HTML pages.
 - **Cross-service consistency**: `trackph-microservice-template/src/main/resources/static/css/theme.css` is the canonical copy. Every service's `theme.css` is a copy of it, not an independent file — edit the template's copy, then run `./scripts/sync-theme.sh` from the repo root to push the change to every service. Run `./scripts/sync-theme.sh --check` to verify no service has drifted (fails with a diff if one has).
