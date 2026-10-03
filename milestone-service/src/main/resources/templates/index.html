@@ -3,15 +3,104 @@
       th:replace="~{layout :: layout(pageTitle='Home', content=~{::main})}">
 <body>
 <main>
-    <div class="hero">
-        <h1>TrackPH</h1>
-        <p class="hero-tagline">Milestone &amp; Timeline Monitoring</p>
+    <section class="hero">
+        <span class="hero-badge">Government Project Transparency</span>
+        <h1>See exactly where <span class="accent">public projects</span> stand.</h1>
         <p class="hero-sub">
-            Real-time tracking of government project milestones and timelines for transparency and accountability.
+            TrackPH gives citizens and agencies a live view of government project milestones &mdash;
+            from groundbreaking to completion &mdash; so progress is never a mystery.
         </p>
-        <a th:href="@{/projects}" class="btn btn-secondary">View Projects</a>
-        <a th:href="@{/login}" class="btn btn-primary">Sign In</a>
-    </div>
+        <a th:href="@{/projects}" class="btn btn-primary">View Projects</a>
+        <a th:href="@{/login}" class="btn btn-secondary">Sign In</a>
+
+        <div class="hero-stats" id="hero-stats">
+            <div class="hero-stat"><div class="value" id="stat-total">&ndash;</div><div class="label">Projects Tracked</div></div>
+            <div class="hero-stat"><div class="value" id="stat-progress">&ndash;</div><div class="label">In Progress</div></div>
+            <div class="hero-stat"><div class="value" id="stat-completed">&ndash;</div><div class="label">Completed</div></div>
+        </div>
+    </section>
+
+    <section class="features">
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg>
+                </div>
+                <h3>Live Milestone Timelines</h3>
+                <p>Every project's milestones are tracked step by step and updated as the work actually happens.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8a6 6 0 1 0-12 0c0 3.5-1.2 5.3-2 6.5h16c-.8-1.2-2-3-2-6.5Z"/><path d="M10 19a2 2 0 0 0 4 0"/></svg>
+                </div>
+                <h3>Automatic Alerts</h3>
+                <p>Delays and risks trigger alerts on their own, so accountability doesn't wait for a scandal.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+                </div>
+                <h3>Open to the Public</h3>
+                <p>Anyone can browse a government project's status and history without needing an account.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="recent-projects">
+        <div class="section-intro">
+            <h2>Recently Tracked Projects</h2>
+            <p>A live look at what's currently being monitored.</p>
+        </div>
+        <div class="project-preview-grid" id="recent-projects-grid">
+            <div class="empty-state">Loading&hellip;</div>
+        </div>
+    </section>
+
+    <section class="cta-band full-bleed">
+        <h2>Curious what's happening in your community?</h2>
+        <p>Browse every tracked project &mdash; no account required.</p>
+        <a th:href="@{/projects}" class="btn btn-primary">Browse Projects</a>
+    </section>
+
+    <script>
+        const statusBadge = {
+            PLANNED: 'badge-secondary', IN_PROGRESS: 'badge-info',
+            DELAYED: 'badge-danger', COMPLETED: 'badge-success', CANCELLED: 'badge-secondary'
+        };
+
+        fetch('/api/v1/projects?size=200&sort=createdAt,desc')
+            .then(r => r.json())
+            .then(data => {
+                const projects = data.data?.content ?? [];
+                const total = projects.length;
+                const inProgress = projects.filter(p => p.status === 'IN_PROGRESS').length;
+                const completed = projects.filter(p => p.status === 'COMPLETED').length;
+                document.getElementById('stat-total').textContent = total;
+                document.getElementById('stat-progress').textContent = inProgress;
+                document.getElementById('stat-completed').textContent = completed;
+
+                const grid = document.getElementById('recent-projects-grid');
+                if (!projects.length) {
+                    grid.innerHTML = '<div class="empty-state"><p>No projects tracked yet. Check back soon.</p></div>';
+                    return;
+                }
+                grid.innerHTML = projects.slice(0, 4).map(p => `
+                    <div class="project-preview-card">
+                        <div class="ppc-head">
+                            <h3>${p.name}</h3>
+                            <span class="badge ${statusBadge[p.status] || 'badge-secondary'}">${p.status.replace('_',' ')}</span>
+                        </div>
+                        <p class="ppc-agency">${p.agencyName ?? '—'}</p>
+                        <p class="ppc-meta">${p.milestoneCount} milestone${p.milestoneCount === 1 ? '' : 's'} tracked</p>
+                        <a href="/projects/${p.id}" class="btn btn-secondary btn-sm">View Timeline</a>
+                    </div>
+                `).join('');
+            })
+            .catch(() => {
+                document.getElementById('hero-stats').style.display = 'none';
+                document.getElementById('recent-projects-grid').innerHTML = '<div class="empty-state"><p>Couldn\'t load projects right now.</p></div>';
+            });
+    </script>
 </main>
 </body>
 </html>

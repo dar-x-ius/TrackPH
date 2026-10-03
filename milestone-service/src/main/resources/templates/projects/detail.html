@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
       th:replace="~{layout :: layout(pageTitle='Project Detail', content=~{::main})}">
 <body>
 <main>
@@ -9,13 +10,13 @@
         <div style="display:flex; align-items:center; gap:0.75rem; flex-wrap:wrap;">
             <h2 id="proj-name" style="color: var(--primary); margin:0;">Loading&hellip;</h2>
             <span id="proj-status" class="badge"></span>
-            <button class="btn btn-secondary btn-sm" onclick="toggleEditProject()">Edit</button>
-            <button class="btn btn-secondary btn-sm" onclick="deleteProject()">Delete</button>
+            <button sec:authorize="isAuthenticated()" class="btn btn-secondary btn-sm" onclick="toggleEditProject()">Edit</button>
+            <button sec:authorize="isAuthenticated()" class="btn btn-secondary btn-sm" onclick="deleteProject()">Delete</button>
         </div>
         <p id="proj-desc" style="color: var(--text-muted); margin-top:0.5rem;"></p>
     </div>
 
-    <form id="edit-project-form" class="card" style="display:none; max-width:600px; margin-bottom:1.5rem;" onsubmit="saveProject(event)">
+    <form sec:authorize="isAuthenticated()" id="edit-project-form" class="card" style="display:none; max-width:600px; margin-bottom:1.5rem;" onsubmit="saveProject(event)">
         <div class="form-group">
             <label class="form-label" for="edit-name">Name</label>
             <input type="text" id="edit-name" class="form-control" required/>
@@ -58,10 +59,10 @@
 
     <div style="display:flex; justify-content:space-between; align-items:center;">
         <h3 style="margin-bottom:0;">Milestone Timeline</h3>
-        <button class="btn btn-primary btn-sm" onclick="toggleAddMilestone()">+ Add Milestone</button>
+        <button sec:authorize="isAuthenticated()" class="btn btn-primary btn-sm" onclick="toggleAddMilestone()">+ Add Milestone</button>
     </div>
 
-    <form id="add-milestone-form" class="card" style="display:none; margin:1rem 0;" onsubmit="addMilestone(event)">
+    <form sec:authorize="isAuthenticated()" id="add-milestone-form" class="card" style="display:none; margin:1rem 0;" onsubmit="addMilestone(event)">
         <div class="form-group">
             <label class="form-label" for="ms-title">Title</label>
             <input type="text" id="ms-title" class="form-control" required/>
@@ -185,17 +186,21 @@
                                     <strong>${m.title}</strong>
                                     <span class="badge ${msBadge[m.status] || 'badge-secondary'}">${m.status}</span>
                                     ${m.delayDays > 0 ? `<span class="badge badge-danger">${m.delayDays}d overdue</span>` : ''}
+                                    ${token ? `
                                     <select class="form-control" onchange="updateMilestoneStatus(${m.id}, this.value)" style="width:auto; margin-left:auto;">
                                         ${Object.keys(msBadge).map(s => `<option value="${s}" ${s === m.status ? 'selected' : ''}>${s}</option>`).join('')}
                                     </select>
                                     <button class="btn btn-secondary btn-sm" onclick="toggleReportForm(${m.id})">Submit Report</button>
+                                    ` : ''}
                                 </div>
                                 <div class="milestone-meta">Due: ${m.dueDate}${m.completedDate ? ', Completed: ' + m.completedDate : ''}</div>
                                 ${m.description ? `<p style="margin: 0.5rem 0 0; font-size:0.9rem;">${m.description}</p>` : ''}
+                                ${token ? `
                                 <form id="report-form-${m.id}" style="display:none; margin-top:0.75rem;" onsubmit="submitReport(event, ${m.id})">
                                     <textarea id="report-desc-${m.id}" class="form-control" placeholder="Progress notes..." rows="2">${m.description ?? ''}</textarea>
                                     <button type="submit" class="btn btn-primary btn-sm" style="margin-top:0.5rem;">Save Report</button>
                                 </form>
+                                ` : ''}
                             </div>
                         </div>
                     `).join('');
