@@ -3,9 +3,9 @@
       th:replace="~{layout :: layout(pageTitle='Audit Logs', content=~{::main})}">
 <body>
 <main>
-    <h2 style="color: var(--primary); margin-bottom: 1.5rem;">Audit Logs</h2>
+    <div class="page-header"><h2>Audit Logs</h2></div>
 
-    <div class="card" style="padding:0; overflow:hidden;">
+    <div class="card card-table">
         <table class="table">
             <thead>
                 <tr>
@@ -17,7 +17,7 @@
                 </tr>
             </thead>
             <tbody id="audit-body">
-                <tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:2rem;">Loading...</td></tr>
+                <tr><td colspan="5"><div class="empty-state">Loading&hellip;</div></td></tr>
             </tbody>
         </table>
     </div>
@@ -32,7 +32,7 @@
                 const logs = data.data?.content ?? [];
                 const tbody = document.getElementById('audit-body');
                 if (!logs.length) {
-                    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:2rem;">No logs yet.</td></tr>';
+                    tbody.innerHTML = '<tr><td colspan="5"><div class="empty-state"><p>No logs yet.</p></div></td></tr>';
                     return;
                 }
                 tbody.innerHTML = logs.map(l => `

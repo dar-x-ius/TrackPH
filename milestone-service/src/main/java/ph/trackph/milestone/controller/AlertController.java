@@ -43,6 +43,12 @@ public class AlertController {
         return ResponseEntity.ok(ApiResponse.success("Marked as read", alertService.markRead(id)));
     }
 
+    @PutMapping("/read-all")
+    @Operation(summary = "Mark all unread alerts as read")
+    public ResponseEntity<ApiResponse<Map<String, Integer>>> markAllRead() {
+        return ResponseEntity.ok(ApiResponse.success("All alerts marked as read", Map.of("count", alertService.markAllRead())));
+    }
+
     public AlertController(final AlertService alertService) {
         this.alertService = alertService;
     }

@@ -3,15 +3,13 @@
       th:replace="~{layout :: layout(pageTitle='Home', content=~{::main})}">
 <body>
 <main>
-    <div style="text-align:center; padding: 4rem 0;">
-        <h1 style="color: var(--primary); font-size: 2.5rem; margin-bottom: 0.5rem;">TrackPH</h1>
-        <p style="color: var(--text-muted); font-size: 1.1rem; margin-bottom: 0.5rem;">
-            Milestone &amp; Timeline Monitoring
-        </p>
-        <p style="color: var(--text-muted); max-width: 480px; margin: 0 auto 2rem;">
+    <div class="hero">
+        <h1>TrackPH</h1>
+        <p class="hero-tagline">Milestone &amp; Timeline Monitoring</p>
+        <p class="hero-sub">
             Real-time tracking of government project milestones and timelines for transparency and accountability.
         </p>
-        <a th:href="@{/projects}" class="btn btn-secondary" style="margin-right: 0.75rem;">View Projects</a>
+        <a th:href="@{/projects}" class="btn btn-secondary">View Projects</a>
         <a th:href="@{/login}" class="btn btn-primary">Sign In</a>
     </div>
 </main>

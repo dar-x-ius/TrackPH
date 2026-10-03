@@ -3,9 +3,12 @@
       th:replace="~{layout :: layout(pageTitle='Alerts', content=~{::main})}">
 <body>
 <main>
-    <h2 style="color: var(--primary); margin-bottom: 1.5rem;">Alerts</h2>
+    <div class="page-header">
+        <h2>Alerts</h2>
+        <button id="mark-all-btn" class="btn btn-secondary btn-sm" onclick="markAllRead()" disabled>Mark all as read</button>
+    </div>
 
-    <div class="card" style="padding:0; overflow:hidden;">
+    <div class="card card-table">
         <table class="table" id="alerts-table">
             <thead>
                 <tr>
@@ -18,7 +21,7 @@
                 </tr>
             </thead>
             <tbody id="alerts-body">
-                <tr><td colspan="6" style="text-align:center;color:var(--text-muted);padding:2rem;">Loading...</td></tr>
+                <tr><td colspan="6"><div class="empty-state">Loading&hellip;</div></td></tr>
             </tbody>
         </table>
     </div>
@@ -35,8 +38,10 @@
                 .then(data => {
                     const alerts = data.data?.content ?? [];
                     const tbody = document.getElementById('alerts-body');
+                    const markAllBtn = document.getElementById('mark-all-btn');
+                    markAllBtn.disabled = !alerts.some(a => !a.read);
                     if (!alerts.length) {
-                        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--text-muted);padding:2rem;">No alerts.</td></tr>';
+                        tbody.innerHTML = '<tr><td colspan="6"><div class="empty-state"><p>No alerts. You will be notified here when one triggers.</p></div></td></tr>';
                         return;
                     }
                     tbody.innerHTML = alerts.map(a => `
@@ -54,7 +59,27 @@
 
         function markRead(id) {
             fetch(`/api/v1/alerts/${id}/read`, { method:'PUT', headers })
-                .then(() => loadAlerts());
+                .then(() => loadAlerts())
+                .then(refreshNavBadge);
+        }
+
+        function markAllRead() {
+            fetch('/api/v1/alerts/read-all', { method:'PUT', headers })
+                .then(() => loadAlerts())
+                .then(refreshNavBadge);
+        }
+
+        function refreshNavBadge() {
+            fetch('/api/v1/alerts/unread-count', { headers })
+                .then(r => r.ok ? r.json() : null)
+                .then(data => {
+                    const badge = document.getElementById('unread-badge');
+                    const count = data?.data?.count ?? 0;
+                    if (!badge) return;
+                    badge.textContent = count;
+                    badge.style.display = count > 0 ? 'inline' : 'none';
+                })
+                .catch(() => {});
         }
 
         loadAlerts();

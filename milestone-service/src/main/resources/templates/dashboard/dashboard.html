@@ -5,26 +5,26 @@
 <main>
     <h2 style="color: var(--primary); margin-bottom: 1.5rem;">Dashboard</h2>
 
-    <div id="stats-row" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
-        <div class="card" style="text-align:center;">
-            <div style="font-size:2rem; font-weight:700; color: var(--primary);" id="stat-total">—</div>
-            <div style="color: var(--text-muted); font-size:0.85rem; margin-top:0.25rem;">Total Projects</div>
+    <div class="stats-row">
+        <div class="stat-tile" style="--stat-color: var(--primary);">
+            <div class="stat-value" id="stat-total">&mdash;</div>
+            <div class="stat-label">Total Projects</div>
         </div>
-        <div class="card" style="text-align:center;">
-            <div style="font-size:2rem; font-weight:700; color: var(--info);" id="stat-inprogress">—</div>
-            <div style="color: var(--text-muted); font-size:0.85rem; margin-top:0.25rem;">In Progress</div>
+        <div class="stat-tile" style="--stat-color: var(--info);">
+            <div class="stat-value" id="stat-inprogress">&mdash;</div>
+            <div class="stat-label">In Progress</div>
         </div>
-        <div class="card" style="text-align:center;">
-            <div style="font-size:2rem; font-weight:700; color: var(--danger);" id="stat-delayed">—</div>
-            <div style="color: var(--text-muted); font-size:0.85rem; margin-top:0.25rem;">Delayed</div>
+        <div class="stat-tile" style="--stat-color: var(--danger);">
+            <div class="stat-value" id="stat-delayed">&mdash;</div>
+            <div class="stat-label">Delayed</div>
         </div>
-        <div class="card" style="text-align:center;">
-            <div style="font-size:2rem; font-weight:700; color: var(--warning);" id="stat-alerts">—</div>
-            <div style="color: var(--text-muted); font-size:0.85rem; margin-top:0.25rem;">Unread Alerts</div>
+        <div class="stat-tile" style="--stat-color: var(--warning);">
+            <div class="stat-value" id="stat-alerts">&mdash;</div>
+            <div class="stat-label">Unread Alerts</div>
         </div>
     </div>
 
-    <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+    <div class="grid-2">
         <div>
             <h3 style="margin-top:0;">Quick Links</h3>
             <div class="card">

@@ -3,11 +3,11 @@
       th:replace="~{layout :: layout(pageTitle='Project Detail', content=~{::main})}">
 <body>
 <main>
-    <a th:href="@{/projects}" style="color:var(--text-muted); font-size:0.9rem;">&larr; Back to Projects</a>
+    <a th:href="@{/projects}" class="back-link">&larr; Back to Projects</a>
 
     <div id="project-header" style="margin: 1.5rem 0;">
         <div style="display:flex; align-items:center; gap:0.75rem; flex-wrap:wrap;">
-            <h2 id="proj-name" style="color: var(--primary); margin:0;">Loading...</h2>
+            <h2 id="proj-name" style="color: var(--primary); margin:0;">Loading&hellip;</h2>
             <span id="proj-status" class="badge"></span>
             <button class="btn btn-secondary btn-sm" onclick="toggleEditProject()">Edit</button>
             <button class="btn btn-secondary btn-sm" onclick="deleteProject()">Delete</button>
@@ -16,21 +16,42 @@
     </div>
 
     <form id="edit-project-form" class="card" style="display:none; max-width:600px; margin-bottom:1.5rem;" onsubmit="saveProject(event)">
-        <label>Name<br/><input type="text" id="edit-name" required style="width:100%;"/></label><br/><br/>
-        <label>Description<br/><textarea id="edit-description" style="width:100%;"></textarea></label><br/><br/>
-        <label>Location<br/><input type="text" id="edit-location" style="width:100%;"/></label><br/><br/>
-        <label>Start Date<br/><input type="date" id="edit-startDate"/></label><br/><br/>
-        <label>End Date<br/><input type="date" id="edit-endDate"/></label><br/><br/>
-        <label>Budget<br/><input type="number" id="edit-budget" step="0.01"/></label><br/><br/>
-        <label>Status<br/>
-            <select id="edit-status">
+        <div class="form-group">
+            <label class="form-label" for="edit-name">Name</label>
+            <input type="text" id="edit-name" class="form-control" required/>
+        </div>
+        <div class="form-group">
+            <label class="form-label" for="edit-description">Description</label>
+            <textarea id="edit-description" class="form-control" rows="3"></textarea>
+        </div>
+        <div class="form-group">
+            <label class="form-label" for="edit-location">Location</label>
+            <input type="text" id="edit-location" class="form-control"/>
+        </div>
+        <div class="grid-2">
+            <div class="form-group">
+                <label class="form-label" for="edit-startDate">Start Date</label>
+                <input type="date" id="edit-startDate" class="form-control"/>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="edit-endDate">End Date</label>
+                <input type="date" id="edit-endDate" class="form-control"/>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="form-label" for="edit-budget">Budget</label>
+            <input type="number" id="edit-budget" class="form-control" step="0.01"/>
+        </div>
+        <div class="form-group">
+            <label class="form-label" for="edit-status">Status</label>
+            <select id="edit-status" class="form-control">
                 <option value="PLANNED">PLANNED</option>
                 <option value="IN_PROGRESS">IN_PROGRESS</option>
                 <option value="DELAYED">DELAYED</option>
                 <option value="COMPLETED">COMPLETED</option>
                 <option value="CANCELLED">CANCELLED</option>
             </select>
-        </label><br/><br/>
+        </div>
         <button type="submit" class="btn btn-primary btn-sm">Save</button>
         <button type="button" class="btn btn-secondary btn-sm" onclick="toggleEditProject()">Cancel</button>
     </form>
@@ -41,16 +62,30 @@
     </div>
 
     <form id="add-milestone-form" class="card" style="display:none; margin:1rem 0;" onsubmit="addMilestone(event)">
-        <label>Title<br/><input type="text" id="ms-title" required style="width:100%;"/></label><br/><br/>
-        <label>Description<br/><textarea id="ms-description" style="width:100%;"></textarea></label><br/><br/>
-        <label>Due Date<br/><input type="date" id="ms-dueDate" required/></label><br/><br/>
-        <label>Sequence Order<br/><input type="number" id="ms-sequenceOrder" value="0"/></label><br/><br/>
+        <div class="form-group">
+            <label class="form-label" for="ms-title">Title</label>
+            <input type="text" id="ms-title" class="form-control" required/>
+        </div>
+        <div class="form-group">
+            <label class="form-label" for="ms-description">Description</label>
+            <textarea id="ms-description" class="form-control" rows="2"></textarea>
+        </div>
+        <div class="grid-2">
+            <div class="form-group">
+                <label class="form-label" for="ms-dueDate">Due Date</label>
+                <input type="date" id="ms-dueDate" class="form-control" required/>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="ms-sequenceOrder">Sequence Order</label>
+                <input type="number" id="ms-sequenceOrder" class="form-control" value="0"/>
+            </div>
+        </div>
         <button type="submit" class="btn btn-primary btn-sm">Add</button>
         <button type="button" class="btn btn-secondary btn-sm" onclick="toggleAddMilestone()">Cancel</button>
     </form>
 
     <div id="milestones-container">
-        <div class="card" style="color: var(--text-muted); text-align:center; padding:2rem;">Loading milestones...</div>
+        <div class="empty-state">Loading milestones&hellip;</div>
     </div>
 
     <script th:inline="javascript">
@@ -139,26 +174,26 @@
                     const milestones = data.data ?? [];
                     const container = document.getElementById('milestones-container');
                     if (!milestones.length) {
-                        container.innerHTML = '<div class="card" style="color:var(--text-muted);text-align:center;padding:2rem;">No milestones yet.</div>';
+                        container.innerHTML = '<div class="empty-state"><p>No milestones yet. Add the first one above.</p></div>';
                         return;
                     }
                     container.innerHTML = milestones.map((m, i) => `
-                        <div class="card" style="margin-bottom:1rem; display:flex; align-items:flex-start; gap:1rem;">
-                            <div style="background:var(--primary); color:#fff; border-radius:50%; width:32px; height:32px; display:flex; align-items:center; justify-content:center; font-weight:700; flex-shrink:0;">${i + 1}</div>
-                            <div style="flex:1;">
-                                <div style="display:flex; align-items:center; gap:0.5rem; margin-bottom:0.25rem; flex-wrap:wrap;">
+                        <div class="card milestone-item">
+                            <div class="milestone-step">${i + 1}</div>
+                            <div class="milestone-body">
+                                <div class="milestone-head">
                                     <strong>${m.title}</strong>
                                     <span class="badge ${msBadge[m.status] || 'badge-secondary'}">${m.status}</span>
                                     ${m.delayDays > 0 ? `<span class="badge badge-danger">${m.delayDays}d overdue</span>` : ''}
-                                    <select onchange="updateMilestoneStatus(${m.id}, this.value)" style="margin-left:auto;">
+                                    <select class="form-control" onchange="updateMilestoneStatus(${m.id}, this.value)" style="width:auto; margin-left:auto;">
                                         ${Object.keys(msBadge).map(s => `<option value="${s}" ${s === m.status ? 'selected' : ''}>${s}</option>`).join('')}
                                     </select>
                                     <button class="btn btn-secondary btn-sm" onclick="toggleReportForm(${m.id})">Submit Report</button>
                                 </div>
-                                <div style="font-size:0.85rem; color:var(--text-muted);">Due: ${m.dueDate}${m.completedDate ? ' · Completed: ' + m.completedDate : ''}</div>
+                                <div class="milestone-meta">Due: ${m.dueDate}${m.completedDate ? ', Completed: ' + m.completedDate : ''}</div>
                                 ${m.description ? `<p style="margin: 0.5rem 0 0; font-size:0.9rem;">${m.description}</p>` : ''}
                                 <form id="report-form-${m.id}" style="display:none; margin-top:0.75rem;" onsubmit="submitReport(event, ${m.id})">
-                                    <textarea id="report-desc-${m.id}" placeholder="Progress notes..." style="width:100%;" rows="2">${m.description ?? ''}</textarea>
+                                    <textarea id="report-desc-${m.id}" class="form-control" placeholder="Progress notes..." rows="2">${m.description ?? ''}</textarea>
                                     <button type="submit" class="btn btn-primary btn-sm" style="margin-top:0.5rem;">Save Report</button>
                                 </form>
                             </div>

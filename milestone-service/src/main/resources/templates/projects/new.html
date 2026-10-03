@@ -3,17 +3,37 @@
       th:replace="~{layout :: layout(pageTitle='New Project', content=~{::main})}">
 <body>
 <main>
-    <h2 style="margin-top:0; color: var(--primary);">New Project</h2>
+    <div class="page-header"><h2>New Project</h2></div>
 
     <div class="card" style="max-width:600px;">
         <form id="new-project-form">
-            <label>Name<br/><input type="text" id="name" required style="width:100%;"/></label><br/><br/>
-            <label>Description<br/><textarea id="description" style="width:100%;"></textarea></label><br/><br/>
-            <label>Location<br/><input type="text" id="location" style="width:100%;"/></label><br/><br/>
-            <label>Start Date<br/><input type="date" id="startDate"/></label><br/><br/>
-            <label>End Date<br/><input type="date" id="endDate"/></label><br/><br/>
-            <label>Budget<br/><input type="number" id="budget" step="0.01"/></label><br/><br/>
-            <div id="error" style="color: var(--danger, red); display:none; margin-bottom:1rem;"></div>
+            <div class="form-group">
+                <label class="form-label" for="name">Name</label>
+                <input type="text" id="name" class="form-control" required/>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="description">Description</label>
+                <textarea id="description" class="form-control" rows="3"></textarea>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="location">Location</label>
+                <input type="text" id="location" class="form-control"/>
+            </div>
+            <div class="grid-2">
+                <div class="form-group">
+                    <label class="form-label" for="startDate">Start Date</label>
+                    <input type="date" id="startDate" class="form-control"/>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="endDate">End Date</label>
+                    <input type="date" id="endDate" class="form-control"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="budget">Budget</label>
+                <input type="number" id="budget" class="form-control" step="0.01"/>
+            </div>
+            <div id="error" class="alert alert-danger" style="display:none;"></div>
             <button type="submit" class="btn btn-primary">Create Project</button>
         </form>
     </div>

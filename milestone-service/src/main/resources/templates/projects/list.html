@@ -3,12 +3,12 @@
       th:replace="~{layout :: layout(pageTitle='Projects', content=~{::main})}">
 <body>
 <main>
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
-        <h2 style="margin:0; color: var(--primary);">Projects</h2>
+    <div class="page-header">
+        <h2>Projects</h2>
         <a th:href="@{/projects/new}" class="btn btn-primary btn-sm">+ New Project</a>
     </div>
 
-    <div class="card" style="padding:0; overflow:hidden;">
+    <div class="card card-table">
         <table class="table" id="projects-table">
             <thead>
                 <tr>
@@ -22,7 +22,7 @@
                 </tr>
             </thead>
             <tbody id="projects-body">
-                <tr><td colspan="7" style="text-align:center; color: var(--text-muted); padding:2rem;">Loading...</td></tr>
+                <tr><td colspan="7"><div class="empty-state">Loading&hellip;</div></td></tr>
             </tbody>
         </table>
     </div>
@@ -42,7 +42,7 @@
                 const tbody = document.getElementById('projects-body');
                 const projects = data.data?.content ?? [];
                 if (!projects.length) {
-                    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--text-muted);padding:2rem;">No projects found.</td></tr>';
+                    tbody.innerHTML = '<tr><td colspan="7"><div class="empty-state"><p>No projects yet. Create the first one to get started.</p></div></td></tr>';
                     return;
                 }
                 tbody.innerHTML = projects.map(p => `

@@ -55,6 +55,11 @@ public class AlertService {
     }
 
     @Transactional
+    public int markAllRead() {
+        return alertRepository.markAllRead();
+    }
+
+    @Transactional
     public void createAlert(Project project, Milestone milestone, Alert.AlertType type, String message, Alert.Severity severity) {
         // deduplicate: skip if same project+milestone+type already exists unread
         if (milestone != null && alertRepository.existsByProjectIdAndMilestoneIdAndType(project.getId(), milestone.getId(), type)) {
