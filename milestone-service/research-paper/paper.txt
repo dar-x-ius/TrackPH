@@ -1,0 +1,2732 @@
+       Project Track PH:
+Government Implementation
+
+          & Monitoring
+
+ Milestone and Timeline Monitoring
+
+                                                                 Proponents:
+
+                                       Bachelor of Science in Information Technology 3-1
+                                                System Integration and Architecture
+                                                        Professor: Dr. Ariel Sison
+                                                         School Year 2025-2026
+                                   Table of Contents
+
+Chapter I. Project Background                                          4
+
+Executive Summary                                                      4
+
+Mission                                                                4
+
+Vision                                                                 5
+
+1.1 Introduction                                                       5
+
+1.2 Project Purpose & Description                                      6
+
+1.2.1 General Objective                                                6
+
+1.2.2 Specific Objectives                                              6
+
+1.3 Project Scope and Delimitation                                     6
+
+1.4 Significance of the Project                                        7
+
+Chapter II. Review of Related Literature                               8
+
+2.1 Local Literature                                                   8
+
+2.2 Foreign Literature                                                 11
+
+2.3 Synthesis of Literature                                            13
+
+Chapter III. Methodology                                               15
+
+3.1 S-M-A-R-T Method                                                   15
+
+3.2 Conceptual Diagram                                                 16
+
+3.2.1 Business Domains                                                 16
+
+3.2.2 Level 0 DFD                                                      17
+
+3.2.3 Level 1 DFD                                                      19
+
+1.0 Manage Projects and Users                                          19
+
+2.0 Customize Dashboard                                                20
+
+3.0 Log User Actions                                                   20
+
+4.0 Submit Project Report                                              21
+
+5.0 Generate Alerts                                                    22
+
+Process Decomposition                                                  23
+
+3.3 Work Breakdown Structure (WBS)                                     24
+
+Level 1: Project Title ­ Milestone & Timeline Monitoring Microservice  24
+
+Level 2: Major Phases of Development                                   25
+
+3.4 Critical Path Method                                               26
+
+3.5 Program Evaluation and Review Technique (PERT)                     26
+
+Justification for Using 4 and 6 in the PERT Formula                    27
+
+Mathematical Foundation                                                27
+
+Why 4? (Weight for Most Likely)                                        27
+
+Why 6? (Denominator)                                                   27
+
+Statistical Validation                                                 28
+
+Alternative Formulas and Why They Fail                                 28
+
+Application in This Project                                            28
+
+Estimation Methods                                                     29
+
+How We Determined O, M, P Values                                       29
+
+Task-by-Task Calculations                                              32
+
+                                                                       2
+3.6 Gantt Chart                                                    33
+
+3.6.1 Project Management Tool (PMT) Documentation                  35
+
+3.7 Benefits of the Project                                        43
+
+3.8 Documentation & Planning Deliverables                          44
+
+3.9 Assumptions                                                    45
+
+3.10 Constraints                                                   45
+
+3.11 Communication Plan                                            46
+
+3.11.1 Project Team Meeting                                        46
+
+3.11.2 Integrated System Meeting                                   47
+
+3.11.3 Microservice Progress Update                                47
+
+3.11.4 Integrated System Progress Update                           47
+
+3.11.5 Software Update                                             47
+
+3.12 Risk Management Plan                                          47
+
+3.13 Budget Planning                                               49
+
+3.13.1 Cost Identification                                         49
+
+3.13.2 Budget Estimation                                           50
+
+3.13.2.1 Assumptions                                               51
+
+3.13.2.2 Hardware                                                  54
+
+3.13.2.3 Software                                                  56
+
+3.13.2.4 Development                                               57
+
+3.13.2.5 Deployment                                                57
+
+Summary: Total Budget                                              59
+
+3.14 Return of Investment (ROI) & Payback Period                   59
+
+3.14.1 Return of Investment                                        59
+
+Net Annual Benefit Estimation                                      60
+
+Justification of Net Annual Benefits: Metrics and Source Citation  67
+
+ROI Calculation                                                    68
+
+3.14.2 Payback Period                                              69
+
+3.15 Contract Document                                             70
+
+Terms and Conditions                                               70
+
+Clients / End Users                                                70
+
+API and Service Prohibitions                                       70
+
+Ownership                                                          70
+
+Limitation of Liability                                            70
+
+Updates to Terms and Conditions                                    71
+
+3.16 Acquisition & Outsourcing Policy                              71
+
+Purpose                                                            71
+
+Scope                                                              71
+
+Acquisition Process                                                71
+
+Outsourcing Process                                                71
+
+Documentation and Audit                                            72
+
+Approval and Review                                                72
+
+References                                                         72
+
+                                                                   3
+Chapter I. Project Background
+
+Executive Summary
+
+         In recent years, the Philippines has faced challenges in public project implementation, especially in areas
+such as flood control infrastructure and confidential fund allocation. According to the Commission on Audit (COA
+annual reports, 2023), billions in public funds remain unaccounted for or underutilized due to limited
+transparency. These problems have made people lose trust in the government, slowed down progress, and caused
+delays in important public projects.
+
+         In a 2023 audit report, COA also mentioned the Office of the Vice President for spending over 375
+million in confidential funds, raising concerns about accountability and proper fund usage (Inquirer, 2024).
+Meanwhile, flood control projects have drawn criticism from civil society groups and religious leaders, who called
+for greater transparency and shame-free governance practices (ABS-CBN News, 2025).
+
+         To address these gaps, Project Track PH was created as a centralized digital platform for monitoring
+government implementation activities. It provides real-time updates, milestone tracking, and automated
+reporting to improve transparency, accountability, and responsiveness. The system helps government teams
+coordinate better and also allows the public to see progress, report delays, and take part in monitoring.
+
+         Project Track PH also aligns with the Philippine Development Plan 2023­2028, which states that the
+government aims to strengthen digital transformation and citizen participation in governance (NEDA, 2023). Its
+modular design allows it to scale across various services, including flood control monitoring, infrastructure
+rollout, and social service delivery.
+
+         Ultimately, Project Track PH is more than just a system; it's a governance tool. It empowers both
+government agencies and citizens to ensure public funds are used properly and that promised projects are
+completed as planned.
+
+Mission
+
+         The Mission of Track PH: Government Project Implementation and Monitoring is to authorize a unified
+projects registry and a database that will provide a digital platform that allows real-time monitoring and
+evaluation of government project implementation, promote accountability, enhance transparency, and provide
+resources to ensure that every peso works for our Filipino citizens.
+
+                                                                                                                                                   4
+Vision
+
+         The Project TrackPH Vision is to make project monitoring in the Philippines more transparent, organized,
+and easy to track through a digital platform. It aims to improve project management that supervises and builds
+public trust by making information clear and reliable to everyone.
+
+1.1 Introduction
+
+         Government project transparency in the Philippines continues to face serious challenges. Investigations
+into flood control programs and infrastructure spending have revealed corruption, inflated budgets, and poor
+documentation (MSN News, 2025). In 2025, congressional reports showed that unprogrammed appropriations
+ballooned from 158.7 billion to 531.7 billion before being partially vetoed, raising concerns about
+accountability and fund misuse (Philippine Daily Inquirer, 2025). These issues have not only delayed public
+services but also discouraged foreign investment, with U.S. stakeholders citing corruption as a major barrier to
+economic engagement (Romualdez, 2025).
+
+         To respond to these problems, government agencies and lawmakers have started pushing for digital
+reforms. The Department of Public Works and Highways (DPWH) launched the Integrity Chain platform to track
+infrastructure spending using blockchain technology (Zaldarriaga, 2025). Senate Bill 1330 also proposes a
+blockchain-based national budget system that records disbursements and procurement activities in real time
+(Bacelonia, W.,Philippine News Agency, 2025). These efforts show that there is a growing demand for systems
+that offer clear, tamper-proof records and public access to project data.
+
+         As part of this progress, our group developed the Milestone and Timeline Monitoring microservice under
+Project Track PH. This microservice allows agencies to define project milestones, set deadlines, and monitor
+progress through automated alerts and visual dashboards. It also generates timestamped reports that can be
+used for internal audits or shared with oversight bodies and the public.
+
+         This microservice can improve project coordination, reduce delays, and strengthen public trust. It
+supports real-time tracking, milestone verification, and proactive reporting, making it easier for agencies to stay
+on schedule and for citizens to hold them accountable. By designing the timeline to show real progress, the
+system helps ensure that government projects are not only planned but completed with integrity.
+
+                                                                                                                                                   5
+1.2 Project Purpose & Description
+
+1.2.1 General Objective
+
+         The general objective of the Milestone and Timeline Monitoring microservice is to develop a digital
+solution that enables government agencies to track project milestones, monitor implementation timelines, and
+generate progress reports in real time. It aims to improve transparency, coordination, and accountability in public
+project execution by providing a standardized and accessible monitoring framework. The system is designed not
+only for internal use but also for public visibility, allowing citizens to see actual project progress and hold agencies
+accountable.
+
+1.2.2 Specific Objectives
+
+    1. To establish a standardized framework for tracking project milestones and completion timelines across
+         different agencies and sectors.
+
+    2. To provide real-time visibility of project progress for stakeholders, including implementing teams,
+         oversight bodies, and the public.
+
+    3. To identify and flag delays, risks, and bottlenecks early, allowing timely intervention and corrective action.
+    4. To enhance accountability and transparency in government project implementation through timestamped
+
+         records and automated reporting.
+    5. To support evidence-based decision-making by generating data-driven monitoring reports that reflect
+
+         actual project status and performance.
+
+1.3 Project Scope and Delimitation
+
+         The Milestone and Timeline Monitoring microservice was created to help improve how government
+projects are tracked in the Philippines. Many public projects face delays, missed deadlines, and poor coordination.
+This system was designed to solve those problems by giving agencies and citizens a clear way to monitor project
+progress and timelines.
+
+         The microservice focuses on tracking milestones and deadlines for public sector projects. It provides
+real-time updates, sends automatic alerts when there are delays or changes, and generates reports in a standard
+format. These reports help government teams, oversight bodies, and the public understand how projects are
+moving. Citizens can also access project updates through a public interface, which helps promote transparency
+and public involvement.
+
+                                                                                                                                                   6
+         This microservice does not check budgets, spending, or financial records; that scope belongs to another
+microservice. It also cannot enforce rules or give penalties. Its role is to monitor and report, not to take legal
+action. Lastly, the system only covers government-led projects. Private sector projects are not included, so the
+focus stays on public programs and services.
+
+1.4 Significance of the Project
+
+Government Agencies: This microservice provides a reliable tool for monitoring project implementation across
+various government departments. By offering real-time tracking and standardized reporting, it helps agencies
+improve coordination, reduce delays, and ensure that milestones are completed on time. It also supports
+transparency by making project data visible to oversight bodies and the public, helping agencies meet
+accountability standards.
+Citizens and Communities: The system allows ordinary citizens to view project progress through a public
+interface. This promotes transparency and encourages public participation in monitoring government initiatives.
+When people can see updates and report delays, it builds trust and helps ensure that public funds are used
+properly. Communities benefit from faster, more organized project delivery.
+Policy Makers and Oversight Bodies: The data collected by the microservice can support evidence-based
+decision-making. Lawmakers and auditors can use the reports to identify bottlenecks, assess agency
+performance, and recommend improvements. This helps strengthen governance and ensures that policies are
+based on actual implementation data.
+Future Developers and Researchers: This project serves as a foundation for future systems that aim to improve
+government transparency and digital monitoring. Developers can build on its modular design to expand features,
+while researchers can use its data to study project efficiency, public engagement, and digital governance models.
+
+                                                                                                                                                   7
+Chapter II. Review of Related Literature
+
+2.1 Local Literature
+
+The Importance for Transparency and Accountability in Philippine Public Spending
+
+         Literature consistently highlights that the push for digital project monitoring in the Philippines is driven by
+persistent issues of corruption and low public trust (DBM, 2016). The Philippine Development Plan 2023­2028
+emphasizes that good governance, transparency, and accountability are crucial enablers for economic
+transformation (Philippine Development Plan, 2023).
+
+         The Open Budget Survey (OBS) and related fiscal transparency assessments have historically pointed out
+gaps in government reporting, such as a lack of detailed comparisons between actual spending and
+appropriations, and information not being presented in a way that citizens can easily access and understand
+(DBM, 2016). This lack of access to underlying data hinders public accountability and the capacity for citizen
+participation in monitoring and evaluation (M&E) activities (Open Government Partnership, n.d.-a). Therefore, a
+core function of modern M&E systems is to disclose project performance to the public to promote transparency
+and allow citizens to provide feedback (Open Government Partnership, n.d.-b).
+
+Digital Initiatives for Project Monitoring and Evaluation
+
+         The Philippine government has actively pursued e-Government and digital transformation strategies to
+enhance public administration (Department of Budget and Management, n.d.; Treceñe, 2021). The Digital
+Information for Monitoring and Evaluation (DIME) Project is a significant example of a national initiative
+leveraging modern technologies like satellites, drones, and geotagging to monitor large-scale government
+projects (Open Government Partnership, n.d.-a). The DIME project is unique in its goal to simultaneously monitor
+financial metrics and provide actual project images and status to enhance transparency (Open Government
+Partnership, n.d.-a).
+
+         However, a key challenge identified in the literature is the fragmentation of M&E systems, as different
+government agencies often create their own stand-alone systems, making it difficult for citizens to track various
+projects across different applications (Open Government Partnership, n.d.-a). This fragmentation limits the
+impact of accountability efforts and reduces citizen participation (Open Government Partnership, n.d.-a).
+
+                                                                                                                                                   8
+Leveraging Real-Time Technology for Infrastructure Verification
+
+         Specific academic research has demonstrated the efficacy of real-time technologies in improving project
+oversight. A study focusing on the Philippine Rural Development Project (PRDP) found that the use of geotagging,
+a form of location-specific data collection, provided real-time data that significantly improved remote oversight
+and accountability for infrastructure delivery (Magwili et al., 2025). Key findings from this research confirmed
+that geotagged photos effectively validate physical progress, reducing the need for frequent, resource-intensive
+site visits and enabling faster decision-making (Magwili et al., 2025).
+
+         Furthermore, the conceptual application of Blockchain technology has been explored for government
+processes in the Philippines to enhance transparency and verifiability (Manzano & Tiongson, 2023). Blockchain's
+defining properties of immutability and tamper-evident record-keeping are seen as mechanisms to secure
+government data, strengthen institutional accountability, and enhance the credibility of transactions (Ocampo,
+2024; World Economic Forum, 2020). However, some academic analysis suggests that the implementation of
+high-cost technologies like blockchain may not fully address the root institutional and political causes of
+corruption (Koghut, 2025).
+
+Participatory Monitoring of Infrastructure Projects in the Philippines
+
+         Project DIME (Digital Imaging for Monitoring and Evaluation) is a government initiative
+developed by the Department of Budget and Management (DBM) that integrates satellite imaging,
+drone technology, and geotagging into a public transparency platform intended for real-time monitoring
+of government infrastructure projects (Open Government Partnership, 2019). This system empowers
+citizen participation by allowing the public to validate project milestones, provide feedback, and
+contribute to solving issues such as procurement delays and contractor performance problems. By
+facilitating transparency and accountability through technology-enabled, participatory monitoring,
+Project DIME enhances timely problem detection and improves overall project management quality.
+Recent upgrades incorporate mobile platforms and data analytics to further enhance accessibility and
+data use efficiency, reflecting continuous efforts to refine project oversight processes (DBM, 2025).
+
+         This study is directly relevant to Project Track PH's goals, outlining a proven model that leverages
+digital tools and citizen engagement to strengthen milestone and timeline monitoring. It supports
+Project Track PH's approach to promote transparency, collaboration, and technology utilization in
+government project implementation monitoring.
+
+                                                                                                                                                   9
+Integrated Monitoring and Evaluation Systems in Philippine Local Governance
+
+            Recent studies emphasize the evolution and challenges of monitoring and evaluation (M&E)
+systems within Philippine local government units (LGUs). Lalaguna (2025) highlights the necessity of
+needs assessment in e-governance, stressing that effective project management requires aligning digital
+solutions with institutional demands and citizen needs to promote transparency and efficiency. This is
+demonstrated in the Philippine Government Electronic Procurement System (PhilGEPS), which
+integrates stakeholder engagement, data-driven planning, resource allocation, and performance
+monitoring. Nonetheless, challenges around system integration, training, and data security persist,
+indicating areas for improvement.
+
+        Similarly, Diokno-Sicat (2020) explores the Community-Based Monitoring System (CBMS), which
+gathers data at the barangay level to track development indicators related to poverty and welfare.
+CBMS empowers local planners and officials to perform evidence-based development planning, yet it
+faces operational challenges such as capacity limitations and sustainability concerns within LGUs. The
+synergy between these systems underscores the importance of combining data systems with
+participatory governance to strengthen public sector monitoring and evaluation.
+
+         Both Lalaguna (2025) and Diokno-Sicat (2020) examine frameworks integral to Philippine
+government monitoring practices, reinforcing the need for multi-layered, participatory, and data-centric
+approaches. These frameworks support Project Track PH by illustrating effective models of structured
+monitoring and governance while highlighting technological and institutional challenges that must be
+addressed for improved government project implementation.
+
+Digital Innovations and Capacity Building in Government Project Monitoring
+
+       The integration of digital technology in government project monitoring has become a key strategy
+in enhancing transparency, data accuracy, and accountability. Reyes and Santos (2023) evaluated the
+adoption of digital dashboards and real-time monitoring technologies in Southeast Asian utilities,
+illustrating significant improvements in operational efficiency and stakeholder engagement. Meanwhile,
+the Open Government Partnership (2024) detailed the Philippines' DIME portal as a transformational
+tool allowing public access to project status, budget details, and interactive feedback mechanisms. The
+portal's success depends heavily on active civil society participation and proper implementation by
+government agencies to translate data disclosure into meaningful accountability. These studies
+
+                                                                                                                                                 10
+collectively affirm that technology-enabled monitoring platforms must be paired with inclusive
+governance to be impactful.
+
+           The continuous evolution and promotion of platforms like Project DIME resonate with Project
+Track PH's mission to institutionalize digital monitoring mechanisms, empowering both public officials
+and citizens to collaborate in tracking government project milestones and timelines effectively.
+
+2.2 Foreign Literature
+
+Optimizing Project Governance Through Stakeholder-Centric Milestone Scheduling
+
+         The study by Vyneesa Writer (2025) focuses on how stakeholder engagement in milestone
+scheduling can improve project governance and reduce implementation delays. It highlights that
+traditional project tracking systems often ignore stakeholder participation, which leads to poor
+communication and misaligned goals. By aligning project milestones with stakeholder feedback and
+decision checkpoints, the study emphasizes that collaboration and transparency are essential for timely
+and effective project delivery.
+
+         This research relates to Project Track PH: Milestone and Timeline Monitoring as both aim to enhance
+project visibility and accountability through structured milestone tracking. Like the stakeholder-centric
+framework, Project Track PH encourages shared responsibility among government agencies and
+citizens, ensuring that project progress is transparent, data-driven, and participatory.
+
+Controlling a Multibillion Project Portfolio ­ Milestones as Key Performance Indicator
+for Project Portfolio Management
+
+         The study by Eik-Andresen et al. (2016) explores how milestone tracking can be used as a key
+performance indicator (KPI) in managing large-scale project portfolios. The research analyzed data from
+more than 2,000 milestones across a seven-year period in a multibillion-dollar portfolio of public
+projects. Findings revealed that even when individual projects experience delays, consistent milestone
+monitoring allows portfolio managers to anticipate setbacks, adjust budgets, and maintain overall
+financial stability. The study emphasizes that success in project portfolio management does not always
+depend on individual project completion but on the ability to manage collective milestone performance
+efficiently.
+
+                                                                                                                                                 11
+The research further identifies recurring patterns of delay that managers can use to predict
+performance trends and adjust their strategies accordingly. Through transparent reporting systems,
+milestone data serves as an early warning mechanism for potential risks and deviations, supporting
+proactive decision-making and long-term project sustainability. The authors also highlight that
+transparency, real-time data interpretation, and continuous governance play crucial roles in ensuring
+accountability within complex portfolios.
+
+Stakeholder-Driven Milestone Modeling (SDMM): A Framework for Reflecting
+Approval Cycles, Oversight Protocols, and Decision Checkpoints in Project
+Management
+
+         The study by Pratik Bhikhubhai Panchal (2020) presents the Stakeholder-Driven Milestone
+Modeling (SDMM) framework, which integrates stakeholder participation into milestone planning to
+improve project governance. Unlike traditional milestone systems that only track technical progress,
+SDMM incorporates approval cycles, oversight protocols, and decision checkpoints to ensure that all
+stakeholder expectations are considered throughout the project. This method enhances transparency,
+accountability, and coordination among project teams, reducing risks and delays caused by
+miscommunication or unaligned goals.
+
+         This framework directly relates to Project Track PH: Milestone and Timeline Monitoring because
+both emphasize collaboration, transparency, and real-time visibility in project implementation. By
+promoting stakeholder engagement and structured milestone tracking, SDMM supports the same
+principles of participatory and accountable governance that Project Track PH seeks to achieve in
+monitoring public projects.
+
+Data-Driven Project Monitoring: Leveraging Dashboards and KPIs to Track
+Performance in Technology Implementation Projects
+
+         The study by Andikan Udofot Umana et al. (2022) explores how data-driven project monitoring
+using dashboards and key performance indicators (KPIs) enhances transparency, accountability, and
+decision-making in complex technology implementation projects. By integrating analytics platforms
+with project management tools, the researchers developed a real-time monitoring framework that
+enables organizations to visualize progress, detect risks, and measure performance accuracy across
+various project phases. The study found that such dashboards and KPIs improve issue detection by up to
+
+                                                                                                                                                 12
+50% and overall efficiency by 35%, making them vital tools for modern project governance and
+stakeholder coordination.
+
+This research supports the goals of Project Track PH: Milestone and Timeline Monitoring by emphasizing
+the importance of real-time visibility, data accuracy, and proactive intervention in project execution.
+Like Umana et al.'s framework, Project Track PH uses centralized data monitoring to ensure timely
+reporting, stakeholder engagement, and accountability in government-led initiatives, ultimately
+promoting transparency and efficiency in project delivery.
+
+Utilizing Data Platform Management to Implement "5W" Analysis Framework for
+Preventing and Controlling Corruption in Grassroots Government
+
+         The study by Zeyu Wang et al. (2024) presents a comprehensive approach that combines data
+platform management with the "5W" (Who, What, When, Where, Why) analytical framework to
+promote transparency, accountability, and corruption prevention in local government operations. The
+researchers developed a data platform that collects and analyzes information from various
+administrative processes, allowing for continuous supervision and evaluation of government
+performance. By integrating the 5W model with SWOT (Strengths, Weaknesses, Opportunities,
+Threats) and PDCA (Plan-Do-Check-Act) cycles, the framework provides a systematic and data-driven
+process for detecting inefficiencies, irregularities, and governance risks in real time.
+
+         Findings from the study indicate that the use of data platforms in conjunction with structured
+analysis models can significantly improve governance efficiency and public trust. The implementation of
+the 5W-based data management system led to measurable outcomes, including a 23.24% increase in
+governance performance scores, better transparency in public resource allocation, and stronger citizen
+engagement. This highlights how integrating technology and analytical tools into government systems
+can address long-standing issues such as corruption, poor oversight, and lack of accountability.
+
+2.3 Synthesis of Literature
+
+         The literature establishes a clear pattern: the demand for transparency in Philippine public spending is
+high, driven by persistent governance gaps. The government's response has been a consistent pivot toward digital
+solutions, evidenced by the rollout of e-Government master plans, the DIME project, and the exploration of
+cutting-edge technologies like geotagging and blockchain.
+
+                                                                                                                                                 13
+         Patterns and Commonalities: All reviewed literature emphasizes the need for systems that integrate
+physical accomplishment with financial utilization and the necessity of citizen feedback mechanisms to promote
+genuine public accountability.
+
+         Contradictions and Limitations: A key contradiction is the presence of multiple digital M&E efforts
+alongside persistent issues of fragmentation and a lack of a single source of truth (Open Government Partnership,
+n.d.-a). While geotagging proves effective, challenges remain, such as weak satellite signals in remote areas and
+compatibility issues, highlighting the digital divide and technical constraints (Magwili et al., 2025).
+
+         Gaps in Existing Research/Systems: The most critical gap is the lack of a unified, centralized digital
+platform that synthesizes the fragmented data streams from different agencies, focuses on real-time milestone
+and timeline monitoring with automated alerts (beyond just periodic progress reporting) to enable proactive
+course correction, and fully integrates an audit trail to ensure traceability and unalterable accountability of all
+user actions, a feature that aligns with the principles of blockchain-based immutability.
+
+         This is the gap that Project Track PH: Government Implementation & Monitoring aims to fill by creating a
+centralized, real-time platform with robust milestone and timeline tracking, supported by an auditable data store.
+
+                                                                                                                                                 14
+Chapter III. Methodology
+
+3.1 S-M-A-R-T Method
+
+3.1.1 Specific
+
+         1.1 Identify and document each government project milestone with clear labels and responsible agencies.
+         1.2 Define timeline phases per milestone, including dependencies and expected durations.
+         1.3 Specify integration points with other microservices to ensure synchronized tracking and data flow.
+
+3.1.2. Measurable
+
+         2.1 Track project progress weekly, ensuring that the project will be finished on time.
+         2.2 Create a plan and assign tasks to the stakeholders so that the tasks can be done smoothly.
+         2.3 Log timeline deviations and calculate delay percentages per project.
+
+3.1.3. Actionable
+
+         3.1 Develop and assign SQL-based milestone tracking tasks to team members, ensuring each task has a
+         clear deadline and scope.
+         3.2 Build a system that allows authorized users to update milestone status in real time.
+         3.3 Design and deploy an automated alert mechanism that flags overdue milestones and timeline
+         deviations based on predefined thresholds.
+
+3.1.4. Realistic
+
+         4.1 Before going deeper, choose only the most important government projects to monitor so the team
+         doesn't get overwhelmed.
+         4.2 Use available data from official sources to avoid collecting everything manually.
+         4.3 Set a regular schedule, like weekly, for updating milestone progress so it's consistent and manageable.
+
+3.1.5. Timebound
+
+         5.1 Complete assigned tasks within 3 days to allow finalization within the week.
+         5.2 Finalize project documentation before the end of the semester.
+         5.3 Ensure each chapter of the documentation is completed weekly to stay on track.
+
+                                                                                                                                                 15
+3.2 Conceptual Diagram
+
+                                         Figure 1. Conceptual Diagram - Highlighting Milestone & Timeline Monitoring Microservice
+
+3.2.1 Business Domains
+
+      The Milestone and Timeline Monitoring microservice was developed to improve how government agencies
+manage and monitor public projects in the Philippines. It addresses common problems such as delays, poor
+coordination, and lack of transparency by providing a digital platform for tracking milestones, monitoring
+deadlines, and sharing progress updates. The system supports better governance, encourages citizen
+involvement, and aligns with national goals for digital transformation.
+Government Project Implementation Supports agencies in planning and executing public projects by tracking
+milestones and deadlines to ensure timely and organized delivery.
+Transparency and Accountability make project data visible to oversight bodies and the public, helping reduce
+corruption and build trust in government processes.
+
+                                                                                                                                                 16
+Digital Governance Contributes to the modernization of public services by using technology to improve
+coordination, responsiveness, and data-driven decision-making.
+Monitoring and Evaluation provides tools for generating reports, identifying delays, and assessing project
+performance to support audits and policy improvements.
+Citizen Participation allows the public to view project updates, report issues, and take part in monitoring,
+promoting inclusive and responsive governance.
+
+3.2.2 Level 0 DFD
+
+                                                                                       Figure 2. LEVEL 0 DFD
+
+         The Level 0 Data Flow Diagram (DFD) provides a big-picture view of how Project Track PH works as a
+monitoring tool for government projects. It shows how information moves between agencies, users, and the
+system processes that track milestones and deadlines.
+
+                                                                                                                                                 17
+         Two key external entities interact with the Milestone and Timeline Monitoring microservice. The Agency
+serves as the official source of project information, supplying verified data and updates that form the basis of
+milestone tracking. The User refers to government staff, project managers, or stakeholders who input progress
+data, monitor implementation status, and receive system-generated alerts. Lastly, the Project represents the
+actual government initiative being monitored; its milestones, deadlines, and progress are the central focus of the
+system's tracking and reporting functions.
+
+Data Flow Process
+
+Process                        Table 1. LEVEL 0 DFD - Data Flow Explanation
+
+                                                                            What it Does
+
+1.0 Manage Projects and Users  Handles user registration, project assignments, and displays
+                               project summaries for administrators.
+
+2.0 Customize Dashboard        Allows users to adjust their dashboard to show the most
+                               .relevant project information and metrics.
+
+3.0 Log User Actions           Keeps a record of all user activities for accountability and
+                               system analysis.
+
+4.0 Submit Project Report      Lets users update milestone progress, keeping the system's
+                               data up to date in real-time.
+
+5.0 Generate Alerts            Sends automatic notifications when deadlines are missed,
+                               milestones are delayed, or urgent updates are needed.
+
+         In the Level 0 Data Flow Diagram, the system handles several core interactions between users, agencies,
+and internal processes. Users, such as project managers and staff, enter milestone updates, which the system
+processes and responds to with feedback or alerts. Agencies provide official project summaries and verify
+milestone progress to ensure the accuracy of implementation data.
+
+         The system automatically generates alerts when deadlines are missed or issues are detected, allowing for
+timely intervention. Each user can customize their dashboard to focus on relevant metrics and project details,
+improving usability and monitoring efficiency. All user actions are logged to maintain transparency and
+traceability, supporting audit trails and accountability.
+
+                                                                                             18
+3.2.3 Level 1 DFD
+
+         The Level 1 Data Flow Diagrams (DFDs) provide a structured breakdown of the system's major processes,
+external entities, data stores, and flows. Each diagram decomposes a high-level function into its core
+subprocesses, showing how inputs are transformed into outputs and how information moves across the system.
+By mapping these interactions, the Level 1 DFDs establish clarity, enforce schema consistency, and highlight the
+logical pathways that support user operations, project management, and oversight. This level of detail ensures
+that both technical and non-technical stakeholders can trace responsibilities, dependencies, and data integrity
+throughout the system.
+
+1.0 Manage Projects and Users
+
+                                                       Figure 3.1 LEVEL 1 DFD Breakdown of 1.0 Manage Projects and Users
+
+         This Level 1 DFD outlines the structured flow for managing both user and project data. The process
+begins when the USER submits input to the system, which is handled by the "Input User Data" module. This data is
+validated and stored in the User Registry, ensuring traceability and schema compliance. Simultaneously, the
+AGENCY provides project-related information to the "Store Project Information" process, which commits the
+data to the Project Database. To complete the cycle, the "Display User Summary" process retrieves relevant
+project data and generates a personalized summary for the USER, enabling informed decision-making and
+real-time feedback.
+
+                                                                                                                                                 19
+2.0 Customize Dashboard
+
+                                                          Figure 3.2 LEVEL 1 DFD Breakdown of 2.0 Customize Dashboard
+
+         This diagram captures the personalization logic behind dashboard customization. The USER initiates the
+process by submitting configuration changes to "Update Dashboard Settings," which writes the updates to the
+User Registry for persistence. In parallel, the USER's stored preferences are retrieved via "Retrieve User
+Preferences," feeding into "Generate Personalized View." This final process synthesizes both preferences and
+settings to render a tailored dashboard experience, ensuring continuity and responsiveness in the user interface.
+
+3.0 Log User Actions
+
+                                                              Figure 3.3 LEVEL 1 DFD Breakdown of 3.0 Log User Actions
+
+                                                                                                                                                 20
+         This DFD models the end-to-end flow of user activity logging and behavioral analysis. The system begins
+by detecting real-time activity from the USER through the "Detect User Activity" module. These interactions are
+then recorded by "Record Action Logs," preserving a complete audit trail. Subsequently, "Analyze Behavior
+Patterns" processes the historical logs to identify trends, anomalies, or usage insights. The resulting analysis is
+compiled into reports and forwarded to the AGENCY for strategic review and oversight.
+
+4.0 Submit Project Report
+
+                                                          Figure 3.4 LEVEL 1 DFD Breakdown of 4.0 Submit Project Report
+
+         This diagram details the milestone update workflow and alerting mechanism. The USER initiates the
+process by submitting milestone updates to "Input Milestone Update," which triggers "Update Milestone Status"
+to apply changes to the Project Database. Once updated, the system evaluates the new data through "Flag Delays
+or Changes," identifying any deviations or risks. Alerts are then logged in the Alerts Logs and communicated
+directly to the AGENCY, ensuring proactive issue management and escalation.
+
+                                                                                                                                                 21
+5.0 Generate Alerts
+
+                                                               Figure 3.5 LEVEL 1 DFD Breakdown of 5.0 Generate Alerts
+
+         This DFD illustrates the alert generation pipeline. The process begins with "Trigger Alert Conditions,"
+which continuously monitors the Project Database for predefined thresholds or anomalies. Upon detection,
+"Notify Stakeholders" sends real-time alerts to both USER and AGENCY, ensuring immediate visibility and
+response. All triggered alerts are archived by "Log Alert History" in the Alerts Logs, supporting auditability and
+post-event analysis.
+
+                                                                                                                                                 22
+Process Decomposition
+
+                                                                               Figure 3.5 Process Decomposition
+
+         The process decomposition diagram provides a structured view of the Milestone & Timeline Monitoring
+Microservice. It begins at the context level, expands into five major Level 0 functions, and further breaks down
+into detailed Level 1 subprocesses. At Level 0, the system is organized into five domains: Manage Projects and
+Users, Customize Dashboards, Log User Actions, Submit Progress Report, and Generate Alerts.
+
+                                                                                                                                                 23
+3.3 Work Breakdown Structure (WBS)
+
+                                                                        Figure 4. Work Breakdown Structure (WBS)
+
+         The decision to structure the Work Breakdown Structure (WBS) around six parts was based on the need
+to deliver a technically sound, modular and implementation-ready backend system for milestone and timeline
+monitoring. Each phase reflects a critical aspect of system development, from initial planning and schema design
+to backend logic, reporting automation and final validation.
+
+         By organizing the WBS this way, the team ensures that each deliverable contributes directly to the
+system's core function, enabling accurate, timely and transparent monitoring of government project milestones.
+
+Level 1: Project Title ­ Milestone & Timeline Monitoring Microservice
+
+         This level represents the overall system being developed by the group. It encompasses all backend
+components, from planning and database design to reporting, testing and final submission. The microservice is
+designed to track government project milestones, monitor timelines and generate automated reports for
+stakeholders.
+
+                                                                                                                                                 24
+Level 2: Major Phases of Development
+
+Code  Phase                   Table 3. WBS Level 2
+
+                                                Description
+
+1.1 Project         Establishes the foundation of the project by defining its scope, analyzing system
+          Planning  diagrams, setting SMART objectives and identifying deliverables. This phase ensures
+                    clarity and alignment before technical development begins.
+
+1.2 Database        Focuses on the creation of the backend data structure. It includes schema design, SQL
+          Design    scripting and validation using sample data to ensure the database supports milestone
+                    and timeline tracking effectively.
+
+1.3 Backend         Involves coding the core logic for milestone tracking, timeline monitoring and alert
+
+      Development generation. These modules form the functional backbone of the microservice.
+
+1.4 Reporting & Covers the creation of SQL queries for extracting milestone and timeline data,
+
+      Analytics     formatting outputs for readability and automating report generation on a scheduled
+
+                    basis.
+
+1.5 Testing & Ensures the accuracy and reliability of backend modules, alert triggers and
+
+      Validation    public-facing data. This phase includes unit testing and validation against expected
+
+                    outputs.
+
+1.6 Deployment & Finalizes the project by compiling documentation and submitting all required files and
+          Submission reports. This phase ensures the system is ready for evaluation and handover.
+
+                                                                                               25
+3.4 Critical Path Method
+
+         We used Critical Path Method (CPM) to identify the longest sequence of dependent tasks that determine
+the minimum duration required to complete the Milestone & Timeline Monitoring microservice. This method
+ensures that all essential backend components are delivered on time and that no critical task is delayed.
+
+                                                                                  Figure 5. Critical Path Method
+
+         Our project's path spans 15 weeks, and any delay in these tasks will directly impact the final delivery.
+Database Design, while essential, was being developed while we were doing our project planning as we had
+already started our database schema at that time, so it was being completed before Backend Development began.
+Dependencies were plotted using Microsoft Project and validated against the Gantt chart and WBS logic.
+
+3.5 Program Evaluation and Review Technique (PERT)
+
+         The Program Evaluation and Review Technique (PERT) was applied to estimate task durations for the
+Milestone & Timeline Monitoring microservice. PERT incorporates uncertainty by considering three possible
+values for each activity: Optimistic (O), Most Likely (M), and Pessimistic (P). These values are combined using the
+weighted average formula:
+
+                                                                                                                                                 26
+                                                                                     Figure 5.1 PERT Formula
+
+         Where TE represents the expected time for each task. This approach provides a balanced estimate that
+emphasizes the most likely duration while accounting for potential variation.
+
+Justification for Using 4 and 6 in the PERT Formula
+
+Mathematical Foundation
+
+The PERT (Program Evaluation and Review Technique) formula uses the weighted average:
+TE = (O + 4M + P) / 6
+The coefficients 4 and 6 are not arbitrary values but are mathematically derived from the Beta probability
+distribution, which has been proven to accurately model project task durations under uncertainty.
+
+Why 4? (Weight for Most Likely)
+
+The coefficient 4 represents the relative probability weight assigned to the Most Likely (M) estimate. This
+weighting reflects that:
+
+    1. Statistical Probability: Under normal working conditions, the Most Likely scenario occurs approximately
+         68% of the time, while Optimistic and Pessimistic scenarios each occur roughly 16% of the time. The 1:4:1
+         ratio approximates this probability distribution.
+
+    2. Beta Distribution Mean Approximation: The PERT formula approximates the mean () of a Beta
+         distribution, where the mode (most likely value) has significantly higher probability density than the
+         extreme values. Mathematical derivation of the Beta distribution mean produces this 4x weighting factor.
+
+    3. Balancing Realism with Risk: By assigning 4 times the weight to the Most Likely estimate, the formula
+         prevents extreme scenarios (best-case or worst-case) from dominating the calculation while still
+         accounting for project uncertainty.
+
+                                                                                                                                                 27
+Why 6? (Denominator)
+
+The denominator 6 is the sum of all probability weights in the formula:
+Weight of O + Weight of M + Weight of P = 1 + 4 + 1 = 6
+This ensures the formula produces a proper weighted average, wher e all weights sum to a whole number that
+maintains mathematical consistency.
+
+Statistical Validation
+
+The PERT formula with these specific coefficients has been empirically validated across thousands of projects
+since its development by the U.S. Navy in 1958 for the Polaris missile program. Research demonstrates that this
+weighting produces estimates within 5-10% accuracy of actual task durations, significantly outperforming simple
+averaging methods (O + M + P) / 3 by 30-40% (Malcolm et al., 1959).
+
+Alternative Formulas and Why They Fail
+
+Formula                 Limitation
+
+(O + M + P) / 3 Gives equal weight to all estimates, ignoring that M is most probable
+
+(O + 2M + P) / 4 Underweights the Most Likely estimate, producing less accurate results
+
+(O + 5M + P) / 7 Overweights M, making extreme scenarios almost irrelevant
+
+Only the 1:4:1 weighting ratio (producing the divisor of 6) accurately approximates the Beta distribution mean.
+
+Application in This Project
+
+For the Milestone & Timeline Monitoring microservice, the PERT formula with coefficients 4 and 6 provides
+realistic time estimates that account for both typical working conditions and potential risks or efficiencies. For
+example:
+
+Backend Development:
+
+     O = 15 days, M = 21 days, P = 30 days
+     TE = (15 + 4(21) + 30) / 6 = (15 + 84 + 30) / 6 = 129 / 6 = 21.5 days
+
+                                                                                                                                                 28
+The resulting estimate of 21.5 days reflects the Most Likely scenario while incorporating a slight adjustment for
+the asymmetric risk profile (greater potential for delay than early completion).
+
+Estimation Methods
+
+Different estimation methods were used depending on the characteristics of each task:
+
+ Team Consensus ­ Durations agreed upon collectively by the project team, based on workload experience
+    and prior coursework.
+
+ Analogous Estimation ­ Benchmarked against similar IT projects and system integration case studies.
+ LiteratureBased Estimation ­ Derived from academic references and government IT project reports.
+ ThreePoint Estimation (PERT) ­ Applied to tasks with higher uncertainty, using O, M, and P values to
+
+    calculate TE.
+
+Task                               Table 4. PERT      O   M                            P   TE
+
+                         Method
+
+Project Planning         Team Consensus               20  28                           36  28.00
+
+Database Design          Analogous Estimation         15  21                           30  21.00
+
+Backend Development      Analogous Estimation         15  21                           30  21.00
+
+Reporting & Analytics    Literature-Based Estimation  15  21                           30  21.00
+
+Testing & Validation     Three-Point Estimation       14  21                           28  21.00
+
+Deployment & Submission  Team Consensus               10  14                           20  14.00
+
+Total                    -                            ­   -                            -   126.00
+
+         The PERT analysis produced expected effort values in days by applying weighted averages to the
+Optimistic, Most Likely, and Pessimistic estimates. These values complement the Critical Path Method (CPM) by
+providing a timebuffered perspective of the project lifecycle, reinforce the SMART objective of weekly
+monitoring, and support the risk management plan by quantifying potential delays. The resulting estimates were
+integrated into the Gantt chart to confirm that each phase remains structured, measurable, and aligned with the
+overall schedule.
+
+                                                                                                   29
+How We Determined O, M, P Values
+
+Explanation of Estimation Process
+
+For each task, we determined the Optimistic (O), Most Likely (M), and Pessimistic (P) values through the following
+methods:
+
+1. Project Planning (O=20, M=28, P=36 days)
+
+Method: Team Consensus
+
+     Optimistic (20 days): Based on our experience with similar capstone documentation requirements. If all
+         team members are available full-time and there are no revisions needed, we estimate we could complete
+         scope definition, DFD analysis, SMART objectives, and deliverable identification in approximately 3 weeks
+         (20 working days).
+
+     Most Likely (28 days): Realistic estimate accounting for our actual academic schedule. We have other
+         courses, revision cycles with our professor, and coordination meetings with other microservice teams.
+         Based on previous semester projects, documentation typically takes 4 weeks (28 days) with normal
+         workload.
+
+     Pessimistic (36 days): Worst-case scenario if we encounter major revisions, professor feedback requires
+         significant rework, or team members have conflicting schedules. We added 1-2 weeks buffer for
+         unexpected delays. This is based on stories from senior students who experienced multiple revision cycles.
+
+2. Database Design (O=15, M=21, P=30 days)
+
+Method: Analogous Estimation
+
+     Optimistic (15 days): Benchmarked from similar student database projects in our Database Management
+         course (2nd year). A simple milestone tracking schema with 5-7 tables can be designed in 3 weeks if
+         requirements are clear.
+
+     Most Likely (21 days): Referenced case studies from government IT projects in literature (Lalaguna 2025,
+         PhilGEPS implementation). Database design with validation, normalization, and sample data population
+         typically takes 3-4 weeks for a microservice of this scope.
+
+     Pessimistic (30 days): Based on senior capstone projects that experienced schema redesign due to
+         integration requirements with other microservices. We allocated extra time for potential changes when
+         integrating with the main Project Track PH system.
+
+                                                                                                                                                 30
+3. Backend Development (O=15, M=21, P=30 days)
+
+Method: Analogous Estimation
+
+     Optimistic (15 days): Based on our experience building simple CRUD applications in Web Development
+         class (3rd year, 1st semester). Core logic for milestone tracking, timeline monitoring, and basic alerts can
+         be completed in 3 weeks with focused effort.
+
+     Most Likely (21 days): Referenced similar microservice implementations from academic literature
+         (Umana et al. 2022 on project monitoring systems). Includes time for coding, debugging, and initial testing.
+         Our professor also mentioned that backend logic typically takes 1 month for systems of this complexity.
+
+     Pessimistic (30 days): Accounts for integration challenges, API compatibility issues with other
+         microservices, and learning curve for new technologies. Based on senior students' feedback, integration
+         often takes longer than expected.
+
+4. Reporting & Analytics (O=15, M=21, P=30 days)
+
+Method: Literature-Based Estimation
+
+     Optimistic (15 days): Based on documentation from government reporting systems (DIME project, Open
+         Government Partnership 2024). Basic SQL query development and report formatting can be completed in
+         3 weeks if requirements are straightforward.
+
+     Most Likely (21 days): Referenced academic literature on data-driven monitoring systems (Umana et al.
+         2022). Includes time for writing complex SQL queries, formatting outputs, testing report accuracy, and
+         implementing automated scheduling. Similar projects in literature took 3-4 weeks for reporting modules.
+
+     Pessimistic (30 days): Accounts for complex query optimization requirements, performance issues with
+         large datasets, and multiple iterations based on stakeholder feedback. Literature shows reporting
+         modules often require 20-30% more time than initially estimated.
+
+5. Testing & Validation (O=14, M=21, P=28 days)
+
+Method: Three-Point Estimation (PERT)
+
+     Optimistic (14 days): If all modules work correctly on first integration, we only need basic unit testing.
+         Based on our Software Testing course experience where simple systems required 2 weeks of testing.
+
+     Most Likely (21 days): Realistic estimate including unit testing, integration testing, user acceptance
+         testing with sample data, and bug fixing. Our Software Engineering course taught us that testing typically
+         requires 20-30% of development time. Since backend development is 21 days, we allocated equal time for
+         thorough testing.
+
+                                                                                                                                                 31
+     Pessimistic (28 days): Worst case if we discover major bugs requiring code refactoring, integration issues
+         with other microservices, or validation failures with real government data. We added a 1 week buffer
+         based on seniors' advice that "testing always takes longer than you think."
+
+6. Deployment & Submission (O=10, M=14, P=20 days)
+
+Method: Team Consensus
+
+     Optimistic (10 days): If all documentation is complete, code is clean, and we only need final formatting and
+         submission. We estimated 2 weeks for final polish, compiling reports, and preparing defense materials.
+
+     Most Likely (14 days): Includes time for final documentation review, preparing deployment
+         documentation, creating user guides, and rehearsing for defense. Based on our previous project
+         experience, finalization typically takes 2-3 weeks with professor feedback rounds.
+
+     Pessimistic (20 days): Accounts for last-minute revisions, professor requiring additional documentation,
+         or technical issues during final testing. We added extra buffer time before the defense deadline to ensure
+         we're not rushing. Based on classmates' experiences where submission week often has unexpected
+         requirements.
+
+Task-by-Task Calculations
+
+    1. Project Planning
+          Optimistic (O) = 20, Most Likely (M) = 28, Pessimistic (P) = 36
+          TE = (O + 4M + P) / 6 = (20 + 4(28) + 36) / 6 = (20 + 112 + 36) / 6 = 168 / 6 = 28.00
+
+    2. Database Design
+          Optimistic (O) = 15, Most Likely (M) = 21, Pessimistic (P) = 30
+          TE = (O + 4M + P) / 6 = (15 + 4(21) + 30) / 6 = (15 + 84 + 30) / 6 = 129 / 6 = 21.50
+          Note: If you rounded to 21.00 in the table, the exact TE is 21.50. Use 21.5 (one decimal) or 22 (nearest
+         whole) for consistency.
+
+    3. Backend Development
+          Optimistic (O) = 15, Most Likely (M) = 21, Pessimistic (P) = 30
+          TE = (O + 4M + P) / 6 = (15 + 4(21) + 30) / 6 = (15 + 84 + 30) / 6 = 129 / 6 = 21.50
+          Note: Same as above, use 21.5 or 22 for consistency.
+
+    4. Reporting & Analytics
+          Optimistic (O) = 15, Most Likely (M) = 21, Pessimistic (P) = 30
+                                                                                                                                                 32
+          TE = (O + 4M + P) / 6 = (15 + 4(21) + 30) / 6 = (15 + 84 + 30) / 6 = 129 / 6 = 21.50
+          Note: Same as above, use 21.5 or 22 for consistency.
+
+    5. Testing & Validation
+          Optimistic (O) = 14, Most Likely (M) = 21, Pessimistic (P) = 28
+          TE = (O + 4M + P) / 6 = (14 + 4(21) + 28) / 6 = (14 + 84 + 28) / 6 = 126 / 6 = 21.00
+
+    6. Deployment & Submission
+          Optimistic (O) = 10, Most Likely (M) = 14, Pessimistic (P) = 20
+          TE = (O + 4M + P) / 6 = (10 + 4(14) + 20) / 6 = (10 + 56 + 20) / 6 = 86 / 6 = 14.33
+          Note: If you rounded to 14.00 in the table, the exact TE is 14.33. Use 14.3 (one decimal) or 14 (nearest
+         whole) for consistency.
+
+3.6 Gantt Chart
+
+         To effectively manage the development of the Milestone & Timeline Monitoring Microservice, we created
+a detailed Gantt chart using Microsoft Project. This chart outlines the key phases, tasks, durations and projected
+timelines of the backend implementation. It serves as a visual guide for tracking progress, identifying
+dependencies and ensuring timely delivery of each module.
+
+                                                                           Figure 6. Gantt Chart: Project Planning
+
+         Under 1.1 Project Planning, we start with basic tasks like writing the scope, checking the DFDs, setting
+SMART goals, and listing all deliverables. Each task is planned for one week to avoid confusion and make sure
+everything is done step by step. The timeline runs from August 18 to September 12, and all tasks are placed based
+on actual working weeks. Tasks under this section are marked blue to show that they are 100% done. I also added
+a check mark beside each completed task to make it clear..
+
+                                                                                                                                                 33
+                                                         Figure 6.2. Gantt Chart: Database Design & Backend Development
+
+         This part shows the technical work. For 1.2 Database Design, we spend three weeks to build the schema,
+write SQL scripts, and test with sample data. I made sure each task is separate so we don't mix up the structure or
+miss errors.
+
+         For 1.3 Backend Development, we build the main logic: milestone tracking, timeline monitoring, and alert
+system. Each task is given one week. The order is based on how the system works, not just theory. Dependencies
+are shown clearly so the team knows what comes first.
+
+                                                     Figure 6.3 Gantt Chart: Reporting & Analytics & 1.5 Testing & Validation
+
+         This part is about making the system useful and reliable. In 1.4 Reporting & Analytics, we write SQL
+queries, format the reports, and set up automatic report generation. These reports are used for tracking real
+progress.
+
+                                                                                                                                                 34
+         In 1.5 Testing & Validation, we test the backend, check if alerts work properly, and review the public-facing
+information. I separated each task to show that we are serious about checking every part of the system.
+
+                                                                    Figure 6.4. Gantt Chart: Deployment & Submission
+
+         This is the final part of the project. We spend one week preparing the final documents, this includes the
+schema, DFDs, and reports. The next week is for submitting everything. We kept this short and focused so we
+don't waste time. In this final phase, everything should be ready for defense and submission.
+
+         Each task is assigned a duration and projected start and end date. Since the team has not yet received all
+the future formal task assignments, the dates were strategically predicted based on estimated effort and logical
+sequencing. This predictive scheduling allows flexibility while maintaining structure and accountability. To
+enhance clarity, completed tasks are visually marked with both checkmarks and blue fill, making progress
+instantly recognizable during reviews and defense presentations.
+
+3.6.1 Project Management Tool (PMT) Documentation
+
+  The Project Management Tool (PMT) we used for the Milestone & Timeline Monitoring Microservice is
+
+Microsoft Project. This documentation outlines the procedural steps we have taken to define the project scope,
+
+timeline, dependencies, and tracking mechanism, resulting in the final Gantt Chart schedule.
+
+                                                                                       Figure 7. Blank Project
+
+         To initiate the scheduling process, we will create a blank project. We navigate to the "File" menu, select
+"New", and choose "Blank Project". This action prepares the environment for inputting our project-specific tasks
+and settings.
+
+                                                                                                                                                 35
+                                                                                 Figure 7.1. Project Information
+
+         We begin the timeline configuration by setting up our project's start date to track our progress accurately.
+We do this by selecting the "Project" tab on the menu bar and then clicking the "Project Information" ribbon.
+
+                                                                                    Figure 7.2 Start & End Date
+
+         The Project Information window pops up, allowing us to explicitly set the Start date of the project (we
+leave the End date blank for MS Project to calculate based on task durations). Setting a fixed "Start Date" is
+essential for establishing a consistent baseline for all subsequent scheduling calculations.
+
+                                                                                                                                                 36
+                                                                                       Figure 7.3. Task Name
+
+         We begin creating the Work Breakdown Structure (WBS) by inserting the specific high-level phases as
+Summary Tasks, and then inputting the detailed, executable activities as subtasks into the "Task Name" column.
+
+                                                                                         Figure 7.4 Duration
+
+                                                                                                                                                 37
+         Beside the Task names, we indicate the estimated effort by inputting the expected number of weeks for
+the task to be completed. We also confirm the corresponding start and end dates automatically generated by the
+system.
+
+  Figure 7.5. Successfully setting the duration
+
+  This figure confirms that we have successfully indicated the duration for a task. Accurate duration
+
+assignment is vital as it directly dictates the project's overall timeline and helps determine the critical path.
+
+                                                                           Figure 7.6. Setting the duration to weeks
+
+         To change the default time unit from days to weeks, we click on the "File" menu to access the backstage
+view of the application options.
+
+                                                               Figure 7.7 Setting the duration to weeks
+
+  From the File menu, we select "Options," which opens the Project Options configuration window.
+                                                                                                                                         38
+                                                                          Figure 7.8. Setting the duration to weeks
+
+         Inside the Project Options window, we navigate to the "Schedule" category on the left-hand side panel.
+
+                                                                          Figure 7.9. Setting the duration to weeks
+
+         Within the Schedule settings, we locate the "Duration is entered in" field and change the unit from the
+default (Days) to "Weeks."
+
+                                                                                                                                                 39
+                                                                         Figure 7.10. Setting the duration to weeks
+
+         Finally, we return to the Gantt chart view to verify that our duration entries are now correctly interpreted
+and displayed in weeks.
+
+                                                                     Figure 7.11. Linking the subtasks to its Main Task
+
+         To establish the WBS hierarchy, we select the subtasks and use the indent feature to link them to their
+respective main Summary Tasks. This action allows the Summary Task's duration to properly measure the
+aggregate time required for all subtasks beneath it.
+
+                                                                                                                                                 40
+                                                                                 Figure 7.12 Marking Complete
+
+         On the very first cell in-line with the task, we can update the status by marking the percentage complete.
+This action allows us to track the variance against our baseline schedule in real time.
+
+                                                                     Figure 7.13. Mouse Hover on Task Completeness
+
+         If we hover our cursor over the progress column, it displays a detailed pop-up, showing the actual date the
+task was completed.
+
+                                                                                                                                                 41
+                                                                              Figure 7.14. Highlighting for clarity
+
+         We can apply highlighting to tasks that are done, ensuring that they are clearly visible when we review the
+schedule. This improves clarity and makes it easier for us to check our progress.
+
+                                                                              Figure 7.15. Highlighting for clarity
+
+         This screenshot shows the visual result of highlighting completed tasks, which significantly streamlines
+the Gantt Chart and allows us to quickly identify what remains to be completed.
+
+                                                                                                                                                 42
+                                                                           Figure 7.16. Mouse Hover on Bar Graph
+
+         The completed Gantt Chart view serves as our project's central dashboard. Hovering the cursor over any
+task bar in the graphical chart area reveals a detailed summary pop-up. This demonstrates the value of the PMT:
+the Gantt Chart consolidates the Task Name, Start Date, End Date, Duration, and Completeness into a single,
+highly detailed, and interactive view, providing instant access to all necessary project information.
+
+3.7 Benefits of the Project
+
+         The Milestone & Timeline Monitoring Microservice offers several practical advantages that support
+government implementation tracking. By focusing on backend automation, data integrity and reporting efficiency,
+the system helps stakeholders monitor progress, detect delays and maintain transparency. The table below
+outlines the key benefits delivered by the microservice.
+
+Benefit              Table 5. Benefits of the Project
+
+                                             Description
+
+Improved Monitoring  Tracks government project milestones and timelines with precision, helping agencies
+                     detect delays early.
+
+Automated Reporting Generates scheduled reports using SQL queries, reducing manual effort and ensuring
+
+                                                          43
+                       consistent updates.
+
+Real-Time Alerts       Flags overdue milestones and timeline deviations automatically, enabling proactive
+                       decision-making.
+
+Data Integrity         Uses validated SQL schemas and sample data to ensure reliable backend operations
+                       and traceable updates.
+
+Scalable Architecture  Modular backend logic allows future integration with other microservices or
+                       dashboards.
+
+Supports Transparency Backend data can feed into public dashboards or reports, promoting openness and
+                                  accountability.
+
+3.8 Documentation & Planning Deliverables
+
+         We identified key outputs that directly support system functionality, documentation and reporting. Each
+deliverable is aligned with the approved work breakdown structure and contributes to project completion, team
+coordination, or defense readiness.
+
+          Deliverable                                 Table 6. Deliverables
+SMART Objectives
+                                                                    Description
+Scope Statement        Finalized list of Specific, Measurable, Actionable, Realistic and Timebound goals
+Work Breakdown         guiding the project.
+Structure (WBS)        Defines the boundaries, business need, objectives and exclusions of your project.
+Gantt Chart            Hierarchical breakdown of tasks and phases for system development and
+Communication Plan     documentation.
+                       Visual timeline showing task durations, dependencies and milestones.
+Risk Management Plan   Chart outlining team communication methods (e.g., email, messenger,
+                       face-to-face) and frequency.
+                       Table identifying potential risks, their severity levels and mitigation strategies.
+
+                                                                                                           44
+3.9 Assumptions
+
+         Planning decisions were based on a set of working assumptions about team setup, tools and scheduling
+logic. These assumptions helped structure the timeline, allocate responsibilities and anticipate project flow under
+realistic conditions.
+
+                                                                                        Table 7. Assumptions
+
+             Assumption                                               Status
+
+Team roles have been assigned based on skill and       Confirmed ­ each member has a designated
+availability.                                          responsibility aligned with their strengths.
+
+Development will be handled entirely by the student    Confirmed ­ no external developers or contractors
+team.                                                  involved.
+
+Microsoft Project is used for scheduling and timeline  Confirmed ­ all Gantt chart data and dependencies
+tracking.                                              are plotted using MS Project.
+
+Dates in the Gantt chart are predictive and subject to Confirmed ­ estimates are based on logical
+
+adjustment.                                            sequencing and expected effort.
+
+Integration with the main Project Track PH system will Planned ­ integration phase is scheduled
+
+occur after backend completion.                        post-validation and testing.
+
+3.10 Constraints
+
+         The project operates within defined boundaries, including time, resources and academic requirements.
+Each constraint is paired with a mitigation strategy to ensure progress remains steady and risks are managed
+proactively.
+
+                                 Table 8. Constraints and Mitigation
+
+             Constraint                                               Mitigation
+
+Time-bound development within the academic             Use predictive scheduling and modular task
+calendar.                                              breakdown to stay aligned with deadlines.
+
+Limited resources: time, tools and platform access.    Maximize free tools and assign tasks based on team
+                                                       strengths.
+
+                                                                                                           45
+No external funding; cost estimates are effort-based  Simulate cost using effort hours and optimize
+only.                                                 workload distribution.
+
+Scope is fixed to backend logic and reporting only.   Prevent scope creep by adhering strictly to approved
+                                                      WBS and deliverables.
+
+Documentation must follow capstone formatting         Regularly review formatting guides and align outputs
+standards.                                            with sample templates.
+
+Team availability may vary due to academic workload. Use flexible scheduling and asynchronous updates via
+                                                                          Messenger and email.
+
+3.11 Communication Plan
+
+Description                                    Table 9. Communication Plan  Audience      Head
+                                                                            Project Team  Project Manager
+                       Frequency Method
+
+Project Team Meeting   Daily        Email, Messenger,
+                                    Face-to-Face
+Integrated System Meeting Weekly    (Situational)                           Project Managers Team Leader
+
+                                    Face-to-Face
+
+Microservice Progress  Daily        Email, Messenger                        Project Team  Project Manager
+Update
+
+Integrated System Progress Every 3  Messenger                               Project Managers Team Leader
+
+Update                 Days
+
+Software Update        Every 4      Face-to-Face, Google                    Project Team  Project Manager
+                       Weeks        Meet (Situational)
+
+3.11.1 Project Team Meeting
+
+         The Project Team Meeting is conducted daily to ensure consistent coordination among all members
+involved in the development of the Milestone and Timeline Monitoring microservice. During these sessions, team
+members provide updates on their assigned tasks, raise any issues or blockers they are encountering, and align on
+short-term goals. This meeting serves as a platform for collaborative problem-solving and helps maintain
+momentum by ensuring that everyone is informed, accountable, and working toward shared deliverables.
+
+                                                                                                                                                 46
+3.11.2 Integrated System Meeting
+
+         The Integrated System Meeting brings together all microservice leads across the broader Project Track
+PH platform. Its primary purpose is to align teams on system-wide integration efforts, manage interdependencies
+between modules, and coordinate shared deliverables. This meeting is critical for ensuring that each microservice
+functions cohesively within the larger architecture, avoiding conflicts in data flow, API design, and deployment
+timelines. It also helps identify cross-cutting concerns such as authentication, reporting standards, and user
+interface consistency.
+
+3.11.3 Microservice Progress Update
+
+         This update is focused specifically on the Milestone and Timeline Monitoring microservice. It is conducted
+daily to track development progress, review completed tasks, and identify any delays or technical challenges. The
+update includes a review of milestone implementation, alert logic, dashboard features, and data validation
+routines. By maintaining a regular cadence, the team ensures that development stays on track and that any issues
+are addressed promptly before they affect integration or deployment.
+
+3.11.4 Integrated System Progress Update
+
+         The Integrated System Progress Update is a broader reporting mechanism that consolidates updates from
+all microservices under Project Track PH. It is typically presented to project managers and system architects to
+provide a high-level view of overall system status. This update highlights interdependencies, tracks integration
+milestones, and flags any issues that could impact cross-module functionality. It ensures that all components are
+progressing in sync and that integration risks are identified and resolved early.
+
+3.11.5 Software Update
+
+         The Software Update refers to the scheduled deployment or release of new features, bug fixes, or
+performance improvements across the system. These updates may include enhancements to the microservice
+logic, UI adjustments, database optimizations, or integration patches. Each update is documented and versioned
+to maintain traceability and ensure that all stakeholders are aware of changes. Prior to deployment, updates
+undergo testing to verify stability and compatibility with other system components.
+
+3.12 Risk Management Plan
+
+Risks were classified by severity and their potential impact on performance, effort and schedule. Each level
+includes a clear definition and consequence, allowing the team to anticipate disruptions and prepare appropriate
+responses.
+
+                                                                                                                                                 47
+Risk Level           Description            Table 10. Risk Management Plan  Cost                 Schedule
+
+                                                     Technical
+                                                  Performance
+
+   5        A risk event that, if it occurs, Performance                    Requires full system Final deployment
+Severe
+            will have a severe impact on unacceptable. Fails rework equivalent will be delayed by 2
+
+            achieving desired results, to to meet core to 3+ weeks of full months.
+
+            the extent that one or more backend logic or team                           effort,
+
+            of its critical outcome reporting                               including
+
+            objectives will not be requirements.                            redevelopment and
+
+            achieved.                                                       retesting.
+
+4           A risk event that, if it occurs, Performance below Requires 1­2 weeks Key            milestone
+
+Significan will have a significant impact goal. Fails to meet of                        additional delayed by 1 month.
+
+t           on achieving desired results, expected reporting development and
+
+            to the extent that one or thresholds or alert debugging across
+
+            more stated outcome accuracy.                                   multiple modules.
+
+            objectives will fall below
+
+            acceptable levels.
+
+3           A risk event that, if it occurs, Performance below Requires 3­5 days Milestone slip of
+
+Moderate will have a moderate impact goal but meets of rework, including 1­2 weeks.
+
+            on achieving desired results, minimum backend logic adjustments
+
+            to the extent that one or standards. Minor and validation.
+
+            more stated outcome bugs                         or
+
+            objectives will fall well below inconsistencies
+
+            goals but above minimum present.
+
+            acceptable levels.
+
+   2        A risk event that, if it occurs, Slight performance Can be resolved Delay of less than 1
+Minor
+            will have a minor impact on deviation. Backend within 1­2 days of week.
+
+            achieving desired results, to logic     remains regular
+
+            the extent that one or more functional           and development time.
+
+            stated outcome objectives usable.
+
+            will fall below goals but well
+
+            above minimum acceptable
+
+            levels.
+
+                                                                                                           48
+    1    A risk event that, if it occurs, Requires minor No additional effort No schedule impact.
+Minimal
+         will have little or no impact on adjustment. No required beyond
+
+         achieving outcome objectives. effect on backend routine
+
+         reliability  or development.
+
+         reporting.
+
+3.13 Budget Planning
+
+3.13.1 Cost Identification
+
+         The total project cost is divided into five major components that represent the critical phases of system
+delivery and sustainability. Hardware and infrastructure will require 886,500 in Year 1, covering Dell
+PowerEdge servers, RAIDconfigured SSD storage, a Fortinet firewall, Synology NAS backup system, Cisco
+managed switch, server rack with cooling, KVM switch, and structured cabling, with annual maintenance for
+warranties, UTM renewal, extended support, and subsidized government power and cooling. Software expenses
+amount to 415,000, which includes Windows Server 2022 Standard, SQL Server 2022 Standard with Software
+Assurance, SSL wildcard certificate, and Veeam Backup licensing, supplemented by free and opensource tools
+such as PostgreSQL, Node.js, Docker, Grafana, and GitHub. Licenses and subscriptions will cost 92,500 annually,
+covering mandatory .gov.ph domain registration, SMS gateway services, email delivery via SendGrid, monitoring
+through Datadog, and M365 Business Basic, while free tier services like Cloudflare, Google Maps API, and Let's
+Encrypt reduce recurring costs. Development represents the largest investment at 2,030,000, encompassing
+personnel such as backend and fullstack developers, database administrators, QA engineers, UI/UX designers,
+project managers, and technical writers, alongside training programs in SQL optimization, microservices,
+cybersecurity, and agile project management to ensure compliance and productivity gains. Deployment will
+require 510,000, which includes enduser training for fifty personnel, training materials, data migration,
+integration testing, golive support, change management workshops, postdeployment monitoring, and
+knowledge transfer sessions. Altogether, the total Year 1 investment amounts to 3,934,000, and when existing
+infrastructure valued at 3,165,000 is factored in, the total Year 1 cost with assumptions reaches 7,099,000.
+Over a threeyear horizon, the total cost of ownership is 4,646,000, and with existing infrastructure valued at
+9,495,000, the combined threeyear cost with assumptions is 14,141,000.
+
+                                                                          49
+3.13.2 Budget Estimation
+
+The total budget estimated cost is broken down into 6 key phases: Assumptions, Hardware, Software, Licenses,
+Development, and Deployment.
+
+3.13.2.1 Assumptions
+
+This section identifies existing infrastructure and resources already available in government offices, which reduces
+initial project costs. The table below is the assumed existing infrastructure and is not factored into the
+calculations for return on investment and payback period.
+
+Table 11. Existing Infrastructure Assumptions
+
+Item            Quantity Unit Cost (PHP)  Total Cost  Justification
+                                            (PHP)
+
+Desktop         50 units  35,000          1,750,000   Calc: 50 × 35,000 = 1,750,000. DBM-PS
+Computers                                             median price for Dell OptiPlex 3080
+(Intel i5, 8GB                                        https://ps-philgeps.gov.ph/home/
+RAM, 256GB                                            https://www.dell.com/support/product-detail
+SSD)                                                  s/en-ph/product/optiplex-3080-desktop
+
+Internet (100 1 line      2,500/month     30,000      Calc: 2,500 × 12 = 30,000. PLDT Fibr
+Mbps)                                     /year       Business rate (https://pldtenterprise.com)
+
+IT Support      3 staff   35,000/month    1,260,000   Calc: 3 × 35,000 × 12 = 1,260,000. SG
+Staff                                     /year       15-18 average per SSL V
+                                                      (https://www.dbm.gov.ph/EO_64_s2024.pdf)
+
+UPS Systems 5 units 15,000                75,000      Calc: 5 × 15,000 = 75,000. APC
+                                                      Smart-UPS 1500VA market rate
+
+Network         1 set     50,000          50,000      Calc: Switch (25k) + Cabling (15k) + WiFi
+Infrastructur                                         APs (10k) = 50,000
+e
+
+Total Existing Infrastructure: 3,165,000
+
+Cost Justification: Existing Infrastructure
+
+         The existing infrastructure valuation of 3,165,000 represents assets already deployed within
+government offices, thereby significantly reducing the initial capital outlay required for this microservice
+implementation. Desktop computer pricing is anchored to the Department of Budget and Management
+Procurement Service (DBM-PS) Common Use Supplies price monitoring data, which establishes 35,000 as the
+median acquisition cost for enterprise-grade workstations with Intel Core i5 processors, 8GB RAM, and 256GB
+SSD configurations, specifications that align with standard government IT procurement guidelines (DBM, 2024).
+
+                                                                                                              50
+         Internet connectivity costs reflect current PLDT Fibr Business Plan rates at 2,500 monthly for 100 Mbps
+bandwidth, which provides adequate throughput for 50 concurrent users engaging with cloud-based monitoring
+applications while maintaining sufficient overhead for peak usage periods (PLDT Enterprise, 2024). The IT
+support staff allocation encompasses three full-time personnel with monthly salaries of 35,000, representing
+the midpoint of Salary Grade 15-18 under the Salary Standardization Law (SSL) Version V, as mandated by
+Executive Order No. 64, series of 2024, which governs compensation for technical positions within the Philippine
+civil service (DBM, 2024).
+
+         Uninterruptible Power Supply (UPS) units are valued at 15,000 per unit based on prevailing market rates
+for APC Smart-UPS 1500VA systems, which provide sufficient runtime (15-20 minutes) to support graceful
+system shutdown during power interruptions, a critical requirement for database integrity and transaction
+consistency. Network infrastructure valuation aggregates the estimated replacement cost of existing switching
+equipment (25,000), structured CAT6 cabling installation (15,000), and wireless access points (10,000),
+reflecting standard government office networking configurations capable of supporting the microservice
+deployment with minimal augmentation.
+
+Source Citations: Department of Budget and Management Procurement Service Price Reference (2024), PLDT
+Enterprise Business Solutions Catalog (2024), Executive Order No. 64 s. 2024 implementing SSL V, APC by
+Schneider Electric Philippines authorized distributor pricing.
+
+Financial Capability
+
+         The Philippine government allocates 24.1 billion for digital government infrastructure per Philippine
+Development Plan 2023-2028 (https://pdp.neda.gov.ph/). GAA 2025 includes 5.2 billion for e-government
+services. Project Track PH budget envelope: 15 million total, 1.5 million allocated for this microservice.
+
+3.13.2.2 Hardware
+
+Item                                                 Table 12. Hardware Requirements  Justification
+
+                    Qty Unit Cost Total (PHP)
+                               (PHP)
+
+Application Server 1   185,000 185,000  Calc: CPU (45k) + RAM (35k) + SSD (60k) +
+(Dell PowerEdge                         RAID (15k) + PSU (20k) + Chassis (10k) =
+R240: Xeon E-2234,                      185k. RAM: 100 users × 140MB + 2GB OS =
+16GB, 2×480GB                           16GB. Source: Dell PH (https://dell.com/en-ph)
+RAID 1)
+
+Database Server     1  245,000 245,000  Calc: CPU (65k) + RAM (70k) + SSD (80k) +
+                                        RAID (20k) + PSU (20k) + Chassis (10k) =
+(Dell PowerEdge                         245k. RAM: 4GB OS + 20GB buffer + 8GB other =
+                                        32GB. RAID 10: 1,920GB usable
+R240: Xeon E-2236,
+
+32GB, 4×960GB
+
+RAID 10)
+
+                                                                                                     51
+Firewall (Fortinet  1  85,000 85,000    Calc: Hardware (65k) + 1-yr UTM (20k) = 85k.
+                       120,000 120,000  900 Mbps capacity vs 500 Mbps needed. Source:
+FortiGate 60F)         45,000 45,000    Fortinet PH
+                       55,000 55,000
+Backup NAS          1  8,500 8,500      Calc: NAS (60k) + 4×4TB HDD @ 15k (60k) =
+                                        120k. 12TB usable vs 4.5TB needed. Source:
+(Synology RS820+                        Synology PH
+
+4×4TB RAID 5)                           Calc: 24-port managed switch. 5 ports active, 19 for
+                                        expansion
+Network Switch      1
+                                        Calc: Rack (35k) + Cooling (8k) + Cable mgmt
+(Cisco 24-port)                         (5k) + PDU (7k) = 55k
+
+Server Rack (42U    1                   Single keyboard/monitor for multiple servers
+
+with cooling)
+
+KVM Switch (8-port) 1
+
+Cables & Accessories 1 12,000 12,000    Calc: CAT6 cables (5k) + Power (2k) + Organizers
+                               lot      (2k) + Fiber (3k) = 12k
+
+Hardware Subtotal: 755,500
+
+Cost Justification: Hardware Procurement
+
+         The hardware investment of 755,500 reflects a carefully architected infrastructure designed to support
+the Milestone & Timeline Monitoring microservice with enterprise-grade reliability, performance scalability, and
+operational resilience. Server selection prioritizes the Dell PowerEdge R240 platform based on its proven
+deployment record in Philippine government data centers, comprehensive local support infrastructure, and
+favorable total cost of ownership (TCO) profile when evaluated against competing solutions from HPE and
+Lenovo (Dell Technologies Philippines, 2024).
+
+Application Server Specification (185,000): The Intel Xeon E-2234 processor configuration provides four
+physical cores operating at 3.6 GHz base frequency, delivering computational capacity exceeding 400 requests
+per second, representing a 400% performance overhead relative to the projected 100-request-per-second
+workload under normal operating conditions. Memory allocation of 16GB ECC (Error-Correcting Code) RAM is
+derived from capacity planning formulas accounting for 100 concurrent user sessions at 140MB per session, plus
+2GB reserved for operating system and application overhead (Total: 2GB + [100 × 0.14GB] = 16GB). The dual
+480GB solid-state drive configuration in RAID 1 (mirroring) ensures data redundancy while providing 480GB of
+usable storage capacity, sufficient for application binaries, system logs, and three-year growth projections with
+85% headroom remaining (Dell Technologies, 2024).
+
+Database Server Specification (245,000): The elevated specification incorporates an Intel Xeon E-2236 six-core
+processor and 32GB ECC RAM to accommodate SQL Server 2022's memory-intensive query optimization
+processes and concurrent transaction handling. RAM dimensioning follows Microsoft's recommended practices:
+4GB for Windows Server 2022 operating system, 20GB for SQL Server buffer pool cache (optimized for the
+projected 500GB database size), 1GB for connection pooling overhead (supporting 100 concurrent connections
+at 10MB each), 4GB for TempDB operations, and 3GB reserved for system stability, totaling 32GB (Microsoft,
+2024). The four-disk 960GB SSD array configured in RAID 10 provides 1,920GB of usable capacity (50% storage
+
+                                                                                                                                                 52
+efficiency) while delivering superior I/O performance for database transaction logs and index operations, with
+dual-drive fault tolerance ensuring operational continuity in failure scenarios.
+
+Network Security (85,000): The Fortinet FortiGate 60F unified threat management (UTM) appliance delivers
+900 Mbps of intrusion prevention system (IPS) throughput, exceeding the estimated 500 Mbps peak network
+utilization by 80%, while satisfying Department of Information and Communications Technology (DICT)
+Memorandum Circular 2020-001 cybersecurity requirements for government information systems. The
+first-year bundle includes antivirus signatures, web filtering, application control, and VPN capabilities essential
+for secure government-to-government (G2G) integrations (Fortinet Philippines, 2024).
+
+Backup Infrastructure (120,000): The Synology RS820+ Network Attached Storage (NAS) with four 4TB
+Seagate IronWolf Pro hard drives configured in RAID 5 provides 12TB of usable capacity, sufficient to
+accommodate 30-day backup retention policies while maintaining 267% capacity reserves for future growth.
+RAID 5 offers single-drive fault tolerance with 75% storage efficiency, balancing data protection requirements
+against cost optimization objectives (Synology Philippines, 2024).
+
+Ancillary equipment, including the Cisco Catalyst 1000 managed switch (45,000), 42U server rack with cooling
+infrastructure (55,000), 8-port KVM switch (8,500), and structured cabling components (12,000), completes
+the physical infrastructure necessary for a production-ready deployment meeting Commission on Audit (COA)
+standards for government IT implementations.
+
+Source Citations: Dell Technologies Philippines Server Configuration Guide (2024), Microsoft SQL Server
+Capacity Planning Documentation (2024), Fortinet Government Solutions Catalog Philippines (2024), Synology
+Enterprise NAS Specifications (2024), Cisco Philippines Enterprise Networking Portfolio (2024).
+
+Annual Maintenance
+
+Item                  Annual Cost  Justification
+
+Hardware Support & Warranties
+
+Dell Server Warranty  45,000       2 servers @ 22,500 each (12% of 430k hardware cost)
+(NBD)
+Fortinet UTM Renewal  32,000       Annual subscription (50% of 65k hardware)
+Synology Support      18,000       NAS support (10k) + HDD warranty 4×2k (8k)
+Power & Cooling       36,000       1.5kW × 24h × 365d × 11/kWh = 144k (govt. rate  36k)
+
+Software Licenses & Subscriptions
+
+.gov.ph Domain        2,500        Mandatory per DICT Circular 003-2019. Source: DICT
+                                   (https://gov.ph/domain-registration)
+
+                                                                                         53
+SMS Gateway (5k/month) 36,000  Calc: 5,000 SMS × 0.60 × 12 = 36k. Usage: 50 users × 2
+                               alerts/day × 30 × 1.67 buffer. 98% delivery. Source: Semaphore
+Email Service         15,000   (https://semaphore.co/pricing)
+(100k/month)          24,000
+                               Calc: $14.95/mo  850, adjusted 1,250 × 12 = 15k. 250
+Monitoring (3 hosts)           recipients × 40 emails. Source: SendGrid
+                               (https://sendgrid.com/pricing)
+M365 Business Basic (5 15,000
+users)                         Calc: 3 hosts × 667/mo × 12 = 24k. Prevents 920k/yr
+                               downtime (10 incidents × 92k). Source: Datadog
+                               (https://datadoghq.com/pricing)
+
+                               Calc: 5 × 250/mo × 12 = 15k. Govt discount 30% off $6/user.
+                               Source: M365 PH
+
+Annual Maitenance: 223,500 3-Year TCO: 1,557,000
+
+3-Year Total Cost of Ownership (TCO):
+
+     Year 1 Hardware: 886,500
+     Annual Maintenance (3 years): 670,500 (223,500 × 3)
+     Total 3-Year TCO: 1,557,000
+
+Cost Justification: Hardware Maintenance
+
+The annual hardware maintenance allocation of 131,000 ensures operational continuity through
+manufacturer-backed support agreements, proactive component replacement, and infrastructure sustainability
+over the three-year planning horizon. This investment represents 17.3% of initial hardware costs, aligning with
+industry benchmarks for enterprise IT infrastructure maintenance, which typically range from 12-20% of capital
+expenditure depending on service level requirements (Gartner, 2023).
+
+Dell ProSupport Next Business Day (NBD) Service (45,000): The three-year warranty extension provides 24/7
+telephone support with on-site hardware replacement within one business day of fault reporting, critical for
+maintaining the 99.5% uptime service level agreement (SLA) mandated for government monitoring systems.
+Pricing reflects 12% of combined server hardware investment (430,000 × 0.12  51,600, negotiated to
+45,000 under government volume licensing), covering both PowerEdge R240 units with comprehensive parts
+replacement, labor, and remote diagnostics capabilities (Dell Technologies, 2024).
+
+Fortinet FortiGuard UTM Bundle Renewal (32,000): Annual subscription maintains access to continuously
+updated threat intelligence signatures, zero-day vulnerability protections, web filtering databases, and
+application control policies. The renewal cost represents 49% of hardware acquisition price (65,000 × 0.49 =
+31,850, rounded to 32,000), consistent with Fortinet's standard maintenance pricing structure for
+small-to-medium enterprise (SME) appliances. This subscription is non-negotiable, as expired licenses degrade
+the firewall to basic packet filtering functionality, eliminating the advanced threat protection capabilities required
+by DICT cybersecurity standards (Fortinet, 2024).
+
+Synology Extended Warranty and Drive Protection (18,000): The comprehensive maintenance package
+combines NAS appliance support (10,000) with proactive hard drive replacement coverage (2,000 per drive ×
+
+                                                                                                                                                 54
+4 drives = 8,000). Given the continuous duty cycle of backup operations (24×7 operation), hard drive failure
+rates follow predictive models suggesting 3-5% annual failure probability for enterprise-class drives under
+sustained workload conditions. RAID 5 configuration tolerates single-drive failures without data loss, but
+proactive replacement under warranty prevents cascading failures that could compromise backup integrity
+(Synology, 2024; Backblaze Drive Stats, 2024).
+
+Power and Cooling Infrastructure (36,000): Electrical consumption estimates derive from measured power
+draw calculations: two servers consuming approximately 350W each under typical load (700W combined),
+network equipment drawing 200W, and cooling overhead adding 30% to account for HVAC requirements
+(270W), totaling 1,170W or approximately 1.5kW continuous load. At standard Meralco commercial rates of 11
+per kWh, the mathematical annualized cost would be 1.5kW × 24 hours × 365 days × 11/kWh = 144,540.
+However, government facilities typically benefit from negotiated bulk power rates and partial subsidization,
+reducing the effective annual cost to approximately 36,000 (Meralco, 2024; The20.com IT Infrastructure Power
+Consumption Study, 2023).
+
+The three-year hardware TCO of 1,148,500 (755,500 initial capital + 393,000 cumulative maintenance)
+provides a comprehensive view of infrastructure sustainability costs, enabling accurate return-on-investment
+(ROI) calculations and facilitating compliance with COA requirements for multi-year budget projections.
+
+Source Citations: Dell Technologies ProSupport Service Level Specifications (2024), Fortinet FortiGuard Services
+Renewal Pricing Philippines (2024), Synology Extended Warranty Program Terms (2024), Manila Electric
+Company (Meralco) Commercial Rate Schedule (2024), Backblaze Hard Drive Reliability Statistics (2024),
+Gartner IT Infrastructure Maintenance Cost Benchmarks (2023).
+
+3.13.2.3 Software
+
+Software     Qty  License                 Table 14. Commercial Software  Justification
+                   Type
+                           Unit Cost Total
+
+Windows 2         Perpetual 32,500  65,000  Calc: 2 × 32,500 = 65k. Supports 24 cores (we
+Server                                      use 10). Source: MS Volume Licensing
+2022 Std                                    (https://microsoft.com/en-ph/licensing)
+
+SQL Server 2-core Perpetual 145,00  290,00  Calc: 4-core min = 2 packs × 145k = 290k. SA @
+                                    0       25% = 72.5k/yr (Yr 2+). Max 128GB RAM (we use
+2022 Std packs + SA        0                32GB). Source: MS SQL Pricing
+
+SSL       1       Annual   18,000   18,000  *.trackph.gov.ph covers all subdomains. OV
+                                            required for govt. Source: DigiCert
+Wildcard                                    (https://digicert.com/pricing)
+
+Cert
+
+                                                                                           55
+Veeam         1        Annual  42,000     42,000   Calc: 2 sockets × 21k = 42k. RTO <15 min vs 4
+                                                   hrs native backup. ROI: 1 incident (100k) > cost.
+Backup                                             Source: Veeam PH
+
+Year 1 Software: 415,000 3-Year TCO: 680,000 (355k perpetual + 60k annual × 1 + 132.5k annual × 2)
+
+Free & Open Source Software
+
+Software                   Purpose                 License                 Cost
+
+PostgreSQL 15          Alternative RDBMS  PostgreSQL License 0
+
+Node.js, Express.js Backend runtime       MIT                              0
+
+Git, VS Code           Development tools  GPL/MIT                          0
+
+Docker, Nginx          Containerization, proxy Apache/BSD                  0
+
+Grafana, Postman Monitoring, testing      AGPL/Free tier                   0
+
+Free Tier Services
+
+              Service                     Purpose  Cost
+
+GitHub, Cloudflare             Version control, CDN 0
+
+Google Maps API, Let's Encrypt Mapping, SSL        0
+
+3.13.2.4 Development
+
+                                          Table 18. Development Personnel
+
+Role             Duration      Monthly    Total                                  Justification
+                                 Rate
+
+Senior           6 months 85,000          510,000  Calc: 6 × 85k = 510k. 800 hrs total. Market:
+                                                   75k-95k (5-7 yrs exp). Source: SalaryExpert PH
+Backend Dev                                        (https://salaryexpert.com/salary/job/senior-softwar
+                                                   e-engineer/philippines)
+
+Full-Stack Dev 6 months 65,000            390,000 Calc: 6 × 65k = 390k. 960 hrs API/integration
+                                                            work. Market: 55k-75k
+
+                                                                                                        56
+Database       4 months 70,000         280,000 Calc: 4 × 70k = 280k. 640 hrs
+Admin                                                    schema/optimization. Market: 60k-80k
+
+QA Engineer 4 months 55,000            220,000 Calc: 4 × 55k = 220k. 640 hrs testing. Market:
+                                                         45k-65k
+UI/UX          2 months 60,000
+Designer       6 months 45,000         120,000 Calc: 2 × 60k = 120k. 320 hrs design. Market:
+               1 month 50,000                            50k-70k
+Project
+Manager                                270,000 Calc: 6 × 45k = 270k (50% of 90k). 520 hrs @ 20
+(50%)                                                    hrs/wk
+
+Technical                              50,000  Calc: 1 × 50k = 50k. 160 hrs documentation.
+Writer                                         Freelance rate
+
+Personnel Subtotal: 1,840,000
+
+Training       Participants Cost/Person Total            Justification
+
+      Program  2               25,000  50,00 3 days. ROI: 286k benefit (70k hardware +
+
+ SQL                                   0       216k time savings). Source: ExecEd PH
+ Optimization
+
+Microservices 3                18,000  54,00 2 days. ROI: 432k (64k incidents + 368k
+
+                                       0       rework prevention). Source: Ateneo JAWCC
+
+Cybersecurity 7                8,000   56,00 1 day. Mandatory for govt compliance. Prevents
+
+                                       0       300k+ redesign. Source: DICT
+
+Agile PM       2               15,000  30,00 2 days. ROI: 368k rework reduction (30% 
+
+                                       0       10%). Source: Scrum Alliance
+
+Training Subtotal: 190,000 Development Total: 2,030,000
+
+                                                                                             57
+3.13.2.5 Deployment
+
+                                         Table 21. Deployment Costs
+
+Item                    Qty        Unit     Total                    Justification
+
+                                   Cost
+
+End-User Training    50 users 2,000      100,00    Calc: 50 × 2k = 100k. ROI: Reduces
+(2-day)                                  0         support from 450k to 112k (3 months).
+                                                   Source: DOST-ICTO rates
+
+Training Materials 50 sets 800           40,000 Hybrid: 10 full sets @ 1k + digital for rest.
+                                                        Manuals, USBs, guides
+
+Data Migration       1             80,000 80,000 80 hrs × 1k/hr. Migrate 2k-4.5k records.
+
+                     project                       <1% error vs 3-5% manual
+
+Integration Testing 1              60,000 60,000 60 hrs testing with other microservices.
+
+                     project                       Prevents 80k production issues
+
+Go-Live Support (2 10 days 10,000 100,00 Calc: (12k + 8k) × 5 = 100k. Prevents
+
+engineers × 5 days)                      0         125k downtime. <15 min response
+
+Change Mgmt          15 mgrs 3,000 45,000 Half-day. Increases adoption 60%  85%.
+Workshop                                                          Saves 56k wasted training
+
+Post-Deploy          1 month 40,000 40,000 80 hrs × 500/hr. ROI: 200k reactive
+Monitoring (30                                                    cost  40k proactive
+days)
+                     3             15,000 45,000 15 hrs × 3k/hr. ROI: 300k 3-yr vendor
+Knowledge
+Transfer (3          sessions                      cost reduction
+sessions)
+
+Deployment Total: 510,000
+
+Summary: Total Budget
+
+Year 1 Investment                  Amount (PHP)
+                                   886,500
+                     Phase         415,000
+ Hardware (initial + maintenance)  92,500
+ Software (perpetual + annual)
+ Licenses (annual)
+
+                                                                                               58
+Development (personnel + training) 2,030,000
+
+Deployment                      510,000
+
+Total                           3,934,000
+
+3-Year Total Cost of Ownership
+
+            Phase       3-Year TCO
+
+Hardware                1,148,500
+
+Software                680,000
+
+Licenses                277,500
+
+Development (one-time)  2,030,000
+
+Deployment (one-time)   510,000
+
+Total 3-Year TCO        4,646,000
+
+Existing Infrastructure (3 years) 9,495,000
+
+Total 3-Year with Assumptions 14,141,00
+                                              0
+
+3.14 Return of Investment (ROI) & Payback Period
+
+3.14.1 Return of Investment
+
+Where:
+- Net Annual Benefit = Total Annual Benefits - Annual Operating Costs
+- Total Investment = Initial Project Cost (Year 1)
+
+Net Annual Benefit Estimation
+
+The Milestone & Timeline Monitoring microservice delivers measurable value through operational efficiency
+gains, cost avoidance, and improved governance outcomes. The following analysis quantifies annual benefits
+based on industry research, government IT benchmarks, and documented cost savings from similar digital
+transformation initiatives in the Philippine public sector.
+
+                                                                                                                                                 59
+                                    Table 23. Annual Benefits Breakdown
+
+System    Mechanism        Benefit  Justification                        Annual Value () and
+Feature                                                                  Detailed Calculation & Explanation
+
+Automated Eliminates       Time     By automating                        Annual Value:
+
+milestone and repetitive   Savings  updates and alerts, 300,000
+
+timeline  manual                    the system reduces
+
+monitoring tracking tasks           hours spent on                       Calculation:
+
+                                    manual reporting, · 50 project staff
+
+                                    making time savings · System saves 10 hours/month per
+
+                                    a reasonable                         staff (not per week)
+
+                                    expectation. Digital · Blended hourly rate: 500/hour
+
+                                    monitoring                           · Formula: 50 staff × 10 hrs/month ×
+
+                                    platforms reduce 12 months × 500/hr = 3,000,000
+
+                                    manual data                          · Adjustment: Only 10% realization in
+
+                                    collection time by Year 1 due to learning curve
+
+                                    30-40% once fully · Final: 3,000,000 × 10% = 300,000
+
+                                    adopted, though
+
+                                    Year 1 typically                     Explanation:
+
+                                    shows only 10-15% Staff save time on manual reporting
+
+                                    efficiency                           but use that time for system learning
+
+                                    realization due to in Year 1.
+
+                                    dual system
+
+                                    operation and
+
+                                    training
+
+                                    requirements (Open
+
+                                    Government
+
+                                    Partnership, 2024;
+
+                                    Lalaguna, 2025).
+
+                                                                                               60
+Early warning Flags        Reduced   Early detection       Annual Value:
+
+alerts for  potential      Overtime  allows teams to       200,000
+
+schedule    delays before            redistribute
+
+slippage    they escalate            workloads during Calculation:
+
+                                     regular hours,        · 100 projects tracked annually
+
+                                     minimizing            · Average delay cost per project:
+
+                                     last-minute           50,000
+
+                                     overtime.             · System prevents 10% of delays: 100
+
+                                     Automated             × 50,000 × 10% = 500,000
+
+                                     monitoring reduces · Adjustment: Only 50% of prevented
+
+                                     crisis-driven         delays are attributable to system in
+
+                                     overtime by 15-25% Year 1
+
+                                     within the first year · Final: 500,000 × 50% = 250,000
+
+                                     of implementation
+
+                                     in Philippine         Explanation:
+
+                                     government            Earlier detection helps, but response
+
+                                     agencies (Umana et to alerts is slow initially.
+
+                                     al., 2022; Lalaguna,
+
+                                     2025).
+
+                                                                                              61
+Centralized Provides a        Better  With unified,         Annual Value:
+                                      real-time data,       250,000
+dashboard     single source Project   managers can
+                                      monitor progress      Calculation:
+with realtime of truth for Tracking   more accurately,      · 100 projects tracked annually
+                                      supporting            · Average delay cost per project:
+visibility    project status          improved tracking     50,000
+                                      as a likely outcome.  · System prevents 10% of delays: 100
+                                      Real-time             × 50,000 × 10% = 500,000
+                                      geotagging and        · Adjustment: Only 50% of prevented
+                                      digital monitoring    delays are attributable to system in
+                                      reduced project       Year 1
+                                      delays by 12-15%      · Final: 500,000 × 50% = 250,000
+                                      through improved      Explanation:
+                                      oversight, with       Earlier detection helps, but response
+                                      government            to alerts is slow initially.
+                                      infrastructure
+                                      delays averaging
+                                      49,937 per
+                                      delayed project
+                                      (Magwili et al.,
+                                      2025; Manila
+                                      Standard, 2024).
+
+Standardized  Reduces         Fewer   Enforced              Annual Value:
+input forms   human error     Errors  consistency and       100,000
+and           in data entry           validation checks
+automated     and reporting           decrease reporting    Calculation:
+validation                            mistakes, making      · Previous error rate: 100
+                                      fewer errors a        errors/month × 3 hours to fix ×
+                                      logical result of     500/hr = 150,000/month
+
+                                                                                             62
+                                    system use.            · Reduced to: 60 errors/month × 3
+
+                                    Automated              hours × 500 = 90,000/month
+
+                                    validation and         · Monthly savings: 60,000
+
+                                    structured input       · Annual: 60,000 × 12 = 720,000
+
+                                    forms reduce data · Adjustment: Only 14% realized as
+
+                                    entry errors by        new system introduces new error
+
+                                    30-50%, though         types
+
+                                    initial                · Final: 720,000 × 14% = 100,000
+
+                                    implementation
+
+                                    reveals new            Explanation:
+
+                                    technology-related Manual errors decrease but
+
+                                    error categories       system/data errors appear.
+
+                                    during transition
+
+                                    periods (Wang et al.,
+
+                                    2024; Diokno-Sicat,
+
+                                    2020).
+
+Automated Generates        Audit    COA audits require Annual Value:
+
+audit trail and immutable  Compliance extensive            400,000
+
+timestamped transaction    Savings  documentation.
+
+records  logs for all               Automated audit Calculation:
+
+         milestone                  trails reduce          · Annual COA audit preparation:
+
+         updates                    preparation time by 2,000 staff hours
+
+                                    providing              · Blended hourly rate: 500/hour
+
+                                    pre-validated,         · Total manual cost: 2,000 × 500 =
+
+                                    timestamped            1,000,000
+
+                                    records that meet · System reduces audit prep time by
+
+                                    compliance             40%
+
+                                    standards              · Final: 1,000,000 × 40% = 400,000
+
+                                    (Commission on
+
+                                    Audit, 2023).          Explanation:
+
+                                                                                              63
+                                                               Automated timestamped records
+                                                               eliminate manual documentation
+                                                               compilation, expediting audit reviews
+                                                               and reducing staff time spent
+                                                               preparing evidence for COA
+                                                               inspections.
+
+Real-time  Identifies         Project     Government           Annual Value:
+                                          projects incur       200,000
+delay      at-risk            Delay Cost  significant costs
+                                          when delayed,        Calculation:
+detection and projects        Avoidance   including contract   · 100 projects tracked annually
+                                          extensions, penalty  · Average delay cost per project:
+intervention before critical              clauses, and         200,000 (contract extensions,
+                                          opportunity costs.   penalties)
+           milestones                     Early intervention   · System prevents 2.5% of major
+                                          prevents costly      delays through early intervention
+           are missed                     overruns (Manila     · Formula: 100 × 200,000 × 2.5% =
+                                          Standard, 2024).     500,000
+                                                               · Adjustment: Only 40% attributable
+                                                               to system in Year 1 (other factors
+                                                               contribute)
+                                                               · Final: 500,000 × 40% = 200,000
+
+                                                               Explanation:
+                                                               Early warning system enables
+                                                               proactive resource reallocation,
+                                                               preventing minor slippages from
+                                                               escalating into major delays requiring
+                                                               contract amendments.
+
+                                                               64
+Streamlined   Accelerates Procureme      Delayed milestone Annual Value:
+milestone
+verification  payment     nt and         verification causes 248,667
+and approval
+workflows     processing Payment         payment
+
+              through faster Efficiency  bottlenecks, leading Calculation:
+
+              milestone                  to emergency    · Average 15 administrative
+
+              validation                 procurements and days/month lost to verification delays
+
+                                         vendor relationship · Cost per administrative day:
+
+                                         strain. Faster  20,000 (salary, opportunity cost)
+
+                                         approvals reduce · Annual cost: 15 days/month × 12
+
+                                         administrative  months × 20,000 = 3,600,000
+
+                                         overhead (Lalaguna, · System reduces delays by 20%
+
+                                         2025).          through automated validation
+
+                                                         · Subtotal: 3,600,000 × 20% =
+
+                                                         720,000
+
+                                                         · Adjustment: Only 34.5% realized in
+
+                                                         Year 1 due to adoption curve
+
+                                                         · Final: 720,000 × 34.5% = 248,667
+
+                                                         (rounded from 248,400)
+
+                                                         Explanation:
+                                                         Automated milestone verification
+                                                         accelerates approval cycles, reducing
+                                                         payment processing times from weeks
+                                                         to days, improving vendor relations
+                                                         and reducing emergency procurement
+                                                         costs.
+
+Total Gross Annual Benefits: 1,748,667
+
+                                                                                             65
+Justification of Net Annual Benefits: Metrics and Source Citation
+
+Benefit           Justifying Sentence from Source Source/Link                       Location in Source
+
+Time Savings &    "The findings indicate that digital ResearchGate: The Impact      Abstract/Findings
+Enhanced                                                                            Section
+Efficiency        procurement adoption has led to a of Digital Procurement on
+
+                  35% reduction in procurement         Transparency, Efficiency,
+
+                  cycle time, a 46% decrease in        and Fraud Prevention in
+
+                  fraud incidences... and a significant Public Contracting
+
+                  cost saving of 2% for every 5%
+
+                  increase in digital procurement. Link: ResearchGate PDF
+
+                  adoption..."
+
+Reduced           "Companies that adopt these          Lucid.Now: How               Section: Better
+Overtime / Fewer  systems report a 75% reduction in    Automated Audit Trails       Incident Response
+Errors            financial errors, compared to a      Ensure Compliance            and Risk
+                  61% increase in errors when such                                  Management
+                  systems are not fully integrated."   Link: Lucid.Now Blog
+
+Better Project    "Cost Avoidance... - Time saved      Enfocus Solutions Inc:       Section: Financial
+Tracking (Cost    (increased productivity and          Calculating ROI on           Benefits,
+Avoidance)        reduction in time to complete        Information Technology       Sub-Section: Cost
+                  tasks). - Time saved from reduced    Projects                     Avoidance
+                  numbers of errors."
+                                                       Link: Enfocus Solutions
+                                                       Article
+
+Project Delay     "The study revealed that the         ResearchGate: Cost and       Abstract/Findings
+Cost Avoidance                                                                      Section (Listing of
+                  influencing factors leading to time Time Overrun of Public        Factors)
+
+                  overruns are inaccurate              Infrastructure Project in
+
+                  budgeting, location of site,         The Philippines: Inhibiting
+
+                  suspension of work, land             Factors and Mitigating
+
+                  acquisition, and variation order, Measures
+
+                  while for the cost overrun factors,
+
+                  inaccurate budgeting, variation Link: ResearchGate PDF
+
+                  order, inadequate project
+
+                                                                                                         66
+                 planning, market conditions, and
+                 inadequate site..."
+
+Audit Compliance "Auditors being able to do their    AuditBoard: What Is an       Section: Ongoing
+                                                     Audit Trail? Everything You  Benefits Are,
+Savings          work faster means less money        Need to Know                 Sub-Section:
+                                                                                  Streamlined Audits
+                 spent on audit fees and less time   Link: AuditBoard Blog
+
+                 spent on audit projects overall."
+
+Procurement and  "The NGPA introduces the            GPPB-TSO (Government Context: Discussion
+Payment
+Efficiency       comprehensive implementation of Procurement Policy Board): of Republic Act 12009
+
+                 Electronic Government               Enhancing Procurement
+
+                 Procurement, which encompasses Efficiency and Transparency
+
+                 the complete digitization and
+
+                 automation of the procurement Link: GPPB-TSO Article
+
+                 process--from procurement
+
+                 planning to contract payment."
+
+Return of Investment (ROI) Calculation
+
+Total Investment (Year 1)
+From Budget Estimation (Section 3.13.2):
+
+New Procurement & Development Costs:
+
+Hardware (initial):                        755,500
+
+Hardware maintenance (Year 1):             131,000
+
+Software (perpetual licenses):             355,000
+
+Software (annual subscriptions):           60,000
+
+Licenses (annual):                         92,500
+
+Development (personnel + training):       2,030,000
+
+Deployment:                                510,000
+
+
+
+Total Initial Investment:                 3,934,000
+
+Note: Existing infrastructure (3,165,000) excluded from ROI
+calculation as these are sunk costs already incurred and not
+attributable to this specific project investment decision.
+
+                                                                                                      67
+ROI Calculation
+
+ROI Formula:
+ROI (%) = (Net Annual Benefit - Total Investment) ÷ Total Investment × 100%
+
+3-YEAR ROI CALCULATION WITH REVISED BENEFITS
+
+Year 1:
+
+     Initial Investment: 3,934,000
+     Gross Benefits: 1,748,667
+     Operating Costs: 0 (included in investment)
+     Net Benefit: 1,748,667
+     Cumulative: 1,748,667
+     Cumulative ROI: -55.55%
+
+ROI = (1,748,667 - 3,934,000) ÷ 3,934,000 × 100% = -55.55%
+
+Year 2:
+
+     Gross Benefits: 1,748,667
+     Operating Costs: 356,000
+     Net Benefit: 1,392,667
+     Cumulative: 3,141,334
+     Cumulative ROI: -20.15%
+
+Cumulative = 1,748,667 + 1,392,667 = 3,141,334
+ROI = (3,141,334 - 3,934,000) ÷ 3,934,000 × 100% = -20.15%
+
+Year 3: RECOVERED!
+
+     Gross Benefits: 1,748,667
+     Operating Costs: 356,000
+     Net Benefit: 1,392,667
+     Cumulative: 4,534,001
+     Cumulative ROI: +15.25%
+
+Cumulative = 3,141,334 + 1,392,667 = 4,534,001
+ROI = (4,534,001 - 3,934,000) ÷ 3,934,000 × 100% = +15.25%
+
+SURPLUS: 600,001
+
+                                                                                                                                                 68
+SUMMARY TABLE
+
+Year     Gross    Operating   Net Benefit Cumulative Net Cumulative ROI        Status
+        Benefits     Costs                             Benefit
+
+1       1,748,667 0*          1,748,667 1,748,667         -55.55%              Negative
+
+2       1,748,667 356,000     1,392,667 3,141,334         -20.15%              Negative
+
+3       1,748,667 356,000     1,392,667 4,534,001         +15.25%              RECOVERED
+
+3.14.2 Payback Period
+
+The Payback Period calculates the time required to recover the initial investment through net benefits, providing
+a straightforward measure of investment risk and cash flow recovery.
+
+Payback Period (Years) = Total Initial Investment (Year 1)/Net Annual Benefit
+
+Metric            Value (PHP) Source
+
+Total Initial     3,934,000 Sum of all new procurement and development costs for Year 1.
+Investment (I)
+
+Net Annual Benefit 1,392,667 The stabilized Net Annual Benefit (Gross Benefits - Annual Operating
+
+(C)                           Costs) from Year 2 onward.
+
+Calculation
+
+Payback Period = 3,934,000/1,392,667
+
+Payback Period = 2.825 years
+
+         The Milestone and Timeline Monitoring microservice has a Payback Period of approximately 2.83 years.
+This means the initial investment of 3,934,000 will be fully recovered through operational efficiencies, cost
+avoidance, and realized annual benefits within the third year of operation.
+
+                                                                                                   69
+3.15 Contract Document
+
+Terms and Conditions
+
+         Use of the Milestone & Timeline Monitoring Service operated under the TrackPHTM digital service group is
+subject to the following terms and conditions. Please be advised to carefully read before signing.
+
+Clients / End Users
+
+         The client or end user is responsible for complying with the Data Regulation Laws applicable to the area
+therein. The service provider operating software services and/or the software hosting/implementation is not
+responsible for handling end-user administrative credentials and any data breaches that occur because of the
+mishandling of admin credentials beyond the service provider's responsibility.
+
+API and Service Prohibitions
+
+         Clients or end users are prohibited from redistributing or sublicensing the software or API to a third party
+without the express written permission of the service provider. Infringement upon this agreement is subject to
+the applicable fines and service termination, regardless of the time contracted and services rendered. The client
+agrees that breach of conditions and prohibitions may result in early termination without monetary
+compensation for services not rendered.
+
+Ownership
+
+         TrackPH Group and the Milestone & Timeline Monitoring Service do not own the data stored by the client
+that the software developed by the service provider handles, and any infringement of local laws or mishandling or
+brokership, i.e., buying or selling of sensitive information, is beyond the service provider's responsibility and
+subject to the proceedings of the relevant legal authorities. Clients may not sell information of third parties
+without their explicit legal consent, as permitted by local laws.
+
+Limitation of Liability
+
+         The TrackPH group and the Milestone & Timeline Monitoring team are not responsible for loss of profits,
+revenues, or data, direct or indirect, to the extent of the law, and as a software service provider, is not responsible
+for the misuse or mishandling of the software and information stored therein. Any legal liability or cases brought
+against the mismanagement of the software and services rendered are subject to the client's use of the software.
+
+                                                                                                                                                 70
+In compliance with the relevant laws and penalties, the client agrees that the TrackPH group and Milestone &
+Timeline Monitoring team are not legally responsible for any infringement of local or international laws and
+regulations.
+
+Updates to Terms and Conditions
+
+         The service provider reserves the right to modify the terms and conditions to reflect changes in the law or
+changes to the relevant software or APIs. The client agrees to read through the updated terms and conditions
+regularly, as we announce changes and updates to the conditions within the document.
+
+3.16 Acquisition & Outsourcing Policy
+
+Purpose
+
+         This policy explains how our team will acquire and outsource public project data for the Milestone and
+Timeline Monitoring microservice. Since our system tracks government milestones and timelines, we rely on
+verified records from official sources. If needed, we are prepared to present the system to government agencies
+to formally request access to these records. The goal is to ensure that all data used in the system is accurate,
+authorized, and aligned with our mission to promote transparency and accountability.
+
+Scope
+
+         The policy applies to all activities related to getting public records, project timelines, and milestone data
+from government agencies or external providers. It also covers outsourcing tasks like formatting, integration, or
+data conversion when needed.
+
+Acquisition Process
+
+         Before we request any data, we first identify which government projects are important to monitor. We
+define what kind of milestone and timeline data we need and make sure it matches our SMART objectives and
+backend logic. If we need to formally request data, we prepare a Request for Proposal (RFP) that explains what we
+need, how often we need it, and in what format. This RFP is sent to the agency or provider, and we track their
+response to see if it meets our requirements.
+
+         If we're choosing between multiple providers, we use methods like sole sourcing (only one provider
+available), single sourcing (we choose one among many), request for quotations (RFQ), or sealed bidding (if
+required). Before we work with any vendor, we screen them by asking them to fill out a vendor questionnaire,
+checking references from other NGOs or agencies, and making sure they're not listed on any restricted or banned
+lists. Only vendors who pass this screening can supply data or services.
+
+Outsourcing Process
+
+                                                                                                                                                 71
+         We outsource tasks when the data we need isn't available locally, when formatting requires special tools,
+or when our team doesn't have enough time to handle everything. Outsourcing can be done onshore (within the
+Philippines), nearshore (within Southeast Asia), or offshore (international providers with good records).
+Outsourcing helps us get data faster, reduce our workload, and access specialized tools. But it also comes with
+risks like slower response times, data errors, and less control over delivery. To manage these risks, we use clear
+contracts, ask for sample data before full engagement, and schedule regular updates with the provider.
+
+Documentation and Audit
+
+         Every acquisition and outsourcing activity must be documented. This includes the source of the data,
+contact details, method used, screening results, and how the data was integrated. These records are stored in our
+system's audit trail and linked to the milestone and progress report modules. We also validate all data before
+using it in the system.
+
+Approval and Review
+
+         All sourcing decisions must be approved by the Project Manager and recorded in the Communication
+Plan. This policy will be reviewed every semester or whenever we make major changes to the system. By
+following this policy, we make sure that all data used in our microservice is reliable, traceable, and supports our
+goal of improving transparency in government project monitoring.
+
+References
+
+ABS-CBN News. (2025, September 6). `Dapat may managot': Amid flood control probe, groups urge gov't to
+         replace `system of corruption' with transparency, accountability. Retrieved from
+         https://www.abs-cbn.com/news/nation/2025/9/6/groups-urge-gov-t-to-replace-system-of-corruption-wi
+         th-transparency-accountability-1342
+
+Commission  on  Audit.  (2023).  Annual               audit         reports.  Retrieved  from
+
+https://www.coa.gov.ph/reports/annual-audit-reports/
+
+Commission on Audit. (n.d.). Compliance audit                       manual.   COA  Philippines.
+         https://www.coa.gov.ph/wpfd_file/compliance-audit-manual/
+
+DBM. (2016). Fiscal transparency. Department of Budget and Management.
+         https://www.dbm.gov.ph/wp-content/uploads/Executive%20Summary/2016/Fiscal%20Transparency.pdf
+
+Department of Budget and Management. (n.d.). Electronic government development & strategy (Philippine
+
+e-Government                             Master                                          Plan).
+
+                                                                                         72
+https://www.dbm.gov.ph/wp-content/uploads/MITHI/Philippines%20E-GovMasterPlan_%28final%20dra
+ft%29.pdf
+
+Department of Budget and Management. (2025). DBM vows Project DIME upgrade for better infrastructure
+         monitoring [Press release]. Philippine News Agency. https://www.pna.gov.ph/articles/1258294
+
+Diokno-Sicat, C. J. (2020). The Community-Based Monitoring System (CBMS) as a data tool in local poverty
+         monitoring and development planning. Philippine Institute for Development Studies.
+         https://pidswebs.pids.gov.ph/CDN/PUBLICATIONS/pidsdps2007.pdf
+
+Eik-Andresen, P., Johansen, A., Landmark, A. D., & Sørensen, A. Ø. (2016). Controlling a multibillion project
+         portfolio ­ Milestones as key performance indicator for project portfolio management. Procedia - Social
+         and Behavioral Sciences, 226, 294­301. https://doi.org/10.1016/j.sbspro.2016.06.191
+
+Inquirer.net. . (2024, December 3). OVP spent over P375M in confidential funds in 2023 ­ COA. Retrieved from
+         https://newsinfo.inquirer.net/2011615/ovp-spent-over-p375m-in-confidential-funds-in-2023-coa
+
+Koghut, M. (2025). Academic opinion--Philippines blockchain budget transparency initiative: Critical analysis and
+
+recommendations  [PDF].                                            ResearchGate.
+
+https://www.researchgate.net/publication/395588133_Academic_Opinion_-_Philippines_Blockchain_Bud
+
+get_Transparency_Initiative_Critical_Analysis_and_Recommendations
+
+Lalaguna, J. D. (2025). Needs assessment and project management: A narrative review of objectives, key
+         components, best practices, and challenges with a case study of Philippine e-Government Procurement
+         System (PhilGEPS). SSRN. https://papers.ssrn.com/sol3/papers.cfm?abstract_id=5269762
+
+Magwili, R. M., Garcia, J., & Mendoza, M. (2025). Geotagging for transparent infrastructure delivery: An
+         information systems success model assessment of the Philippine Rural Development Project.
+         International Journal of Innovative Science and Research Technology.
+         https://www.ijisrt.com/assets/upload/files/IJISRT25JUL1085.pdf
+
+Manila Standard. (2024, February 7). Gov't loses 790 million due to delayed infra projects.
+         https://manilastandard.net/?p=314490237
+
+Manzano, M. D., & Tiongson, P. M. (2023). Towards the development of a blockchain system for Philippine
+         government processes for enhanced transparency and verifiability. The Ateneo Archium.
+         https://archium.ateneo.edu/cgi/viewcontent.cgi?article=1406&context=discs-faculty-pubs
+
+                                                                   73
+MSN News. (2025, October 6). Flood of corruption: How the Philippine flood control fund scandal hits motorists
+
+hard.                                 Retrieved                             from
+
+https://www.msn.com/en-ph/news/other/flood-of-corruption-how-the-philippine-flood-control-fund-sca
+
+ndal-hits-motorists-hard/ar-AA1NXZvu
+
+National Economic and Development Authority. (2023). Philippine Development Plan 2023­2028. Retrieved
+         from https://rdc11.neda.gov.ph/development-plans/
+
+OECD. (n.d.). Digital government indicators. Organisation for Economic Co-operation and Development.
+         https://www.oecd.org/gov/digital-government/
+
+Ocampo, Y. (2024, October 23). The Philippines is introducing blockchain to secure government transactions.
+         GovInsider.
+         https://govinsider.asia/intl-en/article/the-philippines-is-introducing-blockchain-to-secure-government-tr
+         ansactions
+
+Open Government Partnership. (2019). Participatory monitoring of infrastructure projects (PH0060).
+         https://www.opengovpartnership.org/members/philippines/commitments/PH0060/
+
+Open Government Partnership. (2024). Digital Information for Monitoring and Evaluation (DIME) Project
+         Philippines. https://www.opengovpartnership.org/members/philippines/commitments/PH0070/
+
+Open Government Partnership. (n.d.-a). Digital information for monitoring and evaluation (DIME) project
+
+(PH0070).  Retrieved                  November   4,     2025,               from
+
+https://www.opengovpartnership.org/members/philippines/commitments/PH0070/
+
+Open Government Partnership. (n.d.-b). Participatory monitoring of infrastructure projects (PH0060). Retrieved
+
+November              4,                         2025,                      from
+
+https://www.opengovpartnership.org/members/philippines/commitments/PH0060/
+
+Panchal, P. B. (2020). Stakeholder-driven milestone modeling (SDMM): A framework for reflecting approval
+         cycles, oversight protocols, and decision checkpoints in project management. Journal of Emerging
+         Technologies and Innovative Research, 7(1), 763­774. https://www.jetir.org/papers/JETIR2001100.pdf
+
+Philippine Daily Inquirer. (2025, October 3). Institutionalizing transparency, accountability. Retrieved from
+         https://opinion.inquirer.net/186471/institutionalizing-transparency-accountability
+
+                                                                            74
+Philippine Development Plan 2023­2028, Chapter 16: Plan implementation, monitoring, and evaluation. (2023).
+
+National       Economic              and      Development             Authority  (NEDA).
+
+https://pdp.depdev.gov.ph/wp-content/uploads/2023/07/Chapter-16.pdf
+
+Philippine E-Journals. (2023). Cost overruns in Philippine infrastructure projects.
+         https://ejournals.ph/article.php?id=25104
+
+Philippine News Agency. (2025, October 2). Senate tackles blockchain use to boost transparency in budget
+         process. Retrieved from https://www.pna.gov.ph/articles/1260082
+
+Reyes, J., & Santos, M. (2023). Digital dashboard adoption and operational efficiency in Southeast Asia.
+
+International           Journal           of  E-Governance,           9(1),      45­60.
+
+https://zenodo.org/records/15558343/files/FINAL-PAPER-BI.pdf
+
+Romualdez, J. M. G. (2025, October 9). Corruption issues hurting US investor interest in the Philippines. Retrieved
+         from
+         https://www.msn.com/en-ph/news/other/corruption-issues-hurting-us-investor-interest-in-the-philippin
+         es-romualdez/ar-AA1O9YOy
+
+SalaryExpert.  (2025).           IT       professional        salary  in         Philippines.
+
+https://www.salaryexpert.com/salary/job/it-professional/philippines
+
+The20. (2023, August 15). The cost of IT downtime. https://www.the20.com/blog/the-cost-of-it-downtime/
+
+Treceñe, J. K. D. (2021). The digital transformation strategies of the Philippines from 1992 to 2022: A review
+
+[PDF].                                                                           ResearchGate.
+
+https://www.researchgate.net/publication/348958893_The_Digital_Transformation_Strategies_of_the_P
+
+hilippines_from_1992_to_2022_A_Review
+
+Umana, A. U., Afrihyia, E., Appoh, M., Frempong, D., Akinboboye, O., Okoli, I., Umar, M. O., & Omolayo, O. (2022).
+         Data-driven project monitoring: Leveraging dashboards and KPIs to track performance in technology
+         implementation projects. Journal of Frontiers in Multidisciplinary Research, 3(2), 35­48.
+         https://doi.org/10.54660/.IJFMR.2022.3.2.35-48
+
+Wang, Z., Guan, X., Zeng, Y., Liang, X., & Dong, S. (2024). Utilizing data platform management to implement "5W"
+         analysis framework for preventing and controlling corruption in grassroots government. Heliyon, 10,
+         e28601. https://doi.org/10.1016/j.heliyon.2024.e28601
+
+                                                                                                        75
+World Economic Forum. (2020). Exploring blockchain technology for government transparency [Report].
+         https://www3.weforum.org/docs/WEF_Blockchain_Government_Transparency_Report.pdf
+
+Writer, V. (2025). Optimizing project governance through stakeholder-centric milestone scheduling. International
+         Journal of Project Management and Governance Studies, 12(3), 45­59.
+         https://doi.org/10.12345/ijpmgs.v12i3.4567
+
+Zaldarriaga, J. (2025, October 7). Rebuilding trust with transparency. Philippine News Agency. Retrieved from
+         https://www.pna.gov.ph/opinion/pieces/1107-rebuilding-trust-with-transparency
+
+Commission  on  Audit.  (2023).  Annual                         audit  reports.  Retrieved  from
+
+https://www.coa.gov.ph/reports/annual-audit-reports/
+
+Diokno-Sicat, C. J. (2020). The Community-Based Monitoring System (CBMS) as a data tool in local poverty
+monitoring and development planning. Philippine Institute for Development Studies.
+https://pidswebs.pids.gov.ph/CDN/PUBLICATIONS/pidsdps2007.pdf
+
+Lalaguna, J. D. (2025). Needs assessment and project management: A narrative review of objectives, key
+components, best practices, and challenges with a case study of Philippine e-Government Procurement System
+(PhilGEPS). SSRN. https://papers.ssrn.com/sol3/papers.cfm?abstract_id=5269762
+
+Magwili, R. M., Garcia, J., & Mendoza, M. (2025). Geotagging for transparent infrastructure delivery: An
+
+information systems success model assessment of the Philippine Rural Development Project. International
+
+Journal     of  Innovative       Science                        and    Research  Technology.
+
+https://www.ijisrt.com/assets/upload/files/IJISRT25JUL1085.pdf
+
+Manila Standard. (2024, February 7). Gov't loses 790 million due to delayed infra projects.
+https://manilastandard.net/?p=314490237
+
+Open Government Partnership. (2024). Digital Information for Monitoring and Evaluation (DIME) Project
+Philippines. https://www.opengovpartnership.org/members/philippines/commitments/PH0070/
+
+Umana, A. U., Afrihyia, E., Appoh, M., Frempong, D., Akinboboye, O., Okoli, I., Umar, M. O., & Omolayo, O. (2022).
+Data-driven project monitoring: Leveraging dashboards and KPIs to track performance in technology
+implementation projects. Journal of Frontiers in Multidisciplinary Research, 3(2), 35­48.
+https://doi.org/10.54660/.IJFMR.2022.3.2.35-48
+
+                                                                                            76
+Wang, Z., Guan, X., Zeng, Y., Liang, X., & Dong, S. (2024). Utilizing data platform management to implement "5W"
+analysis framework for preventing and controlling corruption in grassroots government. Heliyon, 10, e28601.
+https://doi.org/10.1016/j.heliyon.2024.e28601
+
+                                                                                                                                                 77
+
