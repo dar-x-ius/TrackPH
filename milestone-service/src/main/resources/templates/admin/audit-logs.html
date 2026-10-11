@@ -30,6 +30,8 @@
         let logs = [];
 
         const ROUTE_LABELS = [
+            [/\/auth\/login$/, 'Signed in'],
+            [/\/auth\/register$/, 'Created an account'],
             [/\/alerts\/\d+\/read$/, 'Marked an alert read'],
             [/\/alerts\/read-all$/, 'Marked all alerts read'],
             [/\/dashboard\/settings$/, 'Updated dashboard settings'],
