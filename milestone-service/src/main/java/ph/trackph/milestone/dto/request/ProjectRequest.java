@@ -1,5 +1,6 @@
 package ph.trackph.milestone.dto.request;
 
+import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.NotBlank;
 import ph.trackph.milestone.model.Project;
 import java.math.BigDecimal;
@@ -13,4 +14,9 @@ public record ProjectRequest(
         String location,
         BigDecimal budget,
         Project.Status status) {
+
+    @AssertTrue(message = "End date must be on or after the start date")
+    public boolean isDateRangeValid() {
+        return startDate == null || endDate == null || !endDate.isBefore(startDate);
+    }
 }
