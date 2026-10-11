@@ -14,6 +14,8 @@ import ph.trackph.milestone.dto.request.ProjectRequest;
 import ph.trackph.milestone.dto.response.ProjectResponse;
 import ph.trackph.milestone.service.ProjectService;
 import ph.trackph.milestone.util.ApiResponse;
+import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/projects")
@@ -35,6 +37,19 @@ public class ProjectController {
         return ResponseEntity.ok(ApiResponse.success(projectService.findById(id)));
     }
 
+    @GetMapping("/archived")
+    @Operation(summary = "List soft-deleted projects (public — transparency over deletions, ADMIN only restores them)")
+    public ResponseEntity<ApiResponse<List<Map<String, Object>>>> archived() {
+        return ResponseEntity.ok(ApiResponse.success(projectService.findArchived()));
+    }
+
+    @PostMapping("/{id}/restore")
+    @Operation(summary = "Restore a soft-deleted project, its milestones and their attachments (ADMIN only)")
+    public ResponseEntity<ApiResponse<Void>> restore(@PathVariable Long id) {
+        projectService.restore(id);
+        return ResponseEntity.ok(ApiResponse.success("Restored", null));
+    }
+
     @PostMapping
     @Operation(summary = "Create a new project")
     public ResponseEntity<ApiResponse<ProjectResponse>> create(@Valid @RequestBody ProjectRequest request, Authentication auth) {
@@ -43,16 +58,20 @@ public class ProjectController {
     }
 
     @PutMapping("/{id}")
-    @Operation(summary = "Update a project")
-    public ResponseEntity<ApiResponse<ProjectResponse>> update(@PathVariable Long id, @Valid @RequestBody ProjectRequest request) {
-        return ResponseEntity.ok(ApiResponse.success("Updated", projectService.update(id, request)));
+    @Operation(summary = "Update a project (owning agency or ADMIN only)")
+    public ResponseEntity<ApiResponse<ProjectResponse>> update(@PathVariable Long id, @Valid @RequestBody ProjectRequest request, Authentication auth) {
+        return ResponseEntity.ok(ApiResponse.success("Updated", projectService.update(id, request, (Long) auth.getPrincipal(), isAdmin(auth))));
     }
 
     @DeleteMapping("/{id}")
-    @Operation(summary = "Delete a project")
-    public ResponseEntity<ApiResponse<Void>> delete(@PathVariable Long id) {
-        projectService.delete(id);
+    @Operation(summary = "Delete a project (owning agency or ADMIN only)")
+    public ResponseEntity<ApiResponse<Void>> delete(@PathVariable Long id, Authentication auth) {
+        projectService.delete(id, (Long) auth.getPrincipal(), isAdmin(auth));
         return ResponseEntity.ok(ApiResponse.success("Deleted", null));
+    }
+
+    private boolean isAdmin(Authentication auth) {
+        return auth.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_ADMIN"));
     }
 
     public ProjectController(final ProjectService projectService) {

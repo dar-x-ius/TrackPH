@@ -6,7 +6,10 @@
 <main>
     <div class="page-header">
         <h2>Projects</h2>
-        <a sec:authorize="isAuthenticated()" th:href="@{/projects/new}" class="btn btn-primary btn-sm">+ New Project</a>
+        <div style="display:flex; gap:0.5rem;">
+            <button class="btn btn-secondary btn-sm" onclick="toggleArchived()">View Archived</button>
+            <a sec:authorize="isAuthenticated()" th:href="@{/projects/new}" class="btn btn-primary btn-sm">+ New Project</a>
+        </div>
     </div>
 
     <div class="card card-table">
@@ -28,8 +31,23 @@
         </table>
     </div>
 
+    <div id="archived-section" style="display:none; margin-top:1.5rem;">
+        <h3>Archived Projects</h3>
+        <div class="card card-table">
+            <table class="table">
+                <thead>
+                    <tr><th>Name</th><th>Status</th><th>Deleted</th><th></th></tr>
+                </thead>
+                <tbody id="archived-body">
+                    <tr><td colspan="4"><div class="empty-state">Loading&hellip;</div></td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
     <script>
         const token = localStorage.getItem('trackph-token') || '';
+        const role = localStorage.getItem('trackph-role') || '';
         const headers = token ? {'Authorization': 'Bearer ' + token} : {};
 
         const statusBadge = {
@@ -58,6 +76,48 @@
                     </tr>
                 `).join('');
             });
+
+        let archivedLoaded = false;
+
+        function toggleArchived() {
+            const section = document.getElementById('archived-section');
+            const show = section.style.display === 'none';
+            section.style.display = show ? 'block' : 'none';
+            if (show && !archivedLoaded) loadArchived();
+        }
+
+        function loadArchived() {
+            fetch('/api/v1/projects/archived', { headers })
+                .then(r => r.json())
+                .then(data => {
+                    archivedLoaded = true;
+                    const tbody = document.getElementById('archived-body');
+                    const rows = data.data ?? [];
+                    if (!rows.length) {
+                        tbody.innerHTML = '<tr><td colspan="4"><div class="empty-state"><p>Nothing archived.</p></div></td></tr>';
+                        return;
+                    }
+                    tbody.innerHTML = rows.map(p => `
+                        <tr>
+                            <td><strong>${p.name}</strong></td>
+                            <td><span class="badge ${statusBadge[p.status] || 'badge-secondary'}">${p.status}</span></td>
+                            <td>${p.deletedAt ?? '—'}</td>
+                            <td>${role === 'ADMIN' ? `<button class="btn btn-secondary btn-sm" onclick="restoreProject(${p.id})">Restore</button>` : ''}</td>
+                        </tr>
+                    `).join('');
+                });
+        }
+
+        function restoreProject(id) {
+            if (!confirm('Restore this project along with its milestones and attachments?')) return;
+            fetch(`/api/v1/projects/${id}/restore`, { method: 'POST', headers })
+                .then(r => r.json().then(body => ({ ok: r.ok, body })))
+                .then(({ ok, body }) => {
+                    if (!ok) throw new Error(body.message || 'Failed to restore project');
+                    loadArchived();
+                })
+                .catch(err => alert(err.message));
+        }
     </script>
 </main>
 </body>

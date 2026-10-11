@@ -2,10 +2,12 @@ package ph.trackph.milestone.model;
 
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.SQLRestriction;
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "milestone_attachments")
+@SQLRestriction("deleted_at IS NULL")
 public class Attachment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,6 +29,8 @@ public class Attachment {
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
+    @Column(name = "deleted_at")
+    private LocalDateTime deletedAt;
 
     public Long getId() {
         return this.id;
@@ -58,6 +62,14 @@ public class Attachment {
 
     public LocalDateTime getCreatedAt() {
         return this.createdAt;
+    }
+
+    public LocalDateTime getDeletedAt() {
+        return this.deletedAt;
+    }
+
+    public void setDeletedAt(final LocalDateTime deletedAt) {
+        this.deletedAt = deletedAt;
     }
 
     public void setId(final Long id) {

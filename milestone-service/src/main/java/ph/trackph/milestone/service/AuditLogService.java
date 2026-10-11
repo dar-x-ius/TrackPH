@@ -20,6 +20,10 @@ public class AuditLogService {
         return auditLogRepository.findAll(pageable).map(AuditLogResponse::from);
     }
 
+    public Page<AuditLogResponse> findAllPublic(Pageable pageable) {
+        return auditLogRepository.findAll(pageable).map(AuditLogResponse::publicView);
+    }
+
     public Page<AuditLogResponse> findByUser(Long userId, Pageable pageable) {
         return auditLogRepository.findByUserId(userId, pageable).map(AuditLogResponse::from);
     }

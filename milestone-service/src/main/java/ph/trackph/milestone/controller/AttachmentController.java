@@ -16,6 +16,7 @@ import ph.trackph.milestone.service.AttachmentService;
 import ph.trackph.milestone.util.ApiResponse;
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/milestones/{milestoneId}/attachments")
@@ -53,6 +54,19 @@ public class AttachmentController {
         boolean isAdmin = auth.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_ADMIN"));
         attachmentService.delete(milestoneId, attachmentId, userId, isAdmin);
         return ResponseEntity.ok(ApiResponse.success("Deleted", null));
+    }
+
+    @GetMapping("/archived")
+    @Operation(summary = "List soft-deleted attachments for a milestone (public — transparency over deletions, ADMIN only restores them)")
+    public ResponseEntity<ApiResponse<List<Map<String, Object>>>> archived(@PathVariable Long milestoneId) {
+        return ResponseEntity.ok(ApiResponse.success(attachmentService.findArchivedByMilestone(milestoneId)));
+    }
+
+    @PostMapping("/{attachmentId}/restore")
+    @Operation(summary = "Restore a soft-deleted attachment (ADMIN only)")
+    public ResponseEntity<ApiResponse<Void>> restore(@PathVariable Long milestoneId, @PathVariable Long attachmentId) {
+        attachmentService.restore(milestoneId, attachmentId);
+        return ResponseEntity.ok(ApiResponse.success("Restored", null));
     }
 
     public AttachmentController(final AttachmentService attachmentService) {

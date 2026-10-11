@@ -28,6 +28,9 @@ public class AuditInterceptor implements HandlerInterceptor {
         AuditLog log = new AuditLog();
         log.setAction(request.getMethod() + " " + request.getRequestURI());
         log.setIpAddress(getClientIp(request));
+        log.setEntityType((String) request.getAttribute(AuditContext.ENTITY_TYPE_ATTR));
+        if (request.getAttribute(AuditContext.ENTITY_ID_ATTR) instanceof Long entityId) log.setEntityId(entityId);
+        log.setDetails((String) request.getAttribute(AuditContext.DETAILS_ATTR));
         try {
             Long userId = (Long) auth.getPrincipal();
             userRepository.findById(userId).ifPresent(log::setUser);

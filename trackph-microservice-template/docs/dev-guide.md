@@ -71,7 +71,7 @@ Not using Eclipse? `mvn spring-boot:run` in the service folder works too.
 - Stateless JWT. No sessions.
 - Token is passed as `Authorization: Bearer <token>`.
 - JWT payload contains `userId` (Long) and `role` (String).
-- **Roles**: `ADMIN`, `AGENCY`, `MANAGER`, `PUBLIC`
+- **Roles**: `ADMIN`, `AGENCY`, `PUBLIC`
 - Role-based access rules live **only** in `SecurityConfig.java`. Do not add `@PreAuthorize` annotations elsewhere — keep access control in one place.
 - Public endpoints (no token required) are listed in the `permitAll` section of `SecurityConfig`.
 

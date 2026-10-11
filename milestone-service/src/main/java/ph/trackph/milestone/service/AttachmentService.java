@@ -1,5 +1,6 @@
 package ph.trackph.milestone.service;
 
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -12,7 +13,9 @@ import ph.trackph.milestone.model.User;
 import ph.trackph.milestone.repository.AttachmentRepository;
 import ph.trackph.milestone.repository.MilestoneRepository;
 import ph.trackph.milestone.repository.UserRepository;
+import ph.trackph.milestone.util.AuditContext;
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -29,6 +32,8 @@ public class AttachmentService {
     private final MilestoneRepository milestoneRepository;
     private final UserRepository userRepository;
     private final FileStorageService fileStorageService;
+    private final AuditContext auditContext;
+    private final JdbcTemplate jdbcTemplate;
 
     public record FileDownload(byte[] content, String contentType, String filename) {
     }
@@ -58,7 +63,9 @@ public class AttachmentService {
         attachment.setStoredFilename(fileStorageService.store(file, extension));
         attachment.setContentType(file.getContentType());
         attachment.setFileSize(file.getSize());
-        return AttachmentResponse.from(attachmentRepository.save(attachment));
+        AttachmentResponse created = AttachmentResponse.from(attachmentRepository.save(attachment));
+        auditContext.recordChange("Attachment", created.id(), null, created);
+        return created;
     }
 
     public FileDownload download(Long milestoneId, Long attachmentId) throws IOException {
@@ -67,14 +74,38 @@ public class AttachmentService {
         return new FileDownload(content, attachment.getContentType(), attachment.getOriginalFilename());
     }
 
+    /**
+     * Soft delete — the row (and the file on disk) stays; it just drops out of the public listing
+     * and download endpoints via the entity's @SQLRestriction. Deliberately does NOT call
+     * fileStorageService.delete() anymore: this is proof-of-progress evidence on a transparency
+     * platform, so "deleted" here means "hidden from the normal view," not "gone."
+     */
     @Transactional
     public void delete(Long milestoneId, Long attachmentId, Long requesterId, boolean requesterIsAdmin) {
         Attachment attachment = getOrThrow(milestoneId, attachmentId);
         if (!requesterIsAdmin && !attachment.getUploadedBy().getId().equals(requesterId)) {
             throw new UnauthorizedException("Only the uploader or an admin can delete this attachment");
         }
-        attachmentRepository.delete(attachment);
-        fileStorageService.delete(attachment.getStoredFilename());
+        AttachmentResponse snapshot = AttachmentResponse.from(attachment);
+        attachment.setDeletedAt(LocalDateTime.now());
+        attachmentRepository.save(attachment);
+        auditContext.recordDeletion("Attachment", attachmentId, snapshot);
+    }
+
+    public List<Map<String, Object>> findArchivedByMilestone(Long milestoneId) {
+        return jdbcTemplate.queryForList(
+                "SELECT a.id, a.original_filename AS originalFilename, u.username AS uploadedByUsername, a.deleted_at AS deletedAt " +
+                        "FROM milestone_attachments a JOIN users u ON u.id = a.uploaded_by " +
+                        "WHERE a.milestone_id = ? AND a.deleted_at IS NOT NULL ORDER BY a.deleted_at DESC",
+                milestoneId);
+    }
+
+    @Transactional
+    public void restore(Long milestoneId, Long attachmentId) {
+        if (attachmentRepository.restoreById(attachmentId, milestoneId) == 0) {
+            throw new ResourceNotFoundException("Attachment", attachmentId);
+        }
+        auditContext.recordChange("Attachment", attachmentId, null, AttachmentResponse.from(getOrThrow(milestoneId, attachmentId)));
     }
 
     private Attachment getOrThrow(Long milestoneId, Long attachmentId) {
@@ -92,10 +123,12 @@ public class AttachmentService {
         return originalFilename.substring(originalFilename.lastIndexOf('.') + 1).toLowerCase();
     }
 
-    public AttachmentService(final AttachmentRepository attachmentRepository, final MilestoneRepository milestoneRepository, final UserRepository userRepository, final FileStorageService fileStorageService) {
+    public AttachmentService(final AttachmentRepository attachmentRepository, final MilestoneRepository milestoneRepository, final UserRepository userRepository, final FileStorageService fileStorageService, final AuditContext auditContext, final JdbcTemplate jdbcTemplate) {
         this.attachmentRepository = attachmentRepository;
         this.milestoneRepository = milestoneRepository;
         this.userRepository = userRepository;
         this.fileStorageService = fileStorageService;
+        this.auditContext = auditContext;
+        this.jdbcTemplate = jdbcTemplate;
     }
 }

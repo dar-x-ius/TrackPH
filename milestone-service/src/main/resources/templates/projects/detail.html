@@ -10,13 +10,13 @@
         <div style="display:flex; align-items:center; gap:0.75rem; flex-wrap:wrap;">
             <h2 id="proj-name" style="color: var(--primary); margin:0;">Loading&hellip;</h2>
             <span id="proj-status" class="badge"></span>
-            <button sec:authorize="isAuthenticated()" class="btn btn-secondary btn-sm" onclick="toggleEditProject()">Edit</button>
-            <button sec:authorize="isAuthenticated()" class="btn btn-secondary btn-sm" onclick="deleteProject()">Delete</button>
+            <button sec:authorize="hasAnyRole('AGENCY','ADMIN')" class="btn btn-secondary btn-sm" onclick="toggleEditProject()">Edit</button>
+            <button sec:authorize="hasAnyRole('AGENCY','ADMIN')" class="btn btn-secondary btn-sm" onclick="deleteProject()">Delete</button>
         </div>
         <p id="proj-desc" style="color: var(--text-muted); margin-top:0.5rem;"></p>
     </div>
 
-    <form sec:authorize="isAuthenticated()" id="edit-project-form" class="card" style="display:none; max-width:600px; margin-bottom:1.5rem;" onsubmit="saveProject(event)">
+    <form sec:authorize="hasAnyRole('AGENCY','ADMIN')" id="edit-project-form" class="card" style="display:none; max-width:600px; margin-bottom:1.5rem;" onsubmit="saveProject(event)">
         <div class="form-group">
             <label class="form-label" for="edit-name">Name</label>
             <input type="text" id="edit-name" class="form-control" required/>
@@ -59,10 +59,10 @@
 
     <div style="display:flex; justify-content:space-between; align-items:center;">
         <h3 style="margin-bottom:0;">Milestone Timeline</h3>
-        <button sec:authorize="isAuthenticated()" class="btn btn-primary btn-sm" onclick="toggleAddMilestone()">+ Add Milestone</button>
+        <button sec:authorize="hasAnyRole('AGENCY','ADMIN')" class="btn btn-primary btn-sm" onclick="toggleAddMilestone()">+ Add Milestone</button>
     </div>
 
-    <form sec:authorize="isAuthenticated()" id="add-milestone-form" class="card" style="display:none; margin:1rem 0;" onsubmit="addMilestone(event)">
+    <form sec:authorize="hasAnyRole('AGENCY','ADMIN')" id="add-milestone-form" class="card" style="display:none; margin:1rem 0;" onsubmit="addMilestone(event)">
         <div class="form-group">
             <label class="form-label" for="ms-title">Title</label>
             <input type="text" id="ms-title" class="form-control" required/>
@@ -92,6 +92,8 @@
     <script th:inline="javascript">
         const projectId = window.location.pathname.split('/').pop();
         const token = localStorage.getItem('trackph-token') || '';
+        const role = localStorage.getItem('trackph-role') || '';
+        const canManageMilestones = role === 'AGENCY' || role === 'ADMIN';
         const headers = token ? {'Authorization': 'Bearer ' + token} : {};
         const jsonHeaders = Object.assign({'Content-Type': 'application/json'}, headers);
 
@@ -186,7 +188,7 @@
                                     <strong>${m.title}</strong>
                                     <span class="badge ${msBadge[m.status] || 'badge-secondary'}">${m.status}</span>
                                     ${m.delayDays > 0 ? `<span class="badge badge-danger">${m.delayDays}d overdue</span>` : ''}
-                                    ${token ? `
+                                    ${canManageMilestones ? `
                                     <select class="form-control" onchange="updateMilestoneStatus(${m.id}, this.value)" style="width:auto; margin-left:auto;">
                                         ${Object.keys(msBadge).map(s => `<option value="${s}" ${s === m.status ? 'selected' : ''}>${s}</option>`).join('')}
                                     </select>
@@ -195,15 +197,25 @@
                                 </div>
                                 <div class="milestone-meta">Due: ${m.dueDate}${m.completedDate ? ', Completed: ' + m.completedDate : ''}</div>
                                 ${m.description ? `<p style="margin: 0.5rem 0 0; font-size:0.9rem;">${m.description}</p>` : ''}
-                                ${token ? `
+                                ${canManageMilestones ? `
                                 <form id="report-form-${m.id}" style="display:none; margin-top:0.75rem;" onsubmit="submitReport(event, ${m.id})">
                                     <textarea id="report-desc-${m.id}" class="form-control" placeholder="Progress notes..." rows="2">${m.description ?? ''}</textarea>
                                     <button type="submit" class="btn btn-primary btn-sm" style="margin-top:0.5rem;">Save Report</button>
                                 </form>
                                 ` : ''}
+                                <div id="attachments-${m.id}" style="margin-top:0.75rem;"></div>
+                                ${role === 'AGENCY' ? `
+                                <form style="margin-top:0.5rem; display:flex; gap:0.5rem; align-items:center;" onsubmit="uploadAttachment(event, ${m.id})">
+                                    <input type="file" id="attach-file-${m.id}" class="form-control" style="width:auto;" required/>
+                                    <button type="submit" class="btn btn-secondary btn-sm">Upload Proof</button>
+                                </form>
+                                ` : ''}
+                                <button type="button" class="btn btn-secondary btn-sm" style="margin-top:0.5rem; padding:0.1rem 0.4rem;" onclick="toggleArchivedAttachments(${m.id})">View Archived Attachments</button>
+                                <div id="archived-attachments-${m.id}" style="display:none; margin-top:0.5rem; font-size:0.85rem;"></div>
                             </div>
                         </div>
                     `).join('');
+                    milestones.forEach(m => loadAttachments(m.id));
                 });
         }
 
@@ -243,6 +255,118 @@
                 })
                 .then(r => r.json().then(b => ({ ok: r.ok, b })))
                 .then(({ ok, b }) => { if (!ok) throw new Error(b.message || 'Failed to submit report'); loadMilestones(); })
+                .catch(err => alert(err.message));
+        }
+
+        function loadAttachments(milestoneId) {
+            fetch(`/api/v1/milestones/${milestoneId}/attachments`, { headers })
+                .then(r => r.json())
+                .then(data => {
+                    const files = data.data ?? [];
+                    const el = document.getElementById(`attachments-${milestoneId}`);
+                    if (!el) return;
+                    if (!files.length) {
+                        el.innerHTML = '<p style="font-size:0.85rem; color:var(--text-muted); margin:0;">No proof attachments yet.</p>';
+                        return;
+                    }
+                    el.innerHTML = '<div style="display:flex; flex-wrap:wrap; gap:0.75rem;">' + files.map(f => {
+                        const isImage = /\.(jpe?g|png|webp)$/i.test(f.originalFilename);
+                        const thumb = isImage
+                            ? `<img src="${f.downloadUrl}" loading="lazy" onclick="previewAttachment(event, '${f.downloadUrl}')" style="width:72px; height:72px; object-fit:cover; border-radius:6px; cursor:zoom-in; border:1px solid var(--border);"/>`
+                            : `<div style="width:72px; height:72px; display:flex; align-items:center; justify-content:center; font-size:0.7rem; color:var(--text-muted); border:1px solid var(--border); border-radius:6px;">${f.originalFilename.split('.').pop().toUpperCase()}</div>`;
+                        const link = isImage
+                            ? `<a href="${f.downloadUrl}" onclick="previewAttachment(event, '${f.downloadUrl}')">${f.originalFilename}</a>`
+                            : `<a href="${f.downloadUrl}" target="_blank">${f.originalFilename}</a>`;
+                        return `
+                        <div style="width:72px; font-size:0.75rem;">
+                            ${thumb}
+                            <div style="margin-top:0.25rem; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${f.originalFilename}">${link}</div>
+                            <div style="color:var(--text-muted);">${(f.fileSize / 1024).toFixed(1)} KB</div>
+                            ${(role === 'AGENCY' || role === 'ADMIN') ? `<button type="button" class="btn btn-secondary btn-sm" style="padding:0.1rem 0.4rem; margin-top:0.15rem;" onclick="deleteAttachment(${milestoneId}, ${f.id})">Delete</button>` : ''}
+                        </div>
+                        `;
+                    }).join('') + '</div>';
+                });
+        }
+
+        function previewAttachment(e, url) {
+            e.preventDefault();
+            let modal = document.getElementById('attachment-preview');
+            if (!modal) {
+                modal = document.createElement('div');
+                modal.id = 'attachment-preview';
+                modal.style.cssText = 'display:none; position:fixed; inset:0; background:rgba(0,0,0,0.85); z-index:1000; align-items:center; justify-content:center; cursor:zoom-out; padding:2rem;';
+                modal.innerHTML = '<img style="max-width:100%; max-height:100%; border-radius:8px; box-shadow:0 10px 40px rgba(0,0,0,0.5);"/>';
+                modal.addEventListener('click', () => modal.style.display = 'none');
+                document.addEventListener('keydown', ev => { if (ev.key === 'Escape') modal.style.display = 'none'; });
+                document.body.appendChild(modal);
+            }
+            modal.querySelector('img').src = url;
+            modal.style.display = 'flex';
+        }
+
+        function uploadAttachment(e, milestoneId) {
+            e.preventDefault();
+            const input = document.getElementById(`attach-file-${milestoneId}`);
+            const file = input.files[0];
+            if (!file) return;
+            const formData = new FormData();
+            formData.append('file', file);
+            fetch(`/api/v1/milestones/${milestoneId}/attachments`, { method: 'POST', headers, body: formData })
+                .then(r => r.json().then(body => ({ ok: r.ok, body })))
+                .then(({ ok, body }) => {
+                    if (!ok) throw new Error(body.message || 'Failed to upload attachment');
+                    input.value = '';
+                    loadAttachments(milestoneId);
+                })
+                .catch(err => alert(err.message));
+        }
+
+        function deleteAttachment(milestoneId, attachmentId) {
+            if (!confirm('Delete this attachment?')) return;
+            fetch(`/api/v1/milestones/${milestoneId}/attachments/${attachmentId}`, { method: 'DELETE', headers })
+                .then(r => r.json().then(body => ({ ok: r.ok, body })))
+                .then(({ ok, body }) => {
+                    if (!ok) throw new Error(body.message || 'Failed to delete attachment');
+                    loadAttachments(milestoneId);
+                })
+                .catch(err => alert(err.message));
+        }
+
+        function toggleArchivedAttachments(milestoneId) {
+            const el = document.getElementById(`archived-attachments-${milestoneId}`);
+            const show = el.style.display === 'none';
+            el.style.display = show ? 'block' : 'none';
+            if (show) loadArchivedAttachments(milestoneId);
+        }
+
+        function loadArchivedAttachments(milestoneId) {
+            const el = document.getElementById(`archived-attachments-${milestoneId}`);
+            fetch(`/api/v1/milestones/${milestoneId}/attachments/archived`, { headers })
+                .then(r => r.json())
+                .then(data => {
+                    const rows = data.data ?? [];
+                    if (!rows.length) {
+                        el.innerHTML = '<p style="color:var(--text-muted); margin:0;">Nothing archived.</p>';
+                        return;
+                    }
+                    el.innerHTML = rows.map(a => `
+                        <div style="display:flex; align-items:center; gap:0.5rem; margin-top:0.25rem;">
+                            <span>${a.originalFilename} <span style="color:var(--text-muted);">(deleted by ${a.uploadedByUsername}, ${a.deletedAt})</span></span>
+                            ${role === 'ADMIN' ? `<button type="button" class="btn btn-secondary btn-sm" style="padding:0.1rem 0.4rem;" onclick="restoreAttachment(${milestoneId}, ${a.id})">Restore</button>` : ''}
+                        </div>
+                    `).join('');
+                });
+        }
+
+        function restoreAttachment(milestoneId, attachmentId) {
+            fetch(`/api/v1/milestones/${milestoneId}/attachments/${attachmentId}/restore`, { method: 'POST', headers })
+                .then(r => r.json().then(body => ({ ok: r.ok, body })))
+                .then(({ ok, body }) => {
+                    if (!ok) throw new Error(body.message || 'Failed to restore attachment');
+                    loadArchivedAttachments(milestoneId);
+                    loadAttachments(milestoneId);
+                })
                 .catch(err => alert(err.message));
         }
 

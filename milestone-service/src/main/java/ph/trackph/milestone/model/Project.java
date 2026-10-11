@@ -2,6 +2,7 @@ package ph.trackph.milestone.model;
 
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.SQLRestriction;
 import org.hibernate.annotations.UpdateTimestamp;
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -11,6 +12,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "projects")
+@SQLRestriction("deleted_at IS NULL")
 public class Project {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -40,6 +42,8 @@ public class Project {
     @UpdateTimestamp
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+    @Column(name = "deleted_at")
+    private LocalDateTime deletedAt;
 
 
     public enum Status {
@@ -92,6 +96,14 @@ public class Project {
 
     public LocalDateTime getUpdatedAt() {
         return this.updatedAt;
+    }
+
+    public LocalDateTime getDeletedAt() {
+        return this.deletedAt;
+    }
+
+    public void setDeletedAt(final LocalDateTime deletedAt) {
+        this.deletedAt = deletedAt;
     }
 
     public void setId(final Long id) {

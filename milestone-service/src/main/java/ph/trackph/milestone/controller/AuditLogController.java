@@ -6,6 +6,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.web.bind.annotation.*;
 import ph.trackph.milestone.dto.response.AuditActivityReportResponse;
 import ph.trackph.milestone.dto.response.AuditLogResponse;
@@ -15,24 +17,27 @@ import java.time.LocalDateTime;
 
 @RestController
 @RequestMapping("/api/v1/audit-logs")
-@Tag(name = "Audit Logs", description = "Immutable user action trail (ADMIN/AGENCY only)")
+@Tag(name = "Audit Logs", description = "Immutable action trail — public (IP address withheld); full detail for ADMIN/AGENCY")
 public class AuditLogController {
     private final AuditLogService auditLogService;
 
     @GetMapping
-    @Operation(summary = "List all audit logs, newest first")
-    public ResponseEntity<ApiResponse<Page<AuditLogResponse>>> list(Pageable pageable) {
-        return ResponseEntity.ok(ApiResponse.success(auditLogService.findAll(pageable)));
+    @Operation(summary = "List all audit logs, newest first (public view withholds IP address)")
+    public ResponseEntity<ApiResponse<Page<AuditLogResponse>>> list(Authentication auth, Pageable pageable) {
+        boolean canSeeFull = auth != null && auth.isAuthenticated()
+                && (auth.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_ADMIN")) || auth.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_AGENCY")));
+        Page<AuditLogResponse> page = canSeeFull ? auditLogService.findAll(pageable) : auditLogService.findAllPublic(pageable);
+        return ResponseEntity.ok(ApiResponse.success(page));
     }
 
     @GetMapping("/user/{userId}")
-    @Operation(summary = "List audit logs for a specific user")
+    @Operation(summary = "List audit logs for a specific user (ADMIN/AGENCY only — internal account review)")
     public ResponseEntity<ApiResponse<Page<AuditLogResponse>>> byUser(@PathVariable Long userId, Pageable pageable) {
         return ResponseEntity.ok(ApiResponse.success(auditLogService.findByUser(userId, pageable)));
     }
 
     @GetMapping("/report")
-    @Operation(summary = "Compiled activity report: action counts by user, with a most-active-users ranking")
+    @Operation(summary = "Compiled activity report: action counts by user, with a most-active-users ranking (ADMIN/AGENCY only)")
     public ResponseEntity<ApiResponse<AuditActivityReportResponse>> report(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime from,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime to,

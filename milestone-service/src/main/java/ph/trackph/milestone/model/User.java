@@ -35,7 +35,7 @@ public class User {
 
 
     public enum Role {
-        ADMIN, AGENCY, MANAGER, PUBLIC
+        ADMIN, AGENCY, PUBLIC
     }
 
     public Long getId() {
