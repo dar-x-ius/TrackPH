@@ -48,15 +48,15 @@
     </div>
 
     <div class="card card-table" style="margin-top:1.5rem;">
-        <table class="table">
+        <table class="table" id="users-table">
             <thead>
                 <tr>
-                    <th>Username</th>
-                    <th>Full Name</th>
-                    <th>Agency</th>
-                    <th>Role</th>
-                    <th>Status</th>
-                    <th>Created</th>
+                    <th data-sort="username">Username</th>
+                    <th data-sort="fullName">Full Name</th>
+                    <th data-sort="agencyName">Agency</th>
+                    <th data-sort="role">Role</th>
+                    <th data-sort="active">Status</th>
+                    <th data-sort="createdAt">Created</th>
                 </tr>
             </thead>
             <tbody id="users-body">
@@ -70,26 +70,39 @@
         const headers = token ? {'Authorization': 'Bearer ' + token} : {};
         const ROLE_BADGE = { ADMIN: 'badge-danger', AGENCY: 'badge-info', PUBLIC: 'badge-secondary' };
 
+        let users = [];
+        let sortBound = false;
+
+        function renderUsers(rows) {
+            const tbody = document.getElementById('users-body');
+            if (!rows.length) {
+                tbody.innerHTML = '<tr><td colspan="6"><div class="empty-state"><p>No users yet.</p></div></td></tr>';
+                return;
+            }
+            tbody.innerHTML = rows.map(u => `
+                <tr>
+                    <td>${u.username}</td>
+                    <td>${u.fullName ?? '—'}</td>
+                    <td>${u.agencyName ?? '—'}</td>
+                    <td><span class="badge ${ROLE_BADGE[u.role] ?? 'badge-secondary'}">${u.role}</span></td>
+                    <td>${u.active ? 'Active' : 'Disabled'}</td>
+                    <td style="font-size:0.8rem; color:var(--text-muted);">${new Date(u.createdAt).toLocaleDateString()}</td>
+                </tr>
+            `).join('');
+        }
+
         function loadUsers() {
             fetch('/api/v1/admin/users', { headers })
                 .then(r => r.json())
                 .then(data => {
-                    const rows = data.data ?? [];
-                    const tbody = document.getElementById('users-body');
-                    if (!rows.length) {
-                        tbody.innerHTML = '<tr><td colspan="6"><div class="empty-state"><p>No users yet.</p></div></td></tr>';
-                        return;
+                    users = data.data ?? [];
+                    renderUsers(users);
+                    // loadUsers() also runs after creating an account — only bind sorting once,
+                    // or every refresh would stack another click listener on the same headers.
+                    if (!sortBound) {
+                        makeSortable(document.getElementById('users-table'), () => users, renderUsers);
+                        sortBound = true;
                     }
-                    tbody.innerHTML = rows.map(u => `
-                        <tr>
-                            <td>${u.username}</td>
-                            <td>${u.fullName ?? '—'}</td>
-                            <td>${u.agencyName ?? '—'}</td>
-                            <td><span class="badge ${ROLE_BADGE[u.role] ?? 'badge-secondary'}">${u.role}</span></td>
-                            <td>${u.active ? 'Active' : 'Disabled'}</td>
-                            <td style="font-size:0.8rem; color:var(--text-muted);">${new Date(u.createdAt).toLocaleDateString()}</td>
-                        </tr>
-                    `).join('');
                 });
         }
 
