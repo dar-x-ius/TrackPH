@@ -25,6 +25,13 @@ public class FileStorageService {
         return Files.readAllBytes(root.resolve(storedFilename));
     }
 
+    /**
+     * Unused for now — attachment deletion is soft-delete only, so the normal delete flow
+     * must NOT call this: the file has to survive as evidence on the audit trail. Keep this
+     * around for a future orphan-cleanup job (files on disk with no matching attachment row
+     * at all, e.g. a crash between store() and the DB save) — never for pruning soft-deleted
+     * attachments.
+     */
     public void delete(String storedFilename) {
         // ponytail: the DB row is the source of truth here, so a file that fails to delete
         // is just an orphan on disk, not a correctness problem. Upgrade to a retry/cleanup
