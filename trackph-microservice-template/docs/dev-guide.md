@@ -102,6 +102,7 @@ Not using Eclipse? `mvn spring-boot:run` in the service folder works too.
 - File naming: `V{n}__{snake_case_description}.sql` (two underscores).
   - Example: `V3__create_milestones.sql`
 - **Never edit a committed migration file.** If you need to change a schema, add a new migration (`Vn+1__...`).
+- **Squashing old migrations into one (e.g. folding a later patch back into the seed migration it's fixing) is fine, but only once you've confirmed no one has actually run that migration against a real database yet.** Flyway tracks what ran by filename + checksum in `flyway_schema_history`; deleting or renaming an applied migration makes Flyway refuse to start for anyone whose database still has the old record, until they drop and recreate their schema. On a team project, that means asking before squashing, not just checking your own machine — a teammate's local MySQL DB is just as real as yours here. In `dev` (H2, `create-drop`) this is a non-issue since nothing persists between restarts.
 - In the `dev` profile, H2 is used with `ddl-auto=create-drop` — Flyway is disabled there.
 
 ### Seed Data
