@@ -103,6 +103,14 @@ Not using Eclipse? `mvn spring-boot:run` in the service folder works too.
 - **Never edit a committed migration file.** If you need to change a schema, add a new migration (`Vn+1__...`).
 - In the `dev` profile, H2 is used with `ddl-auto=create-drop` — Flyway is disabled there.
 
+### Seed Data
+
+- A service may ship a seed migration (e.g. `V8__seed_demo_data.sql`) that inserts demo rows — users, sample records — instead of leaving a fresh database empty. It's a normal numbered migration, nothing special: plain `INSERT` statements, following the same `Vn__description.sql` naming and "never edit a committed one" rule as a schema migration.
+- Because it's Flyway-managed, it runs automatically and exactly once, on anything the `dev` profile doesn't touch — point a fresh MySQL database at the service and start it; no manual step, no seed script to remember to run.
+- **To force a full reseed** (e.g. to verify seed data still works end-to-end, or to wipe out accumulated manual-testing cruft): dropping and recreating the schema is the only way — Flyway won't re-run a migration it's already recorded as applied. This is destructive to whatever is currently in that database, so don't do it to a database with real work in it without being sure; a disposable throwaway schema is a safer way to test a seed migration in isolation.
+- **If you edit a seed migration's `INSERT` values after it's already been applied somewhere** (only safe before it's committed — see the rule above), Flyway will refuse to start with a checksum mismatch on any database that already recorded the old version. Either reseed that database (see above), or run `flyway:repair` (or update that migration's `checksum` column in `flyway_schema_history` to match the new file) to bring the recorded checksum back in line — repair only fixes the bookkeeping, it doesn't retroactively insert the new rows, so a database fixed this way keeps whatever the old migration inserted until it's reseeded or backfilled by hand.
+- Check a service's own `CLAUDE.md` for the actual demo account credentials and what's seeded, if it has any — that's service-specific, not part of this shared guide.
+
 ---
 
 ## Theme & UI
