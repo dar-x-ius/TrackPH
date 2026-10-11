@@ -20,10 +20,8 @@ public class AuditLogService {
         return auditLogRepository.findAll(pageable).map(AuditLogResponse::from);
     }
 
-    // Sign-ins and account creation are account metadata, not project/milestone activity —
-    // keep them out of the public trail but still visible to ADMIN via findAll().
     public Page<AuditLogResponse> findAllPublic(Pageable pageable) {
-        return auditLogRepository.findByActionNotContaining("/api/v1/auth/", pageable).map(AuditLogResponse::publicView);
+        return auditLogRepository.findAllPublic(pageable).map(AuditLogResponse::publicView);
     }
 
     public Page<AuditLogResponse> findByUser(Long userId, Pageable pageable) {

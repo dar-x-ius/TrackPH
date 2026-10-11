@@ -35,13 +35,22 @@
             [/\/alerts\/\d+\/read$/, 'Marked an alert read'],
             [/\/alerts\/read-all$/, 'Marked all alerts read'],
             [/\/dashboard\/settings$/, 'Updated dashboard settings'],
+            [/\/milestones\/\d+\/report$/, 'Submitted a milestone report'],
             [/\/attachments\/\d+\/restore$/, 'Restored an attachment'],
             [/\/attachments\/\d+$/, 'Removed an attachment'],
             [/\/attachments$/, 'Uploaded an attachment'],
             [/\/restore$/, 'Restored a record']
         ];
 
-        /** Technical `action` (e.g. "PUT /api/v1/milestones/42") means nothing to a non-technical reader, so turn it into a sentence. Falls back to a route-pattern guess for actions with no entityType (alerts, dashboard settings) — the raw string is still shown as a tooltip for anyone who needs it. */
+        /** Last-resort label for a route nothing above recognizes (old rows logged before this entity wired up AuditContext, or a future endpoint nobody's mapped yet) — "DELETE /api/v1/projects/14" becomes "Deleted project", never raw. */
+        function humanizeRoute(method, path) {
+            const VERBS = { POST: 'Created', PUT: 'Updated', PATCH: 'Updated', DELETE: 'Deleted' };
+            const segments = path.replace(/^\/api\/v1\//, '').split('/').filter(s => s && !/^\d+$/.test(s));
+            const noun = (segments[segments.length - 1] || 'record').replace(/s$/, '');
+            return `${VERBS[method] || method} ${noun}`;
+        }
+
+        /** Technical `action` (e.g. "PUT /api/v1/milestones/42") means nothing to a non-technical reader, so turn it into a sentence. Falls back to a route-pattern guess, then a generic humanizer, for actions with no entityType — the raw string is still shown as a tooltip for anyone who needs it. */
         function renderAction(log) {
             let parsed = null;
             try { parsed = log.details ? JSON.parse(log.details) : null; } catch (e) { /* malformed details, fall through to route guess */ }
@@ -50,9 +59,9 @@
                 const verb = parsed?.deleted ? 'Deleted' : (parsed && parsed.before === null) ? 'Created' : 'Updated';
                 label = `${verb} ${log.entityType}${log.entityId != null ? ' #' + log.entityId : ''}`;
             } else {
-                const path = log.action.split(' ')[1] || '';
-                const match = ROUTE_LABELS.find(([re]) => re.test(path));
-                label = match ? match[1] : log.action;
+                const [method, path] = log.action.split(' ');
+                const match = ROUTE_LABELS.find(([re]) => re.test(path || ''));
+                label = match ? match[1] : humanizeRoute(method, path || '');
             }
             return `<span title="${log.action}">${label}</span>`;
         }
