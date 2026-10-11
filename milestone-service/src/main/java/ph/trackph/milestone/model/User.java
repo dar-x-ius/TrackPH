@@ -46,6 +46,14 @@ public class User {
         return this.username;
     }
 
+    public String getEmail() {
+        return this.email;
+    }
+
+    public String getFullName() {
+        return this.fullName;
+    }
+
     public String getPasswordHash() {
         return this.passwordHash;
     }

@@ -37,4 +37,7 @@ public class PageController {
 
     @GetMapping("/audit-logs")
     public String auditLogs() { return "admin/audit-logs"; }
+
+    @GetMapping("/admin/users")
+    public String adminUsers() { return "admin/users"; }
 }
