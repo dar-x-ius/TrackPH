@@ -50,6 +50,13 @@
     document.addEventListener('DOMContentLoaded', function() {
         initTheme();
         const token = localStorage.getItem('trackph-token') || '';
+
+        const usernameEl = document.getElementById('navbar-username');
+        const roleEl = document.getElementById('navbar-role');
+        if (usernameEl && roleEl) {
+            usernameEl.textContent = localStorage.getItem('trackph-username') || '';
+            roleEl.textContent = localStorage.getItem('trackph-role') || '';
+        }
         // Poll unread count every 60s for authenticated users (and once more right away on any pushed alert)
         function refreshUnread() {
             fetch('/api/v1/alerts/unread-count', { headers: { 'Authorization': 'Bearer ' + token } })

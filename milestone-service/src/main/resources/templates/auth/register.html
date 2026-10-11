@@ -64,6 +64,8 @@
                 if (data.status === 'success') {
                     document.cookie = 'trackph-jwt=' + data.data.token + '; path=/; SameSite=Strict';
                     localStorage.setItem('trackph-token', data.data.token);
+                    localStorage.setItem('trackph-username', data.data.username);
+                    localStorage.setItem('trackph-role', data.data.role);
                     window.location.href = '/dashboard';
                 } else {
                     err.textContent = data.message;
