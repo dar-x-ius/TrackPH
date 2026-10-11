@@ -20,6 +20,18 @@ Each microservice folder is a complete, self-contained Maven project — no shar
 
 Read [trackph-microservice-template/docs/dev-guide.md](trackph-microservice-template/docs/dev-guide.md) before writing any code. It covers the tech stack, Eclipse/Maven setup, inter-service API contract, and the step-by-step for adding a new entity or cloning the template for a new service.
 
+## Seed Data
+
+Point a fresh MySQL 8 database at a service and start it — Flyway runs that service's seed migration automatically, no manual step. `milestone-service` seeds 7 demo projects (covering every status) and 3 demo logins, password `Demo@12345` for all three:
+
+| Username | Role | Represents |
+|---|---|---|
+| `admin_demo` | ADMIN | Platform admin |
+| `doh_agency` | AGENCY | Department of Health |
+| `citizen_demo` | PUBLIC | Citizen/public viewer |
+
+This only runs outside the `dev` profile (`dev` uses an in-memory H2 DB instead, with no seed data). See dev-guide.md's "Database Migrations → Seed Data" section for how to force a full reseed, and that service's own `CLAUDE.md` for anything seed-related specific to it.
+
 ## Tech Stack
 
 Java 21 · Spring Boot 3.x · MySQL 8 · Flyway · Thymeleaf · JWT auth · SpringDoc OpenAPI
