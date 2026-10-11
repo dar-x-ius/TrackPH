@@ -13,8 +13,8 @@
                     <th data-sort="username">User</th>
                     <th data-sort="action">Action</th>
                     <th data-sort="entityType">Entity</th>
-                    <th>What changed</th>
-                    <th data-sort="ipAddress">IP</th>
+                    <th data-sort="changeType">What changed</th>
+                    <th data-sort="ipAddress" id="ip-header">IP</th>
                 </tr>
             </thead>
             <tbody id="audit-body">
@@ -26,6 +26,10 @@
     <script>
         const token = localStorage.getItem('trackph-token') || '';
         const headers = token ? {'Authorization': 'Bearer ' + token} : {};
+        // The API already withholds the IP itself for non-ADMIN; drop the column too so there's
+        // nothing dangling with a dash in it.
+        const isAdmin = (localStorage.getItem('trackph-role') || '') === 'ADMIN';
+        if (!isAdmin) document.getElementById('ip-header').remove();
 
         let logs = [];
 
@@ -87,12 +91,21 @@
             return String(v);
         }
 
+        /** "Created"/"Changed"/"Removed" — also doubles as the sort key for the What Changed column. */
+        function changeTypeOf(details) {
+            if (!details) return '';
+            try {
+                const parsed = JSON.parse(details);
+                return parsed.deleted ? 'Removed' : (parsed.before === null ? 'Created' : 'Changed');
+            } catch (e) { return ''; }
+        }
+
         function renderChanges(details) {
             if (!details) return '—';
             let parsed;
             try { parsed = JSON.parse(details); } catch (e) { return '—'; }
+            const label = changeTypeOf(details);
             const badge = parsed.deleted ? 'badge-danger' : (parsed.before === null ? 'badge-success' : 'badge-info');
-            const label = parsed.deleted ? 'Removed' : (parsed.before === null ? 'Created' : 'Changed');
             const lines = diffLines(parsed.deleted ? null : parsed.before, parsed.deleted ?? parsed.after);
             return `
                 <details>
@@ -120,8 +133,9 @@
 
         function renderLogs(rows) {
             const tbody = document.getElementById('audit-body');
+            const colspan = isAdmin ? 6 : 5;
             if (!rows.length) {
-                tbody.innerHTML = '<tr><td colspan="6"><div class="empty-state"><p>No logs yet.</p></div></td></tr>';
+                tbody.innerHTML = `<tr><td colspan="${colspan}"><div class="empty-state"><p>No logs yet.</p></div></td></tr>`;
                 return;
             }
             tbody.innerHTML = rows.map(l => {
@@ -134,7 +148,7 @@
                     <td style="font-size:0.85rem;">${renderAction(l)}</td>
                     <td style="font-size:0.85rem;">${link ? `<a href="${link}">${entityCell}</a>` : entityCell}</td>
                     <td>${renderChanges(l.details)}</td>
-                    <td style="font-size:0.8rem; color:var(--text-muted);">${l.ipAddress ?? '—'}</td>
+                    ${isAdmin ? `<td style="font-size:0.8rem; color:var(--text-muted);">${l.ipAddress ?? '—'}</td>` : ''}
                 </tr>
             `;
             }).join('');
@@ -143,7 +157,7 @@
         fetch('/api/v1/audit-logs?size=100&sort=createdAt,desc', { headers })
             .then(r => r.json())
             .then(data => {
-                logs = data.data?.content ?? [];
+                logs = (data.data?.content ?? []).map(l => ({ ...l, changeType: changeTypeOf(l.details) }));
                 renderLogs(logs);
                 makeSortable(document.getElementById('audit-table'), () => logs, renderLogs);
             });
