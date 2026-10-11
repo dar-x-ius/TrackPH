@@ -53,9 +53,11 @@
 /* Base reset */
 *, *::before, *::after { box-sizing: border-box; }
 
+html, body { height: 100%; }
+
 body {
     margin: 0;
-    overflow-x: hidden;
+    overflow: hidden; /* the navbar is fixed; .app-scroll below it owns the actual scrolling */
     font-family: 'Segoe UI', 'Noto Sans', Roboto, system-ui, -apple-system, sans-serif;
     font-size: 1rem;
     line-height: 1.6;
@@ -71,22 +73,58 @@ a:hover { color: var(--primary-dark); text-decoration: underline; }
 
 :focus-visible { outline: none; box-shadow: var(--focus-ring); border-radius: var(--radius); }
 
-/* Scrollbar: thin, theme-matched thumb instead of the OS default */
-html { scrollbar-width: thin; scrollbar-color: var(--text-muted) var(--surface); }
-::-webkit-scrollbar { width: 12px; height: 12px; }
-::-webkit-scrollbar-track { background: var(--surface); }
-::-webkit-scrollbar-thumb {
-    background-color: var(--text-muted);
+/* Scrolling area below the fixed navbar — thin scrollbar with arrows/thumb in the brand red */
+.app-scroll {
+    height: calc(100% - 60px);
+    margin-top: 60px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    scrollbar-width: thin;
+    scrollbar-color: var(--primary) var(--surface);
+}
+.app-scroll::-webkit-scrollbar { width: 12px; height: 12px; }
+.app-scroll::-webkit-scrollbar-track { background: var(--surface); }
+.app-scroll::-webkit-scrollbar-thumb {
+    background-color: var(--primary);
     background-clip: padding-box;
     border: 3px solid var(--surface);
     border-radius: 999px;
 }
-::-webkit-scrollbar-thumb:hover { background-color: var(--primary); }
+.app-scroll::-webkit-scrollbar-thumb:hover { background-color: var(--primary-dark); }
+.app-scroll::-webkit-scrollbar-button {
+    display: block;
+    background-color: var(--surface);
+    height: 14px;
+}
+.app-scroll::-webkit-scrollbar-button:vertical:start {
+    -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 8l-6 8h12z'/%3E%3C/svg%3E");
+    mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 8l-6 8h12z'/%3E%3C/svg%3E");
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+    mask-position: center;
+    -webkit-mask-size: 10px 10px;
+    mask-size: 10px 10px;
+    background-color: var(--primary);
+}
+.app-scroll::-webkit-scrollbar-button:vertical:end {
+    -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M6 8l6 8 6-8z'/%3E%3C/svg%3E");
+    mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M6 8l6 8 6-8z'/%3E%3C/svg%3E");
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+    mask-position: center;
+    -webkit-mask-size: 10px 10px;
+    mask-size: 10px 10px;
+    background-color: var(--primary);
+}
 
 /* Navbar */
 .navbar {
-    position: sticky;
+    position: fixed;
     top: 0;
+    left: 0;
+    right: 0;
     z-index: 100;
     background: linear-gradient(180deg, var(--primary-light), var(--primary));
     color: var(--primary-text);

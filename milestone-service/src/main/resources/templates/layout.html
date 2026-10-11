@@ -41,16 +41,18 @@
     </div>
 </nav>
 
-<div class="page-container">
-    <div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}"></div>
-    <div th:if="${errorMessage}"   class="alert alert-danger"  th:text="${errorMessage}"></div>
+<div class="app-scroll">
+    <div class="page-container">
+        <div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}"></div>
+        <div th:if="${errorMessage}"   class="alert alert-danger"  th:text="${errorMessage}"></div>
 
-    <th:block th:replace="${content}"/>
+        <th:block th:replace="${content}"/>
+    </div>
+
+    <footer class="footer">
+        <span th:text="'TrackPH © 2025, ' + (${appTagline} ?: 'Government Project Monitoring Platform')">TrackPH &copy; 2025, Milestone &amp; Timeline Monitoring</span>
+    </footer>
 </div>
-
-<footer class="footer">
-    <span th:text="'TrackPH © 2025, ' + (${appTagline} ?: 'Government Project Monitoring Platform')">TrackPH &copy; 2025, Milestone &amp; Timeline Monitoring</span>
-</footer>
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
