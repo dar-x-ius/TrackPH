@@ -104,22 +104,40 @@
             `;
         }
 
+        /** Where to send someone who clicks a Project/Milestone row — its project page. The project id
+         * sits right in the before/after snapshot already captured in `details`, so no extra API call. */
+        function projectLink(log) {
+            if (log.entityType === 'Project') return `/projects/${log.entityId}`;
+            if (log.entityType === 'Milestone') {
+                try {
+                    const d = JSON.parse(log.details);
+                    const projectId = (d.deleted ?? d.after ?? d.before)?.projectId;
+                    if (projectId) return `/projects/${projectId}`;
+                } catch (e) { /* no parseable details, no link */ }
+            }
+            return null;
+        }
+
         function renderLogs(rows) {
             const tbody = document.getElementById('audit-body');
             if (!rows.length) {
                 tbody.innerHTML = '<tr><td colspan="6"><div class="empty-state"><p>No logs yet.</p></div></td></tr>';
                 return;
             }
-            tbody.innerHTML = rows.map(l => `
+            tbody.innerHTML = rows.map(l => {
+                const link = projectLink(l);
+                const entityCell = l.entityType ? `${l.entityType} #${l.entityId}` : '—';
+                return `
                 <tr>
                     <td style="font-size:0.8rem; color:var(--text-muted);">${new Date(l.createdAt).toLocaleString()}</td>
                     <td>${l.username ?? '—'}</td>
                     <td style="font-size:0.85rem;">${renderAction(l)}</td>
-                    <td style="font-size:0.85rem;">${l.entityType ? l.entityType + ' #' + l.entityId : '—'}</td>
+                    <td style="font-size:0.85rem;">${link ? `<a href="${link}">${entityCell}</a>` : entityCell}</td>
                     <td>${renderChanges(l.details)}</td>
                     <td style="font-size:0.8rem; color:var(--text-muted);">${l.ipAddress ?? '—'}</td>
                 </tr>
-            `).join('');
+            `;
+            }).join('');
         }
 
         fetch('/api/v1/audit-logs?size=100&sort=createdAt,desc', { headers })
