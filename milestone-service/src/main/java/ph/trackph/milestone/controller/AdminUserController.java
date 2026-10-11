@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ph.trackph.milestone.dto.request.AdminCreateUserRequest;
+import ph.trackph.milestone.dto.request.ResetPasswordRequest;
 import ph.trackph.milestone.dto.response.UserResponse;
 import ph.trackph.milestone.model.User;
 import ph.trackph.milestone.service.AuthService;
@@ -34,6 +35,19 @@ public class AdminUserController {
     @Operation(summary = "Create a staff or agency account")
     public ResponseEntity<ApiResponse<UserResponse>> create(@Valid @RequestBody AdminCreateUserRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success("Account created", authService.createByAdmin(request)));
+    }
+
+    @PatchMapping("/{id}/password")
+    @Operation(summary = "Reset a non-admin account's password")
+    public ResponseEntity<ApiResponse<Void>> resetPassword(@PathVariable Long id, @Valid @RequestBody ResetPasswordRequest request) {
+        authService.resetPassword(id, request);
+        return ResponseEntity.ok(ApiResponse.success("Password reset", null));
+    }
+
+    @PatchMapping("/{id}/active")
+    @Operation(summary = "Activate or deactivate a non-admin account")
+    public ResponseEntity<ApiResponse<UserResponse>> setActive(@PathVariable Long id, @RequestParam boolean active) {
+        return ResponseEntity.ok(ApiResponse.success(authService.setActive(id, active)));
     }
 
     public AdminUserController(final AuthService authService) {

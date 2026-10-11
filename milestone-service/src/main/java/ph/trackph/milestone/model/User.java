@@ -106,6 +106,10 @@ public class User {
         this.agencyName = agencyName;
     }
 
+    public void setActive(final boolean active) {
+        this.active = active;
+    }
+
     public void setCreatedAt(final LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }

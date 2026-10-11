@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ph.trackph.milestone.dto.request.AdminCreateUserRequest;
 import ph.trackph.milestone.dto.request.LoginRequest;
 import ph.trackph.milestone.dto.request.RegisterRequest;
+import ph.trackph.milestone.dto.request.ResetPasswordRequest;
 import ph.trackph.milestone.dto.response.AuthResponse;
 import ph.trackph.milestone.dto.response.UserResponse;
 import ph.trackph.milestone.exception.ResourceNotFoundException;
@@ -43,6 +44,35 @@ public class AuthService {
 
     public List<UserResponse> listUsers(List<User.Role> roles) {
         return userRepository.findByRoleIn(roles, Sort.by("username")).stream().map(UserResponse::from).toList();
+    }
+
+    // Admins aren't managed through this panel — an admin locking out another admin's
+    // password or account here would be too easy to do by accident.
+    @Transactional
+    public void resetPassword(Long userId, ResetPasswordRequest request) {
+        User user = getNonAdminUser(userId);
+        user.setPasswordHash(passwordEncoder.encode(request.newPassword()));
+        userRepository.save(user);
+        auditContext.recordChange("User", userId, null, "password reset");
+    }
+
+    @Transactional
+    public UserResponse setActive(Long userId, boolean active) {
+        User user = getNonAdminUser(userId);
+        UserResponse before = UserResponse.from(user);
+        user.setActive(active);
+        userRepository.save(user);
+        UserResponse after = UserResponse.from(user);
+        auditContext.recordChange("User", userId, before, after);
+        return after;
+    }
+
+    private User getNonAdminUser(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+        if (user.getRole() == User.Role.ADMIN)
+            throw new IllegalArgumentException("Admin accounts can't be managed from this panel");
+        return user;
     }
 
     private User buildUser(String username, String email, String password, String fullName, String agencyName, User.Role role) {
