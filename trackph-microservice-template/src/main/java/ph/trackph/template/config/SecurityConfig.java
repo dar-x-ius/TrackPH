@@ -1,5 +1,6 @@
 package ph.trackph.template.config;
 
+import jakarta.servlet.http.Cookie;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -28,7 +29,12 @@ public class SecurityConfig {
         // Everything else requires auth
         // Allow Thymeleaf form-based login for UI pages
         // Allow H2 console frames in dev
-        http.csrf(AbstractHttpConfigurer::disable).sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS)).authorizeHttpRequests(auth -> auth.requestMatchers("/", "/login", "/register", "/error").permitAll().requestMatchers("/api/v1/auth/**").permitAll().requestMatchers(HttpMethod.GET, "/api/v1/projects").permitAll().requestMatchers(HttpMethod.GET, "/api/v1/projects/{id}").permitAll().requestMatchers("/css/**", "/js/**", "/images/**").permitAll().requestMatchers("/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**").permitAll().requestMatchers("/h2-console/**").permitAll().requestMatchers("/admin/**", "/api/v1/admin/**").hasAnyRole("ADMIN").anyRequest().authenticated()).addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class).formLogin(form -> form.loginPage("/login").loginProcessingUrl("/auth/login-form").defaultSuccessUrl("/dashboard", true).failureUrl("/login?error").permitAll()).logout(logout -> logout.logoutUrl("/auth/logout").logoutSuccessUrl("/login?logout").permitAll()).headers(h -> h.frameOptions(f -> f.sameOrigin()));
+        http.csrf(AbstractHttpConfigurer::disable).sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS)).authorizeHttpRequests(auth -> auth.requestMatchers("/", "/login", "/register", "/error").permitAll().requestMatchers("/api/v1/auth/**").permitAll().requestMatchers(HttpMethod.GET, "/api/v1/projects").permitAll().requestMatchers(HttpMethod.GET, "/api/v1/projects/{id}").permitAll().requestMatchers("/css/**", "/js/**", "/images/**").permitAll().requestMatchers("/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**").permitAll().requestMatchers("/h2-console/**").permitAll().requestMatchers("/admin/**", "/api/v1/admin/**").hasAnyRole("ADMIN").anyRequest().authenticated()).addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class).formLogin(form -> form.loginPage("/login").loginProcessingUrl("/auth/login-form").defaultSuccessUrl("/dashboard", true).failureUrl("/login?error").permitAll()).logout(logout -> logout.logoutUrl("/auth/logout").addLogoutHandler((req, res, auth) -> {
+            Cookie c = new Cookie("trackph-jwt", "");
+            c.setMaxAge(0);
+            c.setPath("/");
+            res.addCookie(c);
+        }).logoutSuccessUrl("/login?logout").permitAll()).headers(h -> h.frameOptions(f -> f.sameOrigin()));
         return http.build();
     }
 

@@ -2,6 +2,7 @@ package ph.trackph.template.config;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.lang.NonNull;
@@ -21,13 +22,20 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull FilterChain chain) throws ServletException, IOException {
+        String token = null;
         String header = request.getHeader("Authorization");
-        if (header == null || !header.startsWith("Bearer ")) {
-            chain.doFilter(request, response);
-            return;
+        if (header != null && header.startsWith("Bearer ")) {
+            token = header.substring(7);
+        } else if (request.getCookies() != null) {
+            // page navigations carry no Authorization header, so fall back to the cookie login/register set
+            for (Cookie c : request.getCookies()) {
+                if ("trackph-jwt".equals(c.getName())) {
+                    token = c.getValue();
+                    break;
+                }
+            }
         }
-        String token = header.substring(7);
-        if (!jwtUtil.isValid(token)) {
+        if (token == null || !jwtUtil.isValid(token)) {
             chain.doFilter(request, response);
             return;
         }

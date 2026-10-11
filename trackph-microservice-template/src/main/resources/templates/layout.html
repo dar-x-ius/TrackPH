@@ -32,24 +32,41 @@
         </svg>TrackPH
     </a>
     <ul class="navbar-links" th:replace="~{fragments/nav :: links}"></ul>
-    <button id="theme-toggle-btn" class="theme-toggle" onclick="toggleTheme()">☾ Dark</button>
+    <div class="navbar-right">
+        <ul class="navbar-user-list" th:replace="~{fragments/nav :: userMenu}"></ul>
+        <button id="theme-toggle-btn" class="theme-toggle" onclick="toggleTheme()" aria-label="Switch to dark mode" title="Switch to dark mode">
+            <svg id="theme-icon-moon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+            <svg id="theme-icon-sun" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="display:none"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+        </button>
+    </div>
 </nav>
 
-<div class="page-container">
-    <!-- Flash messages -->
-    <div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}"></div>
-    <div th:if="${errorMessage}"   class="alert alert-danger"  th:text="${errorMessage}"></div>
+<!-- .navbar is fixed; .app-scroll owns the actual page scrolling so the scrollbar doesn't run behind it -->
+<div class="app-scroll">
+    <div class="page-container">
+        <!-- Flash messages -->
+        <div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}"></div>
+        <div th:if="${errorMessage}"   class="alert alert-danger"  th:text="${errorMessage}"></div>
 
-    <!-- Page content injected here -->
-    <th:block th:replace="${content}"/>
+        <!-- Page content injected here -->
+        <th:block th:replace="${content}"/>
+    </div>
+
+    <footer class="footer">
+        <span th:text="'TrackPH © 2025, ' + (${appTagline} ?: 'Government Project Monitoring Platform')">TrackPH &copy; 2025, Government Project Monitoring Platform</span>
+    </footer>
 </div>
 
-<footer class="footer">
-    <span th:text="'TrackPH © 2025, ' + (${appTagline} ?: 'Government Project Monitoring Platform')">TrackPH &copy; 2025, Government Project Monitoring Platform</span>
-</footer>
-
 <script>
-    document.addEventListener('DOMContentLoaded', initTheme);
+    document.addEventListener('DOMContentLoaded', function () {
+        initTheme();
+        const usernameEl = document.getElementById('navbar-username');
+        const roleEl = document.getElementById('navbar-role');
+        if (usernameEl && roleEl) {
+            usernameEl.textContent = localStorage.getItem('trackph-username') || '';
+            roleEl.textContent = localStorage.getItem('trackph-role') || '';
+        }
+    });
 </script>
 <th:block th:replace="${extraScript} ?: ~{}"/>
 </body>

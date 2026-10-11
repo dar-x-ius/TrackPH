@@ -3,43 +3,63 @@
       th:replace="~{layout :: layout(pageTitle='Register', content=~{::main})}">
 <body>
 <main>
-    <div style="max-width: 480px; margin: 3rem auto;">
+    <div style="max-width: 560px; margin: 0.75rem auto;">
         <div class="card">
-            <h2 style="margin-top:0; color: var(--primary);">Create Account</h2>
+            <h2 style="margin-top:0; margin-bottom:1.25rem; color: var(--primary);">Create Account</h2>
             <form id="reg-form">
-                <div class="form-group">
-                    <label class="form-label">Username</label>
-                    <input id="username" type="text" class="form-control" required/>
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label class="form-label">Username</label>
+                        <input id="username" type="text" class="form-control" required/>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Email</label>
+                        <input id="email" type="email" class="form-control" required/>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label class="form-label">Email</label>
-                    <input id="email" type="email" class="form-control" required/>
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label class="form-label">Full Name</label>
+                        <input id="fullName" type="text" class="form-control"/>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Agency / Organization</label>
+                        <input id="agencyName" type="text" class="form-control"/>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label class="form-label">Full Name</label>
-                    <input id="fullName" type="text" class="form-control"/>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Agency / Organization</label>
-                    <input id="agencyName" type="text" class="form-control"/>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Password</label>
-                    <input id="password" type="password" class="form-control" required/>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Confirm Password</label>
-                    <input id="confirmPassword" type="password" class="form-control" required/>
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label class="form-label">Password</label>
+                        <div class="password-field">
+                            <input id="password" type="password" class="form-control" required/>
+                            <button type="button" class="password-toggle" data-target="password">Show</button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Confirm Password</label>
+                        <div class="password-field">
+                            <input id="confirmPassword" type="password" class="form-control" required/>
+                            <button type="button" class="password-toggle" data-target="confirmPassword">Show</button>
+                        </div>
+                    </div>
                 </div>
                 <div id="reg-error" class="alert alert-danger" style="display:none;"></div>
                 <button type="submit" class="btn btn-primary" style="width:100%; margin-top:0.5rem;">Register</button>
             </form>
-            <p style="text-align:center; margin-top:1rem; font-size:0.9rem; color: var(--text-muted);">
+            <p style="text-align:center; margin-top:1rem; margin-bottom:0; font-size:0.9rem; color: var(--text-muted);">
                 Already have an account? <a th:href="@{/login}">Sign in</a>
             </p>
         </div>
     </div>
     <script>
+        document.querySelectorAll('.password-toggle').forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                const input = document.getElementById(btn.dataset.target);
+                const show = input.type === 'password';
+                input.type = show ? 'text' : 'password';
+                btn.textContent = show ? 'Hide' : 'Show';
+            });
+        });
         document.getElementById('reg-form').addEventListener('submit', function(e) {
             e.preventDefault();
             const err = document.getElementById('reg-error');
@@ -64,6 +84,8 @@
                 if (data.status === 'success') {
                     document.cookie = 'trackph-jwt=' + data.data.token + '; path=/; SameSite=Strict';
                     localStorage.setItem('trackph-token', data.data.token);
+                    localStorage.setItem('trackph-username', data.data.username);
+                    localStorage.setItem('trackph-role', data.data.role);
                     window.location.href = '/';
                 } else {
                     err.textContent = data.message;

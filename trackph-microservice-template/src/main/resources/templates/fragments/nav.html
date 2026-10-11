@@ -5,12 +5,19 @@
 <!--
   Per-service navbar links. layout.html includes this file directly, so it is NOT
   passed as a fragment parameter and does NOT need editing on every page template.
-  Add your service's authenticated-only links here (see dev-guide.md "Theme & UI").
+  Add your service's authenticated-only links to "links" below (see dev-guide.md
+  "Theme & UI"). "userMenu" (signed-in identity + sign in/out) is generic — most
+  services won't need to touch it.
 -->
 <ul class="navbar-links" th:fragment="links">
-    <li sec:authorize="!isAuthenticated()"><a th:href="@{/login}">Sign in</a></li>
-    <li sec:authorize="!isAuthenticated()"><a th:href="@{/register}">Register</a></li>
-    <li sec:authorize="isAuthenticated()"><a th:href="@{/auth/logout}">Sign out</a></li>
+</ul>
+<ul class="navbar-user-list" th:fragment="userMenu">
+    <li sec:authorize="isAuthenticated()" class="navbar-user" id="navbar-user">
+        <span id="navbar-username"></span><span id="navbar-role" class="badge badge-secondary"></span>
+    </li>
+    <li sec:authorize="isAuthenticated()"><a th:href="@{/auth/logout}" class="nav-action" onclick="localStorage.removeItem('trackph-token'); localStorage.removeItem('trackph-username'); localStorage.removeItem('trackph-role')">Sign out</a></li>
+    <li sec:authorize="!isAuthenticated()"><a th:href="@{/login}" class="nav-action">Sign in</a></li>
+    <li sec:authorize="!isAuthenticated()"><a th:href="@{/register}" class="nav-action">Register</a></li>
 </ul>
 </body>
 </html>
