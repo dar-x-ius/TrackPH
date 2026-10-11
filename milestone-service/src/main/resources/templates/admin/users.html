@@ -5,7 +5,7 @@
 <main>
     <div class="page-header">
         <h2>Users</h2>
-        <div style="display:flex; gap:0.5rem;">
+        <div class="flex gap-2">
             <button id="toggle-filter" class="btn btn-secondary btn-sm"></button>
             <a th:href="@{/admin/users/new}" class="btn btn-primary btn-sm">+ Create Account</a>
         </div>
@@ -58,9 +58,9 @@
                     <td>${u.agencyName ?? '—'}</td>
                     <td><span class="badge ${ROLE_BADGE[u.role] ?? 'badge-secondary'}">${u.role}</span></td>
                     <td>${u.active ? 'Active' : 'Disabled'}</td>
-                    <td style="font-size:0.8rem; color:var(--text-muted);">${new Date(u.createdAt).toLocaleDateString()}</td>
+                    <td class="text-sm text-muted">${new Date(u.createdAt).toLocaleDateString()}</td>
                     <td>${u.role === 'ADMIN' ? '—' : `
-                        <div style="display:flex; gap:0.4rem;">
+                        <div class="flex gap-2">
                             <button class="btn btn-secondary btn-sm" onclick="resetPassword(${u.id})">Reset Password</button>
                             <button class="btn btn-secondary btn-sm" onclick="toggleActive(${u.id}, ${!u.active})">${u.active ? 'Deactivate' : 'Activate'}</button>
                         </div>

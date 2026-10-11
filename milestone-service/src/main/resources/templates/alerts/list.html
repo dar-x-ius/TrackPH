@@ -45,8 +45,8 @@
                     <td><span class="badge ${sevBadge[a.severity] || 'badge-secondary'}">${a.severity}</span></td>
                     <td>${a.type.replace(/_/g,' ')}</td>
                     <td>${a.message}</td>
-                    <td><a href="/projects/${a.projectId}" ${(token && !a.read) ? `onclick="markReadOnNavigate(${a.id})"` : ''} style="color:var(--primary);">Project #${a.projectId}</a></td>
-                    <td style="font-size:0.8rem; color:var(--text-muted);">${new Date(a.triggeredAt).toLocaleString()}</td>
+                    <td><a href="/projects/${a.projectId}" ${(token && !a.read) ? `onclick="markReadOnNavigate(${a.id})"` : ''}>Project #${a.projectId}</a></td>
+                    <td class="text-sm text-muted">${new Date(a.triggeredAt).toLocaleString()}</td>
                     <td>${(token && !a.read) ? `<button class="btn btn-secondary btn-sm" onclick="markRead(${a.id})">Mark read</button>` : ''}</td>
                 </tr>
             `).join('');

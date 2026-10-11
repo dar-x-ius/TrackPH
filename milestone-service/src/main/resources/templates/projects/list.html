@@ -6,26 +6,26 @@
 <main>
     <div class="page-header">
         <h2>Projects</h2>
-        <div style="display:flex; gap:0.5rem;">
+        <div class="flex gap-2">
             <a th:href="@{/projects/archived}" class="btn btn-secondary btn-sm">View Archived</a>
             <a sec:authorize="isAuthenticated()" th:href="@{/projects/new}" class="btn btn-primary btn-sm">+ New Project</a>
         </div>
     </div>
 
     <div class="stats-row">
-        <div class="stat-tile" style="--stat-color: var(--primary);">
+        <div class="stat-tile stat-primary">
             <div class="stat-value" id="stat-total">&mdash;</div>
             <div class="stat-label">Total Projects</div>
         </div>
-        <div class="stat-tile" style="--stat-color: var(--info);">
+        <div class="stat-tile stat-info">
             <div class="stat-value" id="stat-inprogress">&mdash;</div>
             <div class="stat-label">In Progress</div>
         </div>
-        <div class="stat-tile" style="--stat-color: var(--danger);">
+        <div class="stat-tile stat-danger">
             <div class="stat-value" id="stat-delayed">&mdash;</div>
             <div class="stat-label">Delayed</div>
         </div>
-        <div class="stat-tile" style="--stat-color: var(--success);">
+        <div class="stat-tile stat-success">
             <div class="stat-value" id="stat-completed">&mdash;</div>
             <div class="stat-label">Completed</div>
         </div>

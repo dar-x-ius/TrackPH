@@ -3,22 +3,24 @@
       th:replace="~{layout :: layout(pageTitle='Dashboard', content=~{::main})}">
 <body>
 <main>
-    <h2 style="color: var(--primary); margin-bottom: 1.5rem;">Dashboard</h2>
+    <div class="page-header">
+        <h2>Dashboard</h2>
+    </div>
 
     <div class="stats-row">
-        <div class="stat-tile" style="--stat-color: var(--primary);">
+        <div class="stat-tile stat-primary">
             <div class="stat-value" id="stat-total">&mdash;</div>
             <div class="stat-label">Total Projects</div>
         </div>
-        <div class="stat-tile" style="--stat-color: var(--info);">
+        <div class="stat-tile stat-info">
             <div class="stat-value" id="stat-inprogress">&mdash;</div>
             <div class="stat-label">In Progress</div>
         </div>
-        <div class="stat-tile" style="--stat-color: var(--danger);">
+        <div class="stat-tile stat-danger">
             <div class="stat-value" id="stat-delayed">&mdash;</div>
             <div class="stat-label">Delayed</div>
         </div>
-        <div class="stat-tile" style="--stat-color: var(--warning);">
+        <div class="stat-tile stat-warning">
             <div class="stat-value" id="stat-alerts">&mdash;</div>
             <div class="stat-label">Unread Alerts</div>
         </div>
@@ -26,16 +28,16 @@
 
     <div class="grid-2">
         <div>
-            <h3 style="margin-top:0;">Quick Links</h3>
-            <div class="card">
-                <a th:href="@{/projects}" class="btn btn-primary btn-sm" style="margin-right:0.5rem;">View Projects</a>
+            <h3 class="mt-0">Quick Links</h3>
+            <div class="card flex gap-2">
+                <a th:href="@{/projects}" class="btn btn-primary btn-sm">View Projects</a>
                 <a th:href="@{/alerts}" class="btn btn-secondary btn-sm">View Alerts</a>
             </div>
         </div>
         <div>
-            <h3 style="margin-top:0;">System Status</h3>
+            <h3 class="mt-0">System Status</h3>
             <div class="card">
-                <p style="margin:0; color: var(--text-muted); font-size:0.9rem;">
+                <p class="mt-0 mb-0 text-muted text-sm">
                     Milestone alert scan runs daily at midnight.<br/>
                     All user actions are automatically logged.
                 </p>

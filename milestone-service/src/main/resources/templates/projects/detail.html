@@ -7,14 +7,14 @@
     <a th:href="@{/projects}" class="back-link">&larr; Back to Projects</a>
 
     <div id="project-header" style="margin: 1.5rem 0;">
-        <div style="display:flex; align-items:center; gap:0.75rem; flex-wrap:wrap;">
-            <h2 id="proj-name" style="color: var(--primary); margin:0;">Loading&hellip;</h2>
+        <div class="flex items-center gap-3 flex-wrap">
+            <h2 id="proj-name" class="text-primary mt-0 mb-0">Loading&hellip;</h2>
             <span id="proj-status" class="badge"></span>
             <span id="proj-edited"></span>
             <button sec:authorize="hasAnyRole('AGENCY','ADMIN')" class="btn btn-secondary btn-sm" onclick="toggleEditProject()">Edit</button>
             <button sec:authorize="hasAnyRole('AGENCY','ADMIN')" class="btn btn-secondary btn-sm" onclick="deleteProject()">Delete</button>
         </div>
-        <p id="proj-desc" style="color: var(--text-muted); margin-top:0.5rem;"></p>
+        <p id="proj-desc" class="text-muted mt-2"></p>
     </div>
 
     <form sec:authorize="hasAnyRole('AGENCY','ADMIN')" id="edit-project-form" class="card" style="display:none; max-width:600px; margin-bottom:1.5rem;" onsubmit="saveProject(event)">
@@ -58,12 +58,12 @@
         <button type="button" class="btn btn-secondary btn-sm" onclick="toggleEditProject()">Cancel</button>
     </form>
 
-    <div style="display:flex; justify-content:space-between; align-items:center;">
-        <h3 style="margin-bottom:0;">Milestone Timeline</h3>
+    <div class="flex justify-between items-center">
+        <h3 class="mb-0">Milestone Timeline</h3>
         <button sec:authorize="hasAnyRole('AGENCY','ADMIN')" class="btn btn-primary btn-sm" onclick="toggleAddMilestone()">+ Add Milestone</button>
     </div>
 
-    <form sec:authorize="hasAnyRole('AGENCY','ADMIN')" id="add-milestone-form" class="card" style="display:none; margin:1rem 0;" onsubmit="addMilestone(event)">
+    <form sec:authorize="hasAnyRole('AGENCY','ADMIN')" id="add-milestone-form" class="card mt-4 mb-4" style="display:none;" onsubmit="addMilestone(event)">
         <div class="form-group">
             <label class="form-label" for="ms-title">Title</label>
             <input type="text" id="ms-title" class="form-control" required/>
@@ -151,7 +151,7 @@
             try { parsed = log.details ? JSON.parse(log.details) : null; } catch (e) { /* malformed details, show timestamp only */ }
             const lines = parsed ? diffLines(parsed.deleted ? null : parsed.before, parsed.deleted ?? parsed.after) : [];
             return `<div style="border-top:1px solid var(--border); padding:0.35rem 0;">
-                <div style="color:var(--text-muted);">${new Date(log.createdAt).toLocaleString()} &mdash; ${log.username ?? 'anonymous'}</div>
+                <div class="text-muted">${new Date(log.createdAt).toLocaleString()} &mdash; ${log.username ?? 'anonymous'}</div>
                 ${lines.map(l => `<div style="margin-top:0.15rem;">${l}</div>`).join('')}
             </div>`;
         }
@@ -254,9 +254,9 @@
                                     ` : ''}
                                 </div>
                                 <div class="milestone-meta">Due: ${m.dueDate}${m.completedDate ? ', Completed: ' + m.completedDate : ''}</div>
-                                ${m.description ? `<p style="margin: 0.5rem 0 0; font-size:0.9rem;">${m.description}</p>` : ''}
+                                ${m.description ? `<p class="mt-2 mb-0 text-sm">${m.description}</p>` : ''}
                                 ${canManageMilestones ? `
-                                <form id="edit-milestone-form-${m.id}" style="display:none; margin-top:0.75rem;" onsubmit="saveMilestone(event, ${m.id})">
+                                <form id="edit-milestone-form-${m.id}" class="mt-3" style="display:none;" onsubmit="saveMilestone(event, ${m.id})">
                                     <div class="form-group">
                                         <label class="form-label">Title</label>
                                         <input type="text" id="edit-ms-title-${m.id}" class="form-control" required/>
@@ -278,20 +278,20 @@
                                     <button type="submit" class="btn btn-primary btn-sm">Save</button>
                                     <button type="button" class="btn btn-secondary btn-sm" onclick="toggleEditMilestone(${m.id})">Cancel</button>
                                 </form>
-                                <form id="report-form-${m.id}" style="display:none; margin-top:0.75rem;" onsubmit="submitReport(event, ${m.id})">
+                                <form id="report-form-${m.id}" class="mt-3" style="display:none;" onsubmit="submitReport(event, ${m.id})">
                                     <textarea id="report-desc-${m.id}" class="form-control" placeholder="Progress notes..." rows="2">${m.description ?? ''}</textarea>
-                                    <button type="submit" class="btn btn-primary btn-sm" style="margin-top:0.5rem;">Save Report</button>
+                                    <button type="submit" class="btn btn-primary btn-sm mt-2">Save Report</button>
                                 </form>
                                 ` : ''}
-                                <div id="attachments-${m.id}" style="margin-top:0.75rem;"></div>
+                                <div id="attachments-${m.id}" class="mt-3"></div>
                                 ${role === 'AGENCY' ? `
-                                <form style="margin-top:0.5rem; display:flex; gap:0.5rem; align-items:center;" onsubmit="uploadAttachment(event, ${m.id})">
+                                <form class="mt-2 flex gap-2 items-center" onsubmit="uploadAttachment(event, ${m.id})">
                                     <input type="file" id="attach-file-${m.id}" class="form-control" style="width:auto;" required/>
                                     <button type="submit" class="btn btn-secondary btn-sm">Upload Proof</button>
                                 </form>
                                 ` : ''}
-                                <button type="button" class="btn btn-secondary btn-sm" style="margin-top:0.5rem; padding:0.1rem 0.4rem;" onclick="toggleArchivedAttachments(${m.id})">View Archived Attachments</button>
-                                <div id="archived-attachments-${m.id}" style="display:none; margin-top:0.5rem; font-size:0.85rem;"></div>
+                                <button type="button" class="btn btn-secondary btn-sm mt-2" style="padding:0.1rem 0.4rem;" onclick="toggleArchivedAttachments(${m.id})">View Archived Attachments</button>
+                                <div id="archived-attachments-${m.id}" class="mt-2 text-sm" style="display:none;"></div>
                             </div>
                         </div>
                     `).join('');
@@ -379,10 +379,10 @@
                     const el = document.getElementById(`attachments-${milestoneId}`);
                     if (!el) return;
                     if (!files.length) {
-                        el.innerHTML = '<p style="font-size:0.85rem; color:var(--text-muted); margin:0;">No proof attachments yet.</p>';
+                        el.innerHTML = '<p class="text-sm text-muted mt-0 mb-0">No proof attachments yet.</p>';
                         return;
                     }
-                    el.innerHTML = '<div style="display:flex; flex-wrap:wrap; gap:0.75rem;">' + files.map(f => {
+                    el.innerHTML = '<div class="flex flex-wrap gap-3">' + files.map(f => {
                         const isImage = /\.(jpe?g|png|webp)$/i.test(f.originalFilename);
                         const thumb = isImage
                             ? `<img src="${f.downloadUrl}" loading="lazy" onclick="previewAttachment(event, '${f.downloadUrl}')" style="width:72px; height:72px; object-fit:cover; border-radius:6px; cursor:zoom-in; border:1px solid var(--border);"/>`
@@ -391,10 +391,10 @@
                             ? `<a href="${f.downloadUrl}" onclick="previewAttachment(event, '${f.downloadUrl}')">${f.originalFilename}</a>`
                             : `<a href="${f.downloadUrl}" target="_blank">${f.originalFilename}</a>`;
                         return `
-                        <div style="width:72px; font-size:0.75rem;">
+                        <div class="text-xs" style="width:72px;">
                             ${thumb}
-                            <div style="margin-top:0.25rem; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${f.originalFilename}">${link}</div>
-                            <div style="color:var(--text-muted);">${(f.fileSize / 1024).toFixed(1)} KB</div>
+                            <div class="mt-1" style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${f.originalFilename}">${link}</div>
+                            <div class="text-muted">${(f.fileSize / 1024).toFixed(1)} KB</div>
                             ${(role === 'AGENCY' || role === 'ADMIN') ? `<button type="button" class="btn btn-secondary btn-sm" style="padding:0.1rem 0.4rem; margin-top:0.15rem;" onclick="deleteAttachment(${milestoneId}, ${f.id})">Delete</button>` : ''}
                         </div>
                         `;
@@ -460,12 +460,12 @@
                 .then(data => {
                     const rows = data.data ?? [];
                     if (!rows.length) {
-                        el.innerHTML = '<p style="color:var(--text-muted); margin:0;">Nothing archived.</p>';
+                        el.innerHTML = '<p class="text-muted mt-0 mb-0">Nothing archived.</p>';
                         return;
                     }
                     el.innerHTML = rows.map(a => `
-                        <div style="display:flex; align-items:center; gap:0.5rem; margin-top:0.25rem;">
-                            <span>${a.originalFilename} <span style="color:var(--text-muted);">(deleted by ${a.uploadedByUsername}, ${a.deletedAt})</span></span>
+                        <div class="flex items-center gap-2 mt-1">
+                            <span>${a.originalFilename} <span class="text-muted">(deleted by ${a.uploadedByUsername}, ${a.deletedAt})</span></span>
                             ${role === 'ADMIN' ? `<button type="button" class="btn btn-secondary btn-sm" style="padding:0.1rem 0.4rem;" onclick="restoreAttachment(${milestoneId}, ${a.id})">Restore</button>` : ''}
                         </div>
                     `).join('');

@@ -110,8 +110,8 @@
             return `
                 <details>
                     <summary class="badge ${badge}" style="cursor:pointer;">${label}</summary>
-                    <div style="font-size:0.75rem; max-width:360px; margin:0.4rem 0 0;">
-                        ${lines.map(l => `<div>${l}</div>`).join('') || '<div style="color:var(--text-muted);">No field changes recorded.</div>'}
+                    <div class="text-xs mt-2" style="max-width:360px;">
+                        ${lines.map(l => `<div>${l}</div>`).join('') || '<div class="text-muted">No field changes recorded.</div>'}
                     </div>
                 </details>
             `;
@@ -143,12 +143,12 @@
                 const entityCell = l.entityType ? `${l.entityType} #${l.entityId}` : '—';
                 return `
                 <tr>
-                    <td style="font-size:0.8rem; color:var(--text-muted);">${new Date(l.createdAt).toLocaleString()}</td>
+                    <td class="text-sm text-muted">${new Date(l.createdAt).toLocaleString()}</td>
                     <td>${l.username ?? '—'}</td>
-                    <td style="font-size:0.85rem;">${renderAction(l)}</td>
-                    <td style="font-size:0.85rem;">${link ? `<a href="${link}">${entityCell}</a>` : entityCell}</td>
+                    <td class="text-sm">${renderAction(l)}</td>
+                    <td class="text-sm">${link ? `<a href="${link}">${entityCell}</a>` : entityCell}</td>
                     <td>${renderChanges(l.details)}</td>
-                    ${isAdmin ? `<td style="font-size:0.8rem; color:var(--text-muted);">${l.ipAddress ?? '—'}</td>` : ''}
+                    ${isAdmin ? `<td class="text-sm text-muted">${l.ipAddress ?? '—'}</td>` : ''}
                 </tr>
             `;
             }).join('');
