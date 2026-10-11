@@ -82,7 +82,8 @@ Not using Eclipse? `mvn spring-boot:run` in the service folder works too.
 - `AuditInterceptor` automatically logs every `POST`, `PUT`, and `DELETE` request.
 - It extracts the user from the JWT, records the action, entity type, entity ID, and IP address in `audit_logs`.
 - **Do NOT call `AuditLogService` from your controllers** — the interceptor already handles it.
-- Audit logs are write-only from the application; only `ADMIN`/`AGENCY` roles can read them via the API.
+- A service can attach a before/after diff to the row the interceptor is about to write, without becoming a second writer: inject `AuditContext` and call `recordChange(entityType, entityId, before, after)` (or `recordDeletion(...)` for a delete) before the method returns. The interceptor picks these request attributes up if present; if a service doesn't call it, the row is still written, just without a `details` payload.
+- **Default audit logs to public, not `ADMIN`/`AGENCY`-only.** This is a transparency platform — an audit trail only staff can see doesn't actually constrain staff, since nothing stops a bad actor from acting with no outside witness. Withhold two things from a non-`ADMIN` reader instead of the whole log: the IP address (a privacy/data-minimization concern, not a transparency one), and rows that are account-management noise rather than project activity — sign-ins, registrations, "marked an alert read." Everything else (who changed what project/milestone, and what the before/after values were) stays visible to the public. See `milestone-service`'s `AuditLogController`/`AuditLogRepository` for a worked example of this split.
 
 ---
 
@@ -195,6 +196,7 @@ Follow this order — skipping steps causes JPA startup failures:
 - Do not add `@Transactional` on controller methods — it belongs in the service layer.
 - Do not write inline styles in Thymeleaf templates — use `theme.css` variables.
 - Do not call `AuditLogService` from controllers — the interceptor handles it.
+- Do not gate a whole feature behind `ADMIN` just because it touches account or security data — gate the specific field or row that's actually sensitive (see "Audit Logging" above) and leave the rest visible.
 - Do not create a new `theme.css` — every service shares the same one from the template.
 - Do not hardcode navbar links directly into `layout.html` — add them to your service's `templates/fragments/nav.html`.
 - Do not hardcode the brand name or footer tagline into `layout.html` — edit the constants in `config/BrandConfig.java`.
