@@ -5,6 +5,7 @@ bin/
 /.project
 
 .settings/
+.vscode/
 
 AGENTS.md
 GEMINI.md
