@@ -22,3 +22,5 @@ trackph:
   jwt:
     secret: dev-secret-key-for-local-development-only-32chars
     expiration-ms: 86400000
+  attachments:
+    dir: ./uploads/milestone-attachments-dev
