@@ -45,7 +45,7 @@
                     <td><span class="badge ${sevBadge[a.severity] || 'badge-secondary'}">${a.severity}</span></td>
                     <td>${a.type.replace(/_/g,' ')}</td>
                     <td>${a.message}</td>
-                    <td><a href="/projects/${a.projectId}" style="color:var(--primary);">Project #${a.projectId}</a></td>
+                    <td><a href="/projects/${a.projectId}" ${(token && !a.read) ? `onclick="markReadOnNavigate(${a.id})"` : ''} style="color:var(--primary);">Project #${a.projectId}</a></td>
                     <td style="font-size:0.8rem; color:var(--text-muted);">${new Date(a.triggeredAt).toLocaleString()}</td>
                     <td>${(token && !a.read) ? `<button class="btn btn-secondary btn-sm" onclick="markRead(${a.id})">Mark read</button>` : ''}</td>
                 </tr>
@@ -68,6 +68,11 @@
             fetch(`/api/v1/alerts/${id}/read`, { method:'PUT', headers })
                 .then(() => loadAlerts())
                 .then(refreshNavBadge);
+        }
+
+        // keepalive lets this PUT finish even though the click also navigates away immediately after
+        function markReadOnNavigate(id) {
+            fetch(`/api/v1/alerts/${id}/read`, { method:'PUT', headers, keepalive: true });
         }
 
         function markAllRead() {
