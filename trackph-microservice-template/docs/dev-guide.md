@@ -1,6 +1,6 @@
 # TrackPH Developer Guide
 
-A reference for humans and AI coding assistants working on any microservice in this repo.
+A reference for developers working on any microservice in this repo.
 
 ---
 
@@ -111,7 +111,7 @@ Not using Eclipse? `mvn spring-boot:run` in the service folder works too.
 - Because it's Flyway-managed, it runs automatically and exactly once, on anything the `dev` profile doesn't touch — point a fresh MySQL database at the service and start it; no manual step, no seed script to remember to run.
 - **To force a full reseed** (e.g. to verify seed data still works end-to-end, or to wipe out accumulated manual-testing cruft): dropping and recreating the schema is the only way — Flyway won't re-run a migration it's already recorded as applied. This is destructive to whatever is currently in that database, so don't do it to a database with real work in it without being sure; a disposable throwaway schema is a safer way to test a seed migration in isolation.
 - **If you edit a seed migration's `INSERT` values after it's already been applied somewhere** (only safe before it's committed — see the rule above), Flyway will refuse to start with a checksum mismatch on any database that already recorded the old version. Either reseed that database (see above), or run `flyway:repair` (or update that migration's `checksum` column in `flyway_schema_history` to match the new file) to bring the recorded checksum back in line — repair only fixes the bookkeeping, it doesn't retroactively insert the new rows, so a database fixed this way keeps whatever the old migration inserted until it's reseeded or backfilled by hand.
-- Check a service's own `CLAUDE.md` for the actual demo account credentials and what's seeded, if it has any — that's service-specific, not part of this shared guide.
+- Demo account credentials and what's seeded are service-specific, not part of this shared guide — see the root `README.md`'s "Seed Data" section.
 
 ---
 
@@ -207,10 +207,6 @@ Follow this order — skipping steps causes JPA startup failures:
 
 ## Maintaining This Documentation
 
-- **This file (`trackph-microservice-template/docs/dev-guide.md`) is the single source of truth, and the only doc file tracked in git.** Everything platform-wide goes here, once. It lives inside the template, not at the repo root, so that handing off just the `trackph-microservice-template/` folder to another team gives them the whole guide too — no separate `docs/` folder to remember to include. Other services (e.g. `milestone-service/`) link to it with a relative path (`../trackph-microservice-template/docs/dev-guide.md`); they do not get their own copy.
-- `CLAUDE.md` (root and per-service) is a **thin wrapper**: a few lines pointing back here, plus (for a service folder) a short "service-specific notes" section for facts that don't apply platform-wide (port number, DFD-to-controller mapping, etc). It's a local-only file (gitignored, see `.gitignore`) so it doesn't need re-syncing across machines.
-- **When something platform-wide changes** (new convention, new anti-pattern, new step in a workflow): edit only this file. Do not copy the change into `CLAUDE.md`.
-- **When something service-specific changes** (new endpoint, new scheduled job, new port): update that service's local `CLAUDE.md` "Service-Specific Notes" section. Keep it short — one line per fact.
-- **When adding a new microservice**: base its `CLAUDE.md` on `trackph-microservice-template/`'s (has the clone checklist), not `milestone-service/`'s (has milestone-specific facts you don't want). Its link to the dev guide should read `../trackph-microservice-template/docs/dev-guide.md`, same as `milestone-service/CLAUDE.md` — unless your new service lives somewhere other than directly under the repo root, in which case adjust the `../` count.
-- **Never** let `CLAUDE.md` grow past ~10 lines. If you need more than that, the content belongs in this file instead, with `CLAUDE.md` just linking to the relevant section.
+- **This file is the single source of truth for anything platform-wide**, and the only doc file tracked in git besides the root `README.md`. Everything that applies to every service goes here, once — not copied into each service's own notes. It lives inside the template, not at the repo root, so that handing off just the `trackph-microservice-template/` folder to another team gives them the whole guide too — no separate `docs/` folder to remember to include. Other services (e.g. `milestone-service/`) link to it with a relative path (`../trackph-microservice-template/docs/dev-guide.md`); they do not get their own copy.
+- **Service-specific facts** (port number, DFD-to-controller mapping, demo credentials) belong in the README's "Seed Data" section or inline in that service's own code/config — not duplicated here.
 - **`research-paper/`** (per-service, e.g. `milestone-service/research-paper/`) holds that service's capstone research paper — a separate deliverable from this dev guide, not covered by the single-source-of-truth rule above. Each service's paper is its own content; don't merge or link them together.
