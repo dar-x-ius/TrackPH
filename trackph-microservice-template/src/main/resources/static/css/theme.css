@@ -82,7 +82,7 @@ a:hover { color: var(--primary-dark); text-decoration: underline; }
     height: 60px;
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    gap: 2rem;
     box-shadow: 0 1px 0 rgba(0,0,0,0.08), 0 4px 16px rgba(0,0,0,0.12);
 }
 
@@ -98,6 +98,7 @@ a:hover { color: var(--primary-dark); text-decoration: underline; }
 
 .navbar-links {
     display: flex;
+    flex: 1 1 auto;
     gap: 1.5rem;
     align-items: center;
     list-style: none;
@@ -113,15 +114,48 @@ a:hover { color: var(--primary-dark); text-decoration: underline; }
 
 .navbar-links a:hover { color: #fff; text-decoration: none; }
 
+/* Right-hand cluster: signed-in identity, sign in/out, theme toggle — always pinned right */
+.navbar-right {
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+    flex-shrink: 0;
+    padding-left: 1rem;
+    border-left: 1px solid rgba(255,255,255,0.22);
+}
+
+.navbar-user-list {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
 .navbar-user {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 0.4rem;
+    background: rgba(255,255,255,0.14);
+    color: #fff;
+    font-size: 0.8rem;
+    font-weight: 500;
+    padding: 0.3rem 0.7rem;
+    border-radius: 999px;
+}
+.navbar-user .badge { text-transform: uppercase; letter-spacing: 0.04em; }
+
+.nav-action {
     color: rgba(255,255,255,0.9);
     font-size: 0.85rem;
     font-weight: 500;
+    padding: 0.35rem 0.8rem;
+    border: 1px solid rgba(255,255,255,0.35);
+    border-radius: var(--radius);
+    transition: background var(--transition), color var(--transition);
 }
-.navbar-user .badge { text-transform: uppercase; letter-spacing: 0.04em; }
+.nav-action:hover { background: rgba(255,255,255,0.15); color: #fff; text-decoration: none; }
 
 .nav-badge {
     background: var(--primary-light);
@@ -135,15 +169,21 @@ a:hover { color: var(--primary-dark); text-decoration: underline; }
 
 .brand-mark { width: 20px; height: 20px; flex-shrink: 0; margin-right: 7px; }
 
-/* Theme toggle button */
+/* Theme toggle button: icon-only circle */
 .theme-toggle {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     background: transparent;
     border: 1px solid rgba(255,255,255,0.5);
     color: var(--primary-text);
-    padding: 4px 10px;
-    border-radius: var(--radius);
+    padding: 0;
+    border-radius: 50%;
     cursor: pointer;
-    font-size: 0.85rem;
+    font-size: 0.95rem;
+    line-height: 1;
     transition: background var(--transition);
 }
 .theme-toggle:hover { background: rgba(255,255,255,0.15); }
@@ -454,6 +494,24 @@ main input:focus, main textarea:focus, main select:focus {
 @media (max-width: 480px) {
     .info-tooltip .info-tooltip-content { left: auto; right: 0; top: calc(100% + 0.5rem); transform: none; width: 210px; }
 }
+
+/* Password field with a show/hide toggle inside it */
+.password-field { position: relative; }
+.password-field input { padding-right: 3.2rem; }
+.password-toggle {
+    position: absolute;
+    right: 0.4rem;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-size: 0.78rem;
+    font-weight: 500;
+    cursor: pointer;
+    padding: 0.25rem 0.5rem;
+}
+.password-toggle:hover { color: var(--text); }
 
 /* Milestone timeline item */
 .milestone-item {

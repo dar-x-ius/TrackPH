@@ -19,7 +19,18 @@
     function apply(theme) {
         document.documentElement.setAttribute('data-theme', theme);
         const btn = document.getElementById('theme-toggle-btn');
-        if (btn) btn.textContent = theme === DARK ? '☀ Light' : '☾ Dark';
+        const moonIcon = document.getElementById('theme-icon-moon');
+        const sunIcon = document.getElementById('theme-icon-sun');
+        if (moonIcon && sunIcon) {
+            // icon shown is the mode you'd switch TO, not the current one
+            moonIcon.style.display = theme === DARK ? 'none' : '';
+            sunIcon.style.display = theme === DARK ? '' : 'none';
+        }
+        if (btn) {
+            const label = theme === DARK ? 'Switch to light mode' : 'Switch to dark mode';
+            btn.setAttribute('aria-label', label);
+            btn.setAttribute('title', label);
+        }
     }
 
     window.initTheme = function () {

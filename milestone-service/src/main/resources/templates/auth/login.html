@@ -28,8 +28,11 @@
                 </div>
                 <div class="form-group">
                     <label class="form-label" for="password">Password</label>
-                    <input id="password" name="password" type="password" class="form-control"
-                           autocomplete="current-password" required/>
+                    <div class="password-field">
+                        <input id="password" name="password" type="password" class="form-control"
+                               autocomplete="current-password" required/>
+                        <button type="button" class="password-toggle" data-target="password">Show</button>
+                    </div>
                 </div>
                 <button type="submit" class="btn btn-primary" style="width:100%; margin-top:0.5rem;">Sign In</button>
             </form>
@@ -39,6 +42,14 @@
         </div>
     </div>
     <script>
+        document.querySelectorAll('.password-toggle').forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                const input = document.getElementById(btn.dataset.target);
+                const show = input.type === 'password';
+                input.type = show ? 'text' : 'password';
+                btn.textContent = show ? 'Hide' : 'Show';
+            });
+        });
         document.getElementById('login-form').addEventListener('submit', function(e) {
             e.preventDefault();
             fetch('/api/v1/auth/login', {
