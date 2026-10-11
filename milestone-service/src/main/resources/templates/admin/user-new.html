@@ -2,12 +2,20 @@
 <html xmlns:th="http://www.thymeleaf.org"
       th:replace="~{layout :: layout(pageTitle='Create Account', content=~{::main})}">
 <body>
-<main>
+<main id="user-new-page">
+    <style>
+        /* Scoped to this page only — register.html and other forms keep the normal spacing. */
+        #user-new-page .page-header { margin-bottom: 0.5rem; }
+        #user-new-page .card { padding: 0.75rem; }
+        #user-new-page .card > p { margin: 0 0 0.4rem; }
+        #user-new-page #create-user-form .form-group { margin-bottom: 0.4rem; }
+        #user-new-page #create-user-form button[type="submit"] { margin-top: 0.15rem; }
+    </style>
     <div class="page-header"><h2>Create Account</h2></div>
 
-    <div style="max-width: 620px; margin: 0.75rem auto;">
+    <div style="max-width: 620px; margin: 0.25rem auto;">
         <div class="card">
-            <p style="margin:0 0 1rem; font-size:0.9rem; color: var(--text-muted);">Provision a staff or agency account. The person signs in with this username and temporary password.</p>
+            <p style="font-size:0.9rem; color: var(--text-muted);">Provision a staff or agency account. The person signs in with this username and temporary password.</p>
             <form id="create-user-form">
                 <div class="grid-2">
                     <div class="form-group">
