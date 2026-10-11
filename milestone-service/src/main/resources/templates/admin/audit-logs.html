@@ -55,17 +55,40 @@
             return `<span title="${log.action}">${label}</span>`;
         }
 
+        /** Turns a before/after audit snapshot into "Field: old → new" lines instead of a raw JSON dump. */
+        function diffLines(before, after) {
+            const keys = new Set([...Object.keys(before || {}), ...Object.keys(after || {})]);
+            const lines = [];
+            keys.forEach(k => {
+                if (k === 'id') return;
+                const b = before ? before[k] : undefined;
+                const a = after ? after[k] : undefined;
+                if (JSON.stringify(b) === JSON.stringify(a)) return;
+                const label = k.replace(/([A-Z])/g, ' $1').replace(/^./, c => c.toUpperCase());
+                lines.push(before ? `${label}: ${formatVal(b)} &rarr; ${formatVal(a)}` : `${label}: ${formatVal(a)}`);
+            });
+            return lines;
+        }
+
+        function formatVal(v) {
+            if (v === null || v === undefined || v === '') return '—';
+            if (typeof v === 'object') return JSON.stringify(v);
+            return String(v);
+        }
+
         function renderChanges(details) {
             if (!details) return '—';
             let parsed;
             try { parsed = JSON.parse(details); } catch (e) { return '—'; }
             const badge = parsed.deleted ? 'badge-danger' : (parsed.before === null ? 'badge-success' : 'badge-info');
             const label = parsed.deleted ? 'Removed' : (parsed.before === null ? 'Created' : 'Changed');
-            const body = parsed.deleted ?? { before: parsed.before, after: parsed.after };
+            const lines = diffLines(parsed.deleted ? null : parsed.before, parsed.deleted ?? parsed.after);
             return `
                 <details>
                     <summary class="badge ${badge}" style="cursor:pointer;">${label}</summary>
-                    <pre style="font-size:0.75rem; max-width:360px; white-space:pre-wrap; margin:0.4rem 0 0;">${JSON.stringify(body, null, 2)}</pre>
+                    <div style="font-size:0.75rem; max-width:360px; margin:0.4rem 0 0;">
+                        ${lines.map(l => `<div>${l}</div>`).join('') || '<div style="color:var(--text-muted);">No field changes recorded.</div>'}
+                    </div>
                 </details>
             `;
         }

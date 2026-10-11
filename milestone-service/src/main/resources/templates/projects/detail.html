@@ -123,14 +123,23 @@
                 });
         }
 
-        /** Shows an "Edited" badge with the before/after trail, reusing the same audit-log JSON the admin audit page renders. Silent no-op if there's only the creation entry. */
+        /**
+         * Shows an "Edited" badge with the before/after trail, reusing the same audit-log JSON
+         * the admin audit page renders. Flags on any real update row (before != null), not just
+         * "more than one row" — seed data is inserted straight into the DB, bypassing the audit
+         * interceptor, so a seeded milestone's first-ever edit has no creation row to compare
+         * against and would otherwise never clear a length > 1 threshold.
+         */
         function loadEditHistory(entityType, entityId, targetId) {
             fetch(`/api/v1/audit-logs/entity/${entityType}/${entityId}?size=50&sort=createdAt,asc`, { headers })
                 .then(r => r.json())
                 .then(data => {
                     const rows = data.data?.content ?? [];
+                    const wasEdited = rows.some(log => {
+                        try { const d = JSON.parse(log.details); return d && !d.deleted && d.before !== null; } catch (e) { return false; }
+                    });
                     const el = document.getElementById(targetId);
-                    if (!el || rows.length <= 1) return;
+                    if (!el || !wasEdited) return;
                     const historyId = `${targetId}-history`;
                     el.innerHTML = `<details style="display:inline;"><summary class="badge badge-secondary" style="cursor:pointer; display:inline;">Edited</summary><div id="${historyId}" style="font-size:0.75rem; max-width:360px;"></div></details>`;
                     document.getElementById(historyId).innerHTML = rows.map(renderHistoryEntry).join('');
@@ -140,11 +149,32 @@
         function renderHistoryEntry(log) {
             let parsed = null;
             try { parsed = log.details ? JSON.parse(log.details) : null; } catch (e) { /* malformed details, show timestamp only */ }
-            const body = parsed ? (parsed.deleted ?? { before: parsed.before, after: parsed.after }) : null;
+            const lines = parsed ? diffLines(parsed.deleted ? null : parsed.before, parsed.deleted ?? parsed.after) : [];
             return `<div style="border-top:1px solid var(--border); padding:0.35rem 0;">
                 <div style="color:var(--text-muted);">${new Date(log.createdAt).toLocaleString()} &mdash; ${log.username ?? 'anonymous'}</div>
-                ${body ? `<pre style="white-space:pre-wrap; margin:0.25rem 0 0;">${JSON.stringify(body, null, 2)}</pre>` : ''}
+                ${lines.map(l => `<div style="margin-top:0.15rem;">${l}</div>`).join('')}
             </div>`;
+        }
+
+        /** Turns a before/after audit snapshot into "Field: old → new" lines instead of a raw JSON dump. */
+        function diffLines(before, after) {
+            const keys = new Set([...Object.keys(before || {}), ...Object.keys(after || {})]);
+            const lines = [];
+            keys.forEach(k => {
+                if (k === 'id') return;
+                const b = before ? before[k] : undefined;
+                const a = after ? after[k] : undefined;
+                if (JSON.stringify(b) === JSON.stringify(a)) return;
+                const label = k.replace(/([A-Z])/g, ' $1').replace(/^./, c => c.toUpperCase());
+                lines.push(before ? `${label}: ${formatVal(b)} &rarr; ${formatVal(a)}` : `${label}: ${formatVal(a)}`);
+            });
+            return lines;
+        }
+
+        function formatVal(v) {
+            if (v === null || v === undefined || v === '') return '—';
+            if (typeof v === 'object') return JSON.stringify(v);
+            return String(v);
         }
 
         function toggleEditProject() {
