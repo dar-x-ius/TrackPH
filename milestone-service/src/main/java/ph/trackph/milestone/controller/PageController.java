@@ -40,4 +40,7 @@ public class PageController {
 
     @GetMapping("/admin/users")
     public String adminUsers() { return "admin/users"; }
+
+    @GetMapping("/admin/users/new")
+    public String adminUserNew() { return "admin/user-new"; }
 }

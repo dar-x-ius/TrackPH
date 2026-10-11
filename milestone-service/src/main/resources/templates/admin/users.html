@@ -3,51 +3,15 @@
       th:replace="~{layout :: layout(pageTitle='Users', content=~{::main})}">
 <body>
 <main>
-    <div class="page-header"><h2>Users</h2></div>
-
-    <div class="card" style="max-width:600px;">
-        <h3 style="margin-top:0;">Create Account</h3>
-        <form id="create-user-form">
-            <div class="grid-2">
-                <div class="form-group">
-                    <label class="form-label">Username</label>
-                    <input id="username" type="text" class="form-control" required/>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Email</label>
-                    <input id="email" type="email" class="form-control" required/>
-                </div>
-            </div>
-            <div class="grid-2">
-                <div class="form-group">
-                    <label class="form-label">Full Name</label>
-                    <input id="fullName" type="text" class="form-control"/>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Agency / Organization</label>
-                    <input id="agencyName" type="text" class="form-control"/>
-                </div>
-            </div>
-            <div class="grid-2">
-                <div class="form-group">
-                    <label class="form-label">Role</label>
-                    <select id="role" class="form-control">
-                        <option value="AGENCY" selected>Agency</option>
-                        <option value="ADMIN">Admin</option>
-                        <option value="PUBLIC">Public</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Temporary Password</label>
-                    <input id="password" type="password" class="form-control" required minlength="8"/>
-                </div>
-            </div>
-            <div id="create-error" class="alert alert-danger" style="display:none;"></div>
-            <button type="submit" class="btn btn-primary">Create Account</button>
-        </form>
+    <div class="page-header">
+        <h2>Users</h2>
+        <div style="display:flex; gap:0.5rem;">
+            <button id="toggle-filter" class="btn btn-secondary btn-sm"></button>
+            <a th:href="@{/admin/users/new}" class="btn btn-primary btn-sm">+ Create Account</a>
+        </div>
     </div>
 
-    <div class="card card-table" style="margin-top:1.5rem;">
+    <div class="card card-table">
         <table class="table" id="users-table">
             <thead>
                 <tr>
@@ -70,13 +34,20 @@
         const headers = token ? {'Authorization': 'Bearer ' + token} : {};
         const ROLE_BADGE = { ADMIN: 'badge-danger', AGENCY: 'badge-info', PUBLIC: 'badge-secondary' };
 
+        // Staff (ADMIN/AGENCY) by default — that list stays small even as the citizen userbase
+        // grows, since PUBLIC is where most future accounts will land. Toggle button swaps to it.
+        let showingCitizens = false;
         let users = [];
         let sortBound = false;
+
+        function updateToggleLabel() {
+            document.getElementById('toggle-filter').textContent = showingCitizens ? 'Show Staff Accounts' : 'Show Citizen Accounts';
+        }
 
         function renderUsers(rows) {
             const tbody = document.getElementById('users-body');
             if (!rows.length) {
-                tbody.innerHTML = '<tr><td colspan="6"><div class="empty-state"><p>No users yet.</p></div></td></tr>';
+                tbody.innerHTML = '<tr><td colspan="6"><div class="empty-state"><p>No accounts here.</p></div></td></tr>';
                 return;
             }
             tbody.innerHTML = rows.map(u => `
@@ -92,13 +63,14 @@
         }
 
         function loadUsers() {
-            fetch('/api/v1/admin/users', { headers })
+            const query = showingCitizens ? '?roles=PUBLIC' : '';
+            fetch(`/api/v1/admin/users${query}`, { headers })
                 .then(r => r.json())
                 .then(data => {
                     users = data.data ?? [];
                     renderUsers(users);
-                    // loadUsers() also runs after creating an account — only bind sorting once,
-                    // or every refresh would stack another click listener on the same headers.
+                    // Sorting only needs binding once — the click handler reads `users` live,
+                    // so a toggle-triggered reload doesn't need a rebind.
                     if (!sortBound) {
                         makeSortable(document.getElementById('users-table'), () => users, renderUsers);
                         sortBound = true;
@@ -106,35 +78,13 @@
                 });
         }
 
-        document.getElementById('create-user-form').addEventListener('submit', function (e) {
-            e.preventDefault();
-            const errorEl = document.getElementById('create-error');
-            errorEl.style.display = 'none';
-
-            fetch('/api/v1/admin/users', {
-                method: 'POST',
-                headers: { ...headers, 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    username: document.getElementById('username').value,
-                    email: document.getElementById('email').value,
-                    fullName: document.getElementById('fullName').value,
-                    agencyName: document.getElementById('agencyName').value,
-                    role: document.getElementById('role').value,
-                    password: document.getElementById('password').value
-                })
-            })
-                .then(r => r.json().then(body => ({ ok: r.ok, body })))
-                .then(({ ok, body }) => {
-                    if (!ok) throw new Error(body.message || 'Failed to create account');
-                    document.getElementById('create-user-form').reset();
-                    loadUsers();
-                })
-                .catch(err => {
-                    errorEl.textContent = err.message;
-                    errorEl.style.display = 'block';
-                });
+        document.getElementById('toggle-filter').addEventListener('click', function () {
+            showingCitizens = !showingCitizens;
+            updateToggleLabel();
+            loadUsers();
         });
 
+        updateToggleLabel();
         loadUsers();
     </script>
 </main>

@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ph.trackph.milestone.dto.request.AdminCreateUserRequest;
 import ph.trackph.milestone.dto.response.UserResponse;
+import ph.trackph.milestone.model.User;
 import ph.trackph.milestone.service.AuthService;
 import ph.trackph.milestone.util.ApiResponse;
 
@@ -19,12 +20,14 @@ import java.util.List;
 @RequestMapping("/api/v1/admin/users")
 @Tag(name = "Admin Users", description = "Admin-provisioned staff and agency accounts")
 public class AdminUserController {
+    private static final List<User.Role> DEFAULT_ROLES = List.of(User.Role.ADMIN, User.Role.AGENCY);
     private final AuthService authService;
 
     @GetMapping
-    @Operation(summary = "List all accounts")
-    public ResponseEntity<ApiResponse<List<UserResponse>>> list() {
-        return ResponseEntity.ok(ApiResponse.success(authService.listUsers()));
+    @Operation(summary = "List accounts, staff (ADMIN/AGENCY) by default — pass ?roles= to filter, e.g. roles=PUBLIC")
+    public ResponseEntity<ApiResponse<List<UserResponse>>> list(@RequestParam(required = false) List<User.Role> roles) {
+        List<User.Role> filter = (roles == null || roles.isEmpty()) ? DEFAULT_ROLES : roles;
+        return ResponseEntity.ok(ApiResponse.success(authService.listUsers(filter)));
     }
 
     @PostMapping

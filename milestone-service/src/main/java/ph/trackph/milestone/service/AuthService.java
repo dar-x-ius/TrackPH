@@ -41,8 +41,8 @@ public class AuthService {
         return response;
     }
 
-    public List<UserResponse> listUsers() {
-        return userRepository.findAll(Sort.by("username")).stream().map(UserResponse::from).toList();
+    public List<UserResponse> listUsers(List<User.Role> roles) {
+        return userRepository.findByRoleIn(roles, Sort.by("username")).stream().map(UserResponse::from).toList();
     }
 
     private User buildUser(String username, String email, String password, String fullName, String agencyName, User.Role role) {
