@@ -44,9 +44,9 @@ public class MilestoneController {
     }
 
     @PostMapping("/api/v1/milestones/{id}/report")
-    @Operation(summary = "Submit a progress report for a milestone (AGENCY or ADMIN only)")
-    public ResponseEntity<ApiResponse<MilestoneResponse>> submitReport(@PathVariable Long id, @Valid @RequestBody MilestoneRequest request) {
-        return ResponseEntity.ok(ApiResponse.success("Report submitted", milestoneService.submitReport(id, request)));
+    @Operation(summary = "Submit a progress report for a milestone (owning agency or ADMIN only)")
+    public ResponseEntity<ApiResponse<MilestoneResponse>> submitReport(@PathVariable Long id, @Valid @RequestBody MilestoneRequest request, Authentication auth) {
+        return ResponseEntity.ok(ApiResponse.success("Report submitted", milestoneService.submitReport(id, request, (Long) auth.getPrincipal(), isAdmin(auth))));
     }
 
     private boolean isAdmin(Authentication auth) {

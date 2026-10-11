@@ -31,10 +31,11 @@ public class AttachmentController {
     }
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    @Operation(summary = "Upload a proof attachment (AGENCY only)")
+    @Operation(summary = "Upload a proof attachment (owning agency or ADMIN only)")
     public ResponseEntity<ApiResponse<AttachmentResponse>> upload(@PathVariable Long milestoneId, @RequestParam("file") MultipartFile file, Authentication auth) throws IOException {
         Long userId = (Long) auth.getPrincipal();
-        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success("Attachment uploaded", attachmentService.upload(milestoneId, file, userId)));
+        boolean isAdmin = auth.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_ADMIN"));
+        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success("Attachment uploaded", attachmentService.upload(milestoneId, file, userId, isAdmin)));
     }
 
     @GetMapping("/{attachmentId}/download")

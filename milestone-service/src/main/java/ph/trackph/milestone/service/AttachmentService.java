@@ -43,7 +43,7 @@ public class AttachmentService {
     }
 
     @Transactional
-    public AttachmentResponse upload(Long milestoneId, MultipartFile file, Long uploaderId) throws IOException {
+    public AttachmentResponse upload(Long milestoneId, MultipartFile file, Long uploaderId, boolean uploaderIsAdmin) throws IOException {
         if (file.isEmpty()) {
             throw new IllegalArgumentException("Attached file is empty");
         }
@@ -54,6 +54,9 @@ public class AttachmentService {
         }
 
         Milestone milestone = milestoneRepository.findById(milestoneId).orElseThrow(() -> new ResourceNotFoundException("Milestone", milestoneId));
+        if (!uploaderIsAdmin && !milestone.getProject().getAgency().getId().equals(uploaderId)) {
+            throw new UnauthorizedException("Only the owning agency or an admin can attach proof to this milestone");
+        }
         User uploader = userRepository.findById(uploaderId).orElseThrow(() -> new ResourceNotFoundException("User", uploaderId));
 
         Attachment attachment = new Attachment();

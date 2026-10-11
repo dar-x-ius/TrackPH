@@ -7,7 +7,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import ph.trackph.milestone.model.AuditLog;
-import ph.trackph.milestone.model.User;
 import ph.trackph.milestone.repository.AuditLogRepository;
 import ph.trackph.milestone.repository.UserRepository;
 import java.util.Set;
@@ -31,12 +30,13 @@ public class AuditInterceptor implements HandlerInterceptor {
         log.setEntityType((String) request.getAttribute(AuditContext.ENTITY_TYPE_ATTR));
         if (request.getAttribute(AuditContext.ENTITY_ID_ATTR) instanceof Long entityId) log.setEntityId(entityId);
         log.setDetails((String) request.getAttribute(AuditContext.DETAILS_ATTR));
-        try {
-            Long userId = (Long) auth.getPrincipal();
-            userRepository.findById(userId).ifPresent(log::setUser);
-        } catch (ClassCastException ignored) {
+        // A lazy reference, not a lookup: this runs at the tail end of the request under
+        // open-session-in-view, and a real findById() here was intermittently coming back
+        // empty for freshly-created users even though the row existed, silently mislabeling
+        // the actor as "anonymous". getReferenceById only needs the id, so it can't go stale.
+        if (auth.getPrincipal() instanceof Long userId) {
+            log.setUser(userRepository.getReferenceById(userId));
         }
-        // anonymous or form-based session principal
         auditLogRepository.save(log);
     }
 

@@ -6,7 +6,9 @@ import java.time.LocalDateTime;
 public record AuditLogResponse(Long id, Long userId, String username, String action, String entityType, Long entityId, String details, String ipAddress, LocalDateTime createdAt) {
 
     public static AuditLogResponse from(AuditLog log) {
-        return new AuditLogResponse(log.getId(), log.getUser() != null ? log.getUser().getId() : null, log.getUser() != null ? log.getUser().getUsername() : "system", log.getAction(), log.getEntityType(), log.getEntityId(), log.getDetails(), log.getIpAddress(), log.getCreatedAt());
+        // No user attached means the request never carried a JWT (register/login themselves) — "anonymous",
+        // not "system": nothing in this app logs actions on its own, every row here was a person acting.
+        return new AuditLogResponse(log.getId(), log.getUser() != null ? log.getUser().getId() : null, log.getUser() != null ? log.getUser().getUsername() : "anonymous", log.getAction(), log.getEntityType(), log.getEntityId(), log.getDetails(), log.getIpAddress(), log.getCreatedAt());
     }
 
     /** Same accountability trail (who did what, when) minus IP address — that's network metadata, not something the public needs to hold an agency accountable. */

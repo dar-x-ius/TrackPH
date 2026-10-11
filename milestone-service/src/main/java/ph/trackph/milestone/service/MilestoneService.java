@@ -61,8 +61,9 @@ public class MilestoneService {
      * Called from the "Submit Report" flow — marks progress and flags delays.
      */
     @Transactional
-    public MilestoneResponse submitReport(Long id, MilestoneRequest request) {
+    public MilestoneResponse submitReport(Long id, MilestoneRequest request, Long requesterId, boolean requesterIsAdmin) {
         Milestone milestone = getOrThrow(id);
+        requireOwnerOrAdmin(milestone.getProject(), requesterId, requesterIsAdmin);
         MilestoneResponse before = MilestoneResponse.from(milestone);
         applyRequest(milestone, request);
         if (milestone.getStatus() == Milestone.Status.COMPLETED) {

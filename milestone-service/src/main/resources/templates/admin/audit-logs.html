@@ -13,11 +13,12 @@
                     <th data-sort="username">User</th>
                     <th data-sort="action">Action</th>
                     <th data-sort="entityType">Entity</th>
+                    <th>What changed</th>
                     <th data-sort="ipAddress">IP</th>
                 </tr>
             </thead>
             <tbody id="audit-body">
-                <tr><td colspan="5"><div class="empty-state">Loading&hellip;</div></td></tr>
+                <tr><td colspan="6"><div class="empty-state">Loading&hellip;</div></td></tr>
             </tbody>
         </table>
     </div>
@@ -28,10 +29,25 @@
 
         let logs = [];
 
+        function renderChanges(details) {
+            if (!details) return '—';
+            let parsed;
+            try { parsed = JSON.parse(details); } catch (e) { return '—'; }
+            const badge = parsed.deleted ? 'badge-danger' : (parsed.before === null ? 'badge-success' : 'badge-info');
+            const label = parsed.deleted ? 'Removed' : (parsed.before === null ? 'Created' : 'Changed');
+            const body = parsed.deleted ?? { before: parsed.before, after: parsed.after };
+            return `
+                <details>
+                    <summary class="badge ${badge}" style="cursor:pointer;">${label}</summary>
+                    <pre style="font-size:0.75rem; max-width:360px; white-space:pre-wrap; margin:0.4rem 0 0;">${JSON.stringify(body, null, 2)}</pre>
+                </details>
+            `;
+        }
+
         function renderLogs(rows) {
             const tbody = document.getElementById('audit-body');
             if (!rows.length) {
-                tbody.innerHTML = '<tr><td colspan="5"><div class="empty-state"><p>No logs yet.</p></div></td></tr>';
+                tbody.innerHTML = '<tr><td colspan="6"><div class="empty-state"><p>No logs yet.</p></div></td></tr>';
                 return;
             }
             tbody.innerHTML = rows.map(l => `
@@ -40,6 +56,7 @@
                     <td>${l.username ?? '—'}</td>
                     <td><code style="font-size:0.8rem;">${l.action}</code></td>
                     <td style="font-size:0.85rem;">${l.entityType ? l.entityType + ' #' + l.entityId : '—'}</td>
+                    <td>${renderChanges(l.details)}</td>
                     <td style="font-size:0.8rem; color:var(--text-muted);">${l.ipAddress ?? '—'}</td>
                 </tr>
             `).join('');
