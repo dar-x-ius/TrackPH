@@ -11,7 +11,7 @@ TrackPH/
 │   └── research-paper/            ← this service's capstone research paper
 ├── milestone-service/             ← Milestone & Timeline Monitoring (port 8081) — first deliverable
 │   └── research-paper/            ← this service's capstone research paper
-└── <future-services>/
+└── ai-analytics-service/          ← AI Analytics — next deliverable, not started yet
 ```
 
 Each microservice folder is a complete, self-contained Maven project — no shared parent POM. The dev guide lives inside the template folder (not at the repo root) so the template stays self-contained when handed off to another team on its own.
