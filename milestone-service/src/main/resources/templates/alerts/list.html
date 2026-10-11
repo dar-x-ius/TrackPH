@@ -12,11 +12,11 @@
         <table class="table" id="alerts-table">
             <thead>
                 <tr>
-                    <th>Severity</th>
-                    <th>Type</th>
-                    <th>Message</th>
-                    <th>Project</th>
-                    <th>Triggered</th>
+                    <th data-sort="severity">Severity</th>
+                    <th data-sort="type">Type</th>
+                    <th data-sort="message">Message</th>
+                    <th data-sort="projectId">Project</th>
+                    <th data-sort="triggeredAt">Triggered</th>
                     <th></th>
                 </tr>
             </thead>
@@ -32,28 +32,33 @@
 
         const sevBadge = { LOW:'badge-secondary', MEDIUM:'badge-warning', HIGH:'badge-danger', CRITICAL:'badge-danger' };
 
+        let alerts = [];
+
+        function renderAlerts(rows) {
+            const tbody = document.getElementById('alerts-body');
+            if (!rows.length) {
+                tbody.innerHTML = '<tr><td colspan="6"><div class="empty-state"><p>No alerts. You will be notified here when one triggers.</p></div></td></tr>';
+                return;
+            }
+            tbody.innerHTML = rows.map(a => `
+                <tr style="${a.read ? '' : 'font-weight:600;'}">
+                    <td><span class="badge ${sevBadge[a.severity] || 'badge-secondary'}">${a.severity}</span></td>
+                    <td>${a.type.replace(/_/g,' ')}</td>
+                    <td>${a.message}</td>
+                    <td><a href="/projects/${a.projectId}" style="color:var(--primary);">Project #${a.projectId}</a></td>
+                    <td style="font-size:0.8rem; color:var(--text-muted);">${new Date(a.triggeredAt).toLocaleString()}</td>
+                    <td>${a.read ? '' : `<button class="btn btn-secondary btn-sm" onclick="markRead(${a.id})">Mark read</button>`}</td>
+                </tr>
+            `).join('');
+        }
+
         function loadAlerts() {
             fetch('/api/v1/alerts?size=50&sort=triggeredAt,desc', { headers })
                 .then(r => r.json())
                 .then(data => {
-                    const alerts = data.data?.content ?? [];
-                    const tbody = document.getElementById('alerts-body');
-                    const markAllBtn = document.getElementById('mark-all-btn');
-                    markAllBtn.disabled = !alerts.some(a => !a.read);
-                    if (!alerts.length) {
-                        tbody.innerHTML = '<tr><td colspan="6"><div class="empty-state"><p>No alerts. You will be notified here when one triggers.</p></div></td></tr>';
-                        return;
-                    }
-                    tbody.innerHTML = alerts.map(a => `
-                        <tr style="${a.read ? '' : 'font-weight:600;'}">
-                            <td><span class="badge ${sevBadge[a.severity] || 'badge-secondary'}">${a.severity}</span></td>
-                            <td>${a.type.replace(/_/g,' ')}</td>
-                            <td>${a.message}</td>
-                            <td><a href="/projects/${a.projectId}" style="color:var(--primary);">Project #${a.projectId}</a></td>
-                            <td style="font-size:0.8rem; color:var(--text-muted);">${new Date(a.triggeredAt).toLocaleString()}</td>
-                            <td>${a.read ? '' : `<button class="btn btn-secondary btn-sm" onclick="markRead(${a.id})">Mark read</button>`}</td>
-                        </tr>
-                    `).join('');
+                    alerts = data.data?.content ?? [];
+                    document.getElementById('mark-all-btn').disabled = !alerts.some(a => !a.read);
+                    renderAlerts(alerts);
                 });
         }
 
@@ -83,6 +88,7 @@
         }
 
         loadAlerts();
+        makeSortable(document.getElementById('alerts-table'), () => alerts, renderAlerts);
 
         // Live push: new alerts refresh the table immediately instead of waiting for a manual reload
         if (token) {

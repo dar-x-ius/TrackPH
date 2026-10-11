@@ -23,6 +23,9 @@ public class PageController {
     @GetMapping("/projects")
     public String projectList() { return "projects/list"; }
 
+    @GetMapping("/projects/archived")
+    public String projectArchived() { return "projects/archived"; }
+
     @GetMapping("/projects/new")
     public String projectNew() { return "projects/new"; }
 

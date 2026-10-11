@@ -6,14 +6,14 @@
     <div class="page-header"><h2>Audit Logs</h2></div>
 
     <div class="card card-table">
-        <table class="table">
+        <table class="table" id="audit-table">
             <thead>
                 <tr>
-                    <th>Time</th>
-                    <th>User</th>
-                    <th>Action</th>
-                    <th>Entity</th>
-                    <th>IP</th>
+                    <th data-sort="createdAt">Time</th>
+                    <th data-sort="username">User</th>
+                    <th data-sort="action">Action</th>
+                    <th data-sort="entityType">Entity</th>
+                    <th data-sort="ipAddress">IP</th>
                 </tr>
             </thead>
             <tbody id="audit-body">
@@ -26,24 +26,31 @@
         const token = localStorage.getItem('trackph-token') || '';
         const headers = {'Authorization': 'Bearer ' + token};
 
+        let logs = [];
+
+        function renderLogs(rows) {
+            const tbody = document.getElementById('audit-body');
+            if (!rows.length) {
+                tbody.innerHTML = '<tr><td colspan="5"><div class="empty-state"><p>No logs yet.</p></div></td></tr>';
+                return;
+            }
+            tbody.innerHTML = rows.map(l => `
+                <tr>
+                    <td style="font-size:0.8rem; color:var(--text-muted);">${new Date(l.createdAt).toLocaleString()}</td>
+                    <td>${l.username ?? '—'}</td>
+                    <td><code style="font-size:0.8rem;">${l.action}</code></td>
+                    <td style="font-size:0.85rem;">${l.entityType ? l.entityType + ' #' + l.entityId : '—'}</td>
+                    <td style="font-size:0.8rem; color:var(--text-muted);">${l.ipAddress ?? '—'}</td>
+                </tr>
+            `).join('');
+        }
+
         fetch('/api/v1/audit-logs?size=100&sort=createdAt,desc', { headers })
             .then(r => r.json())
             .then(data => {
-                const logs = data.data?.content ?? [];
-                const tbody = document.getElementById('audit-body');
-                if (!logs.length) {
-                    tbody.innerHTML = '<tr><td colspan="5"><div class="empty-state"><p>No logs yet.</p></div></td></tr>';
-                    return;
-                }
-                tbody.innerHTML = logs.map(l => `
-                    <tr>
-                        <td style="font-size:0.8rem; color:var(--text-muted);">${new Date(l.createdAt).toLocaleString()}</td>
-                        <td>${l.username ?? '—'}</td>
-                        <td><code style="font-size:0.8rem;">${l.action}</code></td>
-                        <td style="font-size:0.85rem;">${l.entityType ? l.entityType + ' #' + l.entityId : '—'}</td>
-                        <td style="font-size:0.8rem; color:var(--text-muted);">${l.ipAddress ?? '—'}</td>
-                    </tr>
-                `).join('');
+                logs = data.data?.content ?? [];
+                renderLogs(logs);
+                makeSortable(document.getElementById('audit-table'), () => logs, renderLogs);
             });
     </script>
 </main>

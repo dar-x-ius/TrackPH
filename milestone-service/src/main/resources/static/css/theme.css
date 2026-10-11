@@ -349,6 +349,13 @@ a:hover { color: var(--primary-dark); text-decoration: underline; }
 .table tr:hover td { background: var(--surface); }
 .table tr { transition: background var(--transition); }
 
+/* Click-to-sort column headers, wired up by js/table-sort.js */
+.table th.sortable { cursor: pointer; user-select: none; }
+.table th.sortable:hover { color: var(--text); }
+.table th.sortable::after { content: '\2195'; margin-left: 0.4rem; opacity: 0.35; }
+.table th.sortable[aria-sort="ascending"]::after { content: '\2191'; opacity: 1; color: var(--primary); }
+.table th.sortable[aria-sort="descending"]::after { content: '\2193'; opacity: 1; color: var(--primary); }
+
 /* Forms */
 .form-group { margin-bottom: 1rem; }
 .form-label { display: block; font-size: 0.875rem; font-weight: 500; margin-bottom: 0.3rem; color: var(--text); }
