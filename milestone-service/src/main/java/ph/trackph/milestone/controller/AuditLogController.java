@@ -24,10 +24,24 @@ public class AuditLogController {
     @GetMapping
     @Operation(summary = "List all audit logs, newest first (public view withholds IP address)")
     public ResponseEntity<ApiResponse<Page<AuditLogResponse>>> list(Authentication auth, Pageable pageable) {
-        boolean canSeeFull = auth != null && auth.isAuthenticated()
-                && (auth.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_ADMIN")) || auth.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_AGENCY")));
-        Page<AuditLogResponse> page = canSeeFull ? auditLogService.findAll(pageable) : auditLogService.findAllPublic(pageable);
+        Page<AuditLogResponse> page = canSeeIp(auth) ? auditLogService.findAll(pageable) : auditLogService.findAllPublic(pageable);
         return ResponseEntity.ok(ApiResponse.success(page));
+    }
+
+    @GetMapping("/entity/{entityType}/{entityId}")
+    @Operation(summary = "Edit history for one entity (e.g. a Project or Milestone), oldest first (public view withholds IP address)")
+    public ResponseEntity<ApiResponse<Page<AuditLogResponse>>> byEntity(@PathVariable String entityType, @PathVariable Long entityId, Authentication auth, Pageable pageable) {
+        Page<AuditLogResponse> page = canSeeIp(auth) ? auditLogService.findByEntity(entityType, entityId, pageable) : auditLogService.findByEntityPublic(entityType, entityId, pageable);
+        return ResponseEntity.ok(ApiResponse.success(page));
+    }
+
+    /**
+     * Full IP is ADMIN-only: AGENCY accounts are usually the ones being held accountable by
+     * these logs, so letting one AGENCY see every other agency's and admin's raw IPs would be
+     * broader access than the role needs (data-minimization principle, RA 10173).
+     */
+    private boolean canSeeIp(Authentication auth) {
+        return auth != null && auth.isAuthenticated() && auth.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_ADMIN"));
     }
 
     @GetMapping("/user/{userId}")

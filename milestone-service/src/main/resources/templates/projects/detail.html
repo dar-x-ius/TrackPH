@@ -10,6 +10,7 @@
         <div style="display:flex; align-items:center; gap:0.75rem; flex-wrap:wrap;">
             <h2 id="proj-name" style="color: var(--primary); margin:0;">Loading&hellip;</h2>
             <span id="proj-status" class="badge"></span>
+            <span id="proj-edited"></span>
             <button sec:authorize="hasAnyRole('AGENCY','ADMIN')" class="btn btn-secondary btn-sm" onclick="toggleEditProject()">Edit</button>
             <button sec:authorize="hasAnyRole('AGENCY','ADMIN')" class="btn btn-secondary btn-sm" onclick="deleteProject()">Delete</button>
         </div>
@@ -118,7 +119,32 @@
                     const badge = document.getElementById('proj-status');
                     badge.textContent = currentProject.status;
                     badge.className = 'badge ' + (statusBadge[currentProject.status] || 'badge-secondary');
+                    loadEditHistory('Project', currentProject.id, 'proj-edited');
                 });
+        }
+
+        /** Shows an "Edited" badge with the before/after trail, reusing the same audit-log JSON the admin audit page renders. Silent no-op if there's only the creation entry. */
+        function loadEditHistory(entityType, entityId, targetId) {
+            fetch(`/api/v1/audit-logs/entity/${entityType}/${entityId}?size=50&sort=createdAt,asc`, { headers })
+                .then(r => r.json())
+                .then(data => {
+                    const rows = data.data?.content ?? [];
+                    const el = document.getElementById(targetId);
+                    if (!el || rows.length <= 1) return;
+                    const historyId = `${targetId}-history`;
+                    el.innerHTML = `<details style="display:inline;"><summary class="badge badge-secondary" style="cursor:pointer; display:inline;">Edited</summary><div id="${historyId}" style="font-size:0.75rem; max-width:360px;"></div></details>`;
+                    document.getElementById(historyId).innerHTML = rows.map(renderHistoryEntry).join('');
+                });
+        }
+
+        function renderHistoryEntry(log) {
+            let parsed = null;
+            try { parsed = log.details ? JSON.parse(log.details) : null; } catch (e) { /* malformed details, show timestamp only */ }
+            const body = parsed ? (parsed.deleted ?? { before: parsed.before, after: parsed.after }) : null;
+            return `<div style="border-top:1px solid var(--border); padding:0.35rem 0;">
+                <div style="color:var(--text-muted);">${new Date(log.createdAt).toLocaleString()} &mdash; ${log.username ?? 'anonymous'}</div>
+                ${body ? `<pre style="white-space:pre-wrap; margin:0.25rem 0 0;">${JSON.stringify(body, null, 2)}</pre>` : ''}
+            </div>`;
         }
 
         function toggleEditProject() {
@@ -186,18 +212,42 @@
                             <div class="milestone-body">
                                 <div class="milestone-head">
                                     <strong>${m.title}</strong>
+                                    <span id="ms-edited-${m.id}"></span>
                                     <span class="badge ${msBadge[m.status] || 'badge-secondary'}">${m.status}</span>
                                     ${m.delayDays > 0 ? `<span class="badge badge-danger">${m.delayDays}d overdue</span>` : ''}
                                     ${canManageMilestones ? `
                                     <select class="form-control" onchange="updateMilestoneStatus(${m.id}, this.value)" style="width:auto; margin-left:auto;">
                                         ${Object.keys(msBadge).map(s => `<option value="${s}" ${s === m.status ? 'selected' : ''}>${s}</option>`).join('')}
                                     </select>
+                                    <button class="btn btn-secondary btn-sm" onclick="toggleEditMilestone(${m.id})">Edit</button>
                                     <button class="btn btn-secondary btn-sm" onclick="toggleReportForm(${m.id})">Submit Report</button>
                                     ` : ''}
                                 </div>
                                 <div class="milestone-meta">Due: ${m.dueDate}${m.completedDate ? ', Completed: ' + m.completedDate : ''}</div>
                                 ${m.description ? `<p style="margin: 0.5rem 0 0; font-size:0.9rem;">${m.description}</p>` : ''}
                                 ${canManageMilestones ? `
+                                <form id="edit-milestone-form-${m.id}" style="display:none; margin-top:0.75rem;" onsubmit="saveMilestone(event, ${m.id})">
+                                    <div class="form-group">
+                                        <label class="form-label">Title</label>
+                                        <input type="text" id="edit-ms-title-${m.id}" class="form-control" required/>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Description</label>
+                                        <textarea id="edit-ms-description-${m.id}" class="form-control" rows="2"></textarea>
+                                    </div>
+                                    <div class="grid-2">
+                                        <div class="form-group">
+                                            <label class="form-label">Due Date</label>
+                                            <input type="date" id="edit-ms-dueDate-${m.id}" class="form-control" required/>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label">Sequence Order</label>
+                                            <input type="number" id="edit-ms-sequenceOrder-${m.id}" class="form-control"/>
+                                        </div>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary btn-sm">Save</button>
+                                    <button type="button" class="btn btn-secondary btn-sm" onclick="toggleEditMilestone(${m.id})">Cancel</button>
+                                </form>
                                 <form id="report-form-${m.id}" style="display:none; margin-top:0.75rem;" onsubmit="submitReport(event, ${m.id})">
                                     <textarea id="report-desc-${m.id}" class="form-control" placeholder="Progress notes..." rows="2">${m.description ?? ''}</textarea>
                                     <button type="submit" class="btn btn-primary btn-sm" style="margin-top:0.5rem;">Save Report</button>
@@ -215,8 +265,41 @@
                             </div>
                         </div>
                     `).join('');
-                    milestones.forEach(m => loadAttachments(m.id));
+                    milestones.forEach(m => {
+                        loadAttachments(m.id);
+                        loadEditHistory('Milestone', m.id, `ms-edited-${m.id}`);
+                        if (!canManageMilestones) return;
+                        document.getElementById(`edit-ms-title-${m.id}`).value = m.title;
+                        document.getElementById(`edit-ms-description-${m.id}`).value = m.description ?? '';
+                        document.getElementById(`edit-ms-dueDate-${m.id}`).value = m.dueDate;
+                        document.getElementById(`edit-ms-sequenceOrder-${m.id}`).value = m.sequenceOrder;
+                    });
                 });
+        }
+
+        function toggleEditMilestone(id) {
+            const form = document.getElementById(`edit-milestone-form-${id}`);
+            form.style.display = form.style.display === 'none' ? 'block' : 'none';
+        }
+
+        function saveMilestone(e, id) {
+            e.preventDefault();
+            fetch(`/api/v1/milestones/${id}`, { headers })
+                .then(r => r.json())
+                .then(data => {
+                    const m = data.data;
+                    const body = {
+                        title: document.getElementById(`edit-ms-title-${id}`).value,
+                        description: document.getElementById(`edit-ms-description-${id}`).value,
+                        dueDate: document.getElementById(`edit-ms-dueDate-${id}`).value,
+                        sequenceOrder: Number(document.getElementById(`edit-ms-sequenceOrder-${id}`).value) || 0,
+                        status: m.status, completedDate: m.completedDate
+                    };
+                    return fetch(`/api/v1/milestones/${id}`, { method: 'PUT', headers: jsonHeaders, body: JSON.stringify(body) });
+                })
+                .then(r => r.json().then(b => ({ ok: r.ok, b })))
+                .then(({ ok, b }) => { if (!ok) throw new Error(b.message || 'Failed to save milestone'); loadMilestones(); })
+                .catch(err => alert(err.message));
         }
 
         function updateMilestoneStatus(id, status) {

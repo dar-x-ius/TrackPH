@@ -9,7 +9,7 @@
         Alerts
         <span id="unread-badge" class="nav-badge"></span>
     </a></li>
-    <li sec:authorize="hasAnyRole('ADMIN','AGENCY')"><a th:href="@{/admin/audit-logs}">Audit Logs</a></li>
+    <li><a th:href="@{/audit-logs}">Audit Logs</a></li>
 </ul>
 <ul class="navbar-user-list" th:fragment="userMenu">
     <li sec:authorize="isAuthenticated()" class="navbar-user" id="navbar-user">

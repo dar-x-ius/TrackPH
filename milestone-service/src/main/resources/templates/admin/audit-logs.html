@@ -25,9 +25,35 @@
 
     <script>
         const token = localStorage.getItem('trackph-token') || '';
-        const headers = {'Authorization': 'Bearer ' + token};
+        const headers = token ? {'Authorization': 'Bearer ' + token} : {};
 
         let logs = [];
+
+        const ROUTE_LABELS = [
+            [/\/alerts\/\d+\/read$/, 'Marked an alert read'],
+            [/\/alerts\/read-all$/, 'Marked all alerts read'],
+            [/\/dashboard\/settings$/, 'Updated dashboard settings'],
+            [/\/attachments\/\d+\/restore$/, 'Restored an attachment'],
+            [/\/attachments\/\d+$/, 'Removed an attachment'],
+            [/\/attachments$/, 'Uploaded an attachment'],
+            [/\/restore$/, 'Restored a record']
+        ];
+
+        /** Technical `action` (e.g. "PUT /api/v1/milestones/42") means nothing to a non-technical reader, so turn it into a sentence. Falls back to a route-pattern guess for actions with no entityType (alerts, dashboard settings) — the raw string is still shown as a tooltip for anyone who needs it. */
+        function renderAction(log) {
+            let parsed = null;
+            try { parsed = log.details ? JSON.parse(log.details) : null; } catch (e) { /* malformed details, fall through to route guess */ }
+            let label;
+            if (log.entityType) {
+                const verb = parsed?.deleted ? 'Deleted' : (parsed && parsed.before === null) ? 'Created' : 'Updated';
+                label = `${verb} ${log.entityType}${log.entityId != null ? ' #' + log.entityId : ''}`;
+            } else {
+                const path = log.action.split(' ')[1] || '';
+                const match = ROUTE_LABELS.find(([re]) => re.test(path));
+                label = match ? match[1] : log.action;
+            }
+            return `<span title="${log.action}">${label}</span>`;
+        }
 
         function renderChanges(details) {
             if (!details) return '—';
@@ -54,7 +80,7 @@
                 <tr>
                     <td style="font-size:0.8rem; color:var(--text-muted);">${new Date(l.createdAt).toLocaleString()}</td>
                     <td>${l.username ?? '—'}</td>
-                    <td><code style="font-size:0.8rem;">${l.action}</code></td>
+                    <td style="font-size:0.85rem;">${renderAction(l)}</td>
                     <td style="font-size:0.85rem;">${l.entityType ? l.entityType + ' #' + l.entityId : '—'}</td>
                     <td>${renderChanges(l.details)}</td>
                     <td style="font-size:0.8rem; color:var(--text-muted);">${l.ipAddress ?? '—'}</td>

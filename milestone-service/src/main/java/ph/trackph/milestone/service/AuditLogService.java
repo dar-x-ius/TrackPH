@@ -32,6 +32,10 @@ public class AuditLogService {
         return auditLogRepository.findByEntityTypeAndEntityId(entityType, entityId, pageable).map(AuditLogResponse::from);
     }
 
+    public Page<AuditLogResponse> findByEntityPublic(String entityType, Long entityId, Pageable pageable) {
+        return auditLogRepository.findByEntityTypeAndEntityId(entityType, entityId, pageable).map(AuditLogResponse::publicView);
+    }
+
     public AuditActivityReportResponse getActivityReport(LocalDateTime from, LocalDateTime to, int topN) {
         List<AuditActivityReportResponse.ActionCount> actionCounts = auditLogRepository.countByUserAndActionBetween(from, to).stream()
                 .map(r -> new AuditActivityReportResponse.ActionCount((Long) r[0], (String) r[1], (String) r[2], (Long) r[3]))

@@ -35,6 +35,6 @@ public class PageController {
     @GetMapping("/alerts")
     public String alerts() { return "alerts/list"; }
 
-    @GetMapping("/admin/audit-logs")
+    @GetMapping("/audit-logs")
     public String auditLogs() { return "admin/audit-logs"; }
 }
