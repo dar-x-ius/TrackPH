@@ -3,9 +3,9 @@
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <body>
 <ul class="navbar-links" th:fragment="links">
-    <li sec:authorize="isAuthenticated()"><a th:href="@{/dashboard}">Dashboard</a></li>
-    <li sec:authorize="isAuthenticated()"><a th:href="@{/projects}">Projects</a></li>
-    <li sec:authorize="isAuthenticated()"><a th:href="@{/alerts}">
+    <li><a th:href="@{/dashboard}">Dashboard</a></li>
+    <li><a th:href="@{/projects}">Projects</a></li>
+    <li><a th:href="@{/alerts}">
         Alerts
         <span id="unread-badge" class="nav-badge"></span>
     </a></li>

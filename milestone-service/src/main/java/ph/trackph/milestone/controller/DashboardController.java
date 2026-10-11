@@ -17,9 +17,9 @@ public class DashboardController {
     private final DashboardService dashboardService;
 
     @GetMapping
-    @Operation(summary = "Get dashboard data and widget config for the authenticated user")
+    @Operation(summary = "Get dashboard data (aggregate stats are public; widget config is personalized only when logged in)")
     public ResponseEntity<ApiResponse<DashboardResponse>> get(Authentication auth) {
-        Long userId = (Long) auth.getPrincipal();
+        Long userId = auth != null && auth.getPrincipal() instanceof Long id ? id : null;
         return ResponseEntity.ok(ApiResponse.success(dashboardService.getDashboard(userId)));
     }
 

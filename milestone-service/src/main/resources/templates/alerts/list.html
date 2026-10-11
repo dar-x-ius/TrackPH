@@ -5,7 +5,7 @@
 <main>
     <div class="page-header">
         <h2>Alerts</h2>
-        <button id="mark-all-btn" class="btn btn-secondary btn-sm" onclick="markAllRead()" disabled>Mark all as read</button>
+        <button id="mark-all-btn" class="btn btn-secondary btn-sm" onclick="markAllRead()" disabled style="display:none;">Mark all as read</button>
     </div>
 
     <div class="card card-table">
@@ -28,7 +28,7 @@
 
     <script>
         const token = localStorage.getItem('trackph-token') || '';
-        const headers = {'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json'};
+        const headers = token ? {'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json'} : {};
 
         const sevBadge = { LOW:'badge-secondary', MEDIUM:'badge-warning', HIGH:'badge-danger', CRITICAL:'badge-danger' };
 
@@ -47,7 +47,7 @@
                     <td>${a.message}</td>
                     <td><a href="/projects/${a.projectId}" style="color:var(--primary);">Project #${a.projectId}</a></td>
                     <td style="font-size:0.8rem; color:var(--text-muted);">${new Date(a.triggeredAt).toLocaleString()}</td>
-                    <td>${a.read ? '' : `<button class="btn btn-secondary btn-sm" onclick="markRead(${a.id})">Mark read</button>`}</td>
+                    <td>${(token && !a.read) ? `<button class="btn btn-secondary btn-sm" onclick="markRead(${a.id})">Mark read</button>` : ''}</td>
                 </tr>
             `).join('');
         }
@@ -57,7 +57,9 @@
                 .then(r => r.json())
                 .then(data => {
                     alerts = data.data?.content ?? [];
-                    document.getElementById('mark-all-btn').disabled = !alerts.some(a => !a.read);
+                    const markAllBtn = document.getElementById('mark-all-btn');
+                    markAllBtn.style.display = token ? 'inline-block' : 'none';
+                    markAllBtn.disabled = !alerts.some(a => !a.read);
                     renderAlerts(alerts);
                 });
         }

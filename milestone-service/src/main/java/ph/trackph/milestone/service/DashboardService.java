@@ -20,12 +20,15 @@ public class DashboardService {
     private final UserRepository userRepository;
 
     public DashboardResponse getDashboard(Long userId) {
-        DashboardConfig config = dashboardConfigRepository.findByUserId(userId).orElseGet(() -> defaultConfig(userId));
+        // Guests get the same aggregate stats with the default widget layout, no DashboardConfig row — nothing to persist for an anonymous visitor.
+        String widgetConfig = userId == null
+                ? "{\"widgets\":[\"projects\",\"alerts\",\"milestones\"]}"
+                : dashboardConfigRepository.findByUserId(userId).orElseGet(() -> defaultConfig(userId)).getWidgetConfig();
         long total = projectRepository.count();
         long inProgress = projectRepository.countByStatus(Project.Status.IN_PROGRESS);
         long delayed = projectRepository.countByStatus(Project.Status.DELAYED);
         long unread = alertRepository.countByReadFalse();
-        return new DashboardResponse(userId, config.getWidgetConfig(), total, inProgress, delayed, unread);
+        return new DashboardResponse(userId, widgetConfig, total, inProgress, delayed, unread);
     }
 
     @Transactional
