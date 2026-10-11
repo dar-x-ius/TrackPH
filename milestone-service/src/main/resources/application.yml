@@ -2,7 +2,7 @@ spring:
   application:
     name: milestone-service
   datasource:
-    url: jdbc:mysql://localhost:3306/trackph_milestone?useSSL=false&serverTimezone=Asia/Manila&allowPublicKeyRetrieval=true
+    url: jdbc:mysql://localhost:3306/trackph_milestone?useSSL=false&serverTimezone=Asia/Manila&allowPublicKeyRetrieval=true&createDatabaseIfNotExist=true
     username: ${DB_USERNAME:root}
     password: ${DB_PASSWORD:1234}
     driver-class-name: com.mysql.cj.jdbc.Driver

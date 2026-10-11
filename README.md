@@ -22,7 +22,7 @@ Read [trackph-microservice-template/docs/dev-guide.md](trackph-microservice-temp
 
 ## Seed Data
 
-Point a fresh MySQL 8 database at a service and start it — Flyway runs that service's seed migration automatically, no manual step. `milestone-service` seeds 7 demo projects (covering every status) and 3 demo logins, password `Demo@12345` for all three:
+Point a service at a running MySQL 8 server and start it — the database, schema, and seed data all appear automatically, no manual step. `milestone-service` seeds 7 demo projects (covering every status) and 3 demo logins, password `Demo@12345` for all three:
 
 | Username | Role | Represents |
 |---|---|---|
