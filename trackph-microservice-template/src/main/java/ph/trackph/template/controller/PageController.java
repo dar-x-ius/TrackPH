@@ -12,4 +12,8 @@ public class PageController {
 
     @GetMapping("/register")
     public String register() { return "auth/register"; }
+
+    /** Living reference for every shared theme.css primitive — template-only, not synced to services. */
+    @GetMapping("/style-guide")
+    public String styleGuide() { return "style-guide"; }
 }

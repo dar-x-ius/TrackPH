@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: layout(pageTitle='Style Guide', content=~{::main})}">
+<body>
+<main>
+    <div class="page-header">
+        <h2>
+            <svg class="page-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="13.5" cy="6.5" r="1.5"/><circle cx="17.5" cy="10.5" r="1.5"/><circle cx="8.5" cy="7.5" r="1.5"/><circle cx="6.5" cy="12.5" r="1.5"/><path d="M12 2a10 10 0 1 0 0 20c1.1 0 2-.9 2-2 0-.5-.2-1-.5-1.4-.3-.4-.5-.9-.5-1.4 0-1.1.9-2 2-2H17a5 5 0 0 0 5-5c0-4.4-4.5-8.2-10-8.2Z"/></svg>
+            Style Guide
+        </h2>
+    </div>
+    <p class="text-muted mb-4">
+        Every shared primitive in <code>theme.css</code>, rendered live so you can see what you're reusing before
+        writing new CSS. This page is template-only — it isn't synced to services and isn't linked from any navbar,
+        so it never ships to a real user. Open <code th:text="@{/style-guide}">/style-guide</code> directly, and use
+        the theme toggle in the navbar above to check everything in both light and dark mode.
+    </p>
+
+    <div class="filter-bar flex-wrap">
+        <a href="#colors">Colors</a>
+        <a href="#typography">Typography</a>
+        <a href="#buttons">Buttons</a>
+        <a href="#badges">Badges</a>
+        <a href="#cards">Cards &amp; Stats</a>
+        <a href="#tables">Tables</a>
+        <a href="#forms">Forms</a>
+        <a href="#alerts">Alerts</a>
+        <a href="#page-patterns">Page Patterns</a>
+        <a href="#milestones">Milestone Timeline</a>
+        <a href="#misc">Misc Components</a>
+    </div>
+
+    <!-- Colors -->
+    <section id="colors" style="margin-bottom:3rem;">
+        <h3>Colors</h3>
+        <p class="text-muted text-sm">
+            Never hardcode a hex value in a template or a new CSS rule — every color below is a variable in
+            <code>:root</code> (and re-declared under <code>[data-theme="dark"]</code> where the value needs to flip).
+        </p>
+        <div class="stats-row" style="grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));">
+            <div class="card" style="padding:0; overflow:hidden;">
+                <div style="height:60px; background:var(--primary);"></div>
+                <div style="padding:0.75rem;"><strong>--primary</strong><br/><span class="text-xs text-muted">Brand red</span></div>
+            </div>
+            <div class="card" style="padding:0; overflow:hidden;">
+                <div style="height:60px; background:var(--primary-dark);"></div>
+                <div style="padding:0.75rem;"><strong>--primary-dark</strong><br/><span class="text-xs text-muted">Hover/active red</span></div>
+            </div>
+            <div class="card" style="padding:0; overflow:hidden;">
+                <div style="height:60px; background:var(--primary-light);"></div>
+                <div style="padding:0.75rem;"><strong>--primary-light</strong><br/><span class="text-xs text-muted">Gradient top, dark-mode text</span></div>
+            </div>
+            <div class="card" style="padding:0; overflow:hidden;">
+                <div style="height:60px; background:var(--text-accent); display:flex; align-items:center; justify-content:center; color:#fff; font-size:0.75rem;">text sample</div>
+                <div style="padding:0.75rem;"><strong>--text-accent</strong><br/><span class="text-xs text-muted">Headings/links on page bg — see note below</span></div>
+            </div>
+            <div class="card" style="padding:0; overflow:hidden;">
+                <div style="height:60px; background:var(--success);"></div>
+                <div style="padding:0.75rem;"><strong>--success</strong></div>
+            </div>
+            <div class="card" style="padding:0; overflow:hidden;">
+                <div style="height:60px; background:var(--warning);"></div>
+                <div style="padding:0.75rem;"><strong>--warning</strong><br/><span class="text-xs text-muted">Doubles as the landing page's accent color</span></div>
+            </div>
+            <div class="card" style="padding:0; overflow:hidden;">
+                <div style="height:60px; background:var(--danger);"></div>
+                <div style="padding:0.75rem;"><strong>--danger</strong></div>
+            </div>
+            <div class="card" style="padding:0; overflow:hidden;">
+                <div style="height:60px; background:var(--info);"></div>
+                <div style="padding:0.75rem;"><strong>--info</strong></div>
+            </div>
+        </div>
+        <p class="text-muted text-sm">
+            <strong>--text-accent</strong> is <code>--primary</code> in light mode but swaps to the lighter
+            <code>--primary-light</code> in dark mode, because full-saturation red reads harshly on a near-black
+            page. Use it (not <code>--primary</code> directly) for any text that sits straight on <code>--bg</code>/
+            <code>--surface</code> &mdash; headings, links, stat numbers. <code>--primary</code> itself is still correct
+            for anything with its own background, like a button or badge.
+        </p>
+        <p class="text-muted text-sm">
+            <strong>--page-bg</strong> / <strong>--card-bg</strong> are the other theme-flip pair: a <code>.card</code>
+            needs to read as "elevated" above the page in both themes, which means white-on-light-gray in light mode
+            but light-gray-on-near-black in dark mode &mdash; opposite directions. Use <code>.card</code>/<code>.stat-tile</code>
+            rather than wiring these two up yourself.
+        </p>
+        <div class="card" style="margin-top:1rem;">
+            <strong class="text-sm">Status tint pairs</strong> &mdash; each has a <code>-bg</code>/<code>-text</code>/<code>-border</code> triple, used by badges and alerts:
+            <div class="flex flex-wrap gap-2 mt-3">
+                <span class="badge badge-success">success</span>
+                <span class="badge badge-warning">warning</span>
+                <span class="badge badge-danger">danger</span>
+                <span class="badge badge-info">info</span>
+                <span class="badge badge-secondary">secondary</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Typography -->
+    <section id="typography" style="margin-bottom:3rem;">
+        <h3>Typography</h3>
+        <div class="card">
+            <h1 class="mt-0">Heading 1</h1>
+            <h2>Heading 2</h2>
+            <h3>Heading 3</h3>
+            <h4>Heading 4</h4>
+            <p>Body text at the default 1rem/1.6 line-height. <a href="#">This is a link</a> using <code>--text-accent</code>.</p>
+            <p class="text-muted">Muted text (<code>.text-muted</code>) for secondary/supporting copy.</p>
+            <p class="text-sm">Small text (<code>.text-sm</code>), e.g. table meta or captions.</p>
+            <p class="text-xs">Extra-small text (<code>.text-xs</code>), e.g. timestamps.</p>
+        </div>
+    </section>
+
+    <!-- Buttons -->
+    <section id="buttons" style="margin-bottom:3rem;">
+        <h3>Buttons</h3>
+        <div class="card flex flex-wrap gap-2 items-center">
+            <button class="btn btn-primary">Primary</button>
+            <button class="btn btn-secondary">Secondary</button>
+            <button class="btn btn-danger">Danger</button>
+            <button class="btn btn-primary btn-sm">Primary small</button>
+            <button class="btn btn-secondary btn-sm">Secondary small</button>
+            <button class="btn btn-primary" disabled>Disabled</button>
+        </div>
+        <p class="text-muted text-sm">
+            Hover any of these &mdash; they lift 1px and darken/raise slightly. If you add a new <code>.btn-*</code>
+            variant, its <code>:hover</code> rule must re-declare its own <code>color</code>: the global
+            <code>a:hover</code> rule otherwise outranks a plain <code>.btn-*</code> color on specificity and can
+            make the label invisible against its own hover background (this bit the hero/CTA buttons once &mdash; see
+            the comment above <code>.btn-primary</code> in <code>theme.css</code>).
+        </p>
+    </section>
+
+    <!-- Badges -->
+    <section id="badges" style="margin-bottom:3rem;">
+        <h3>Badges</h3>
+        <div class="card flex flex-wrap gap-2">
+            <span class="badge badge-success">Completed</span>
+            <span class="badge badge-info">In Progress</span>
+            <span class="badge badge-warning">Delayed</span>
+            <span class="badge badge-danger">Cancelled</span>
+            <span class="badge badge-secondary">Planned</span>
+        </div>
+    </section>
+
+    <!-- Cards & Stats -->
+    <section id="cards" style="margin-bottom:3rem;">
+        <h3>Cards &amp; Stat Tiles</h3>
+        <div class="stats-row">
+            <div class="stat-tile stat-primary">
+                <div class="stat-value">24</div>
+                <div class="stat-label">Total Projects</div>
+            </div>
+            <div class="stat-tile stat-info">
+                <div class="stat-value">9</div>
+                <div class="stat-label">In Progress</div>
+            </div>
+            <div class="stat-tile stat-success">
+                <div class="stat-value">11</div>
+                <div class="stat-label">Completed</div>
+            </div>
+            <div class="stat-tile stat-warning">
+                <div class="stat-value">3</div>
+                <div class="stat-label">Unread Alerts</div>
+            </div>
+            <div class="stat-tile stat-danger">
+                <div class="stat-value">1</div>
+                <div class="stat-label">Delayed</div>
+            </div>
+        </div>
+        <div class="grid-2">
+            <div class="card">
+                <strong>Plain .card</strong>
+                <p class="text-muted text-sm mb-0 mt-2">Shadow deepens on hover. Background is <code>--card-bg</code>, not <code>--bg</code> &mdash; that's what keeps it from blending into the page.</p>
+            </div>
+            <div class="card">
+                <strong>Another .card</strong>
+                <p class="text-muted text-sm mb-0 mt-2">Used for any grouped content that isn't a table: quick links, settings panels, form wrappers.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Tables -->
+    <section id="tables" style="margin-bottom:3rem;">
+        <h3>Tables</h3>
+        <div class="card card-table">
+            <table class="table">
+                <thead>
+                    <tr><th>Name</th><th>Agency</th><th>Status</th><th>Milestones</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>Barangay Health Center Renovation</td><td>Department of Health</td><td><span class="badge badge-info">IN_PROGRESS</span></td><td>4</td></tr>
+                    <tr><td>Rural Farm-to-Market Road</td><td>Department of Health</td><td><span class="badge badge-danger">DELAYED</span></td><td>3</td></tr>
+                    <tr><td>Coastal Seawall Construction</td><td>Department of Health</td><td><span class="badge badge-secondary">PLANNED</span></td><td>3</td></tr>
+                    <tr><td>Public Market Modernization</td><td>Department of Health</td><td><span class="badge badge-success">COMPLETED</span></td><td>3</td></tr>
+                </tbody>
+            </table>
+        </div>
+        <p class="text-muted text-sm">
+            Header uses the same red gradient as <code>.navbar</code>/<code>.cta-band</code> &mdash; one brand
+            treatment, reused, not a fourth red. Rows alternate a faint <code>--surface</code> tint and highlight
+            <code>--surface-raised</code> on hover. Wrap a table in <code>.card.card-table</code> (not a bare
+            <code>.card</code>) so it gets zero internal padding and the permanently-raised shadow a static table
+            needs to separate from the page.
+        </p>
+    </section>
+
+    <!-- Forms -->
+    <section id="forms" style="margin-bottom:3rem;">
+        <h3>Forms</h3>
+        <div class="card" style="max-width:420px;">
+            <div class="form-group">
+                <label class="form-label" for="sg-text">Text input</label>
+                <input id="sg-text" type="text" class="form-control" placeholder="Project name"/>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="sg-select">Select</label>
+                <select id="sg-select" class="form-control">
+                    <option>PLANNED</option>
+                    <option>IN_PROGRESS</option>
+                    <option>DELAYED</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="sg-password">
+                    Password field
+                    <span class="info-tooltip">
+                        <button type="button" class="info-icon" tabindex="0">i</button>
+                        <span class="info-tooltip-content">
+                            <p><code>.info-tooltip</code> reveals its content on hover or keyboard focus &mdash; used for things like demo credentials on the login page.</p>
+                        </span>
+                    </span>
+                </label>
+                <div class="password-field">
+                    <input id="sg-password" type="password" class="form-control" value="Demo@12345"/>
+                    <button type="button" class="password-toggle" onclick="const i=document.getElementById('sg-password'); const show=i.type==='password'; i.type=show?'text':'password'; this.textContent=show?'Hide':'Show';">Show</button>
+                </div>
+            </div>
+            <button type="button" class="btn btn-primary w-full">Submit</button>
+        </div>
+    </section>
+
+    <!-- Alerts -->
+    <section id="alerts" style="margin-bottom:3rem;">
+        <h3>Alerts</h3>
+        <div class="alert alert-success">Project saved successfully.</div>
+        <div class="alert alert-warning">This milestone is due in 3 days.</div>
+        <div class="alert alert-danger">Could not reach the server. Please try again.</div>
+        <div class="alert alert-info">Public visitors see a read-only view of this page.</div>
+    </section>
+
+    <!-- Page patterns -->
+    <section id="page-patterns" style="margin-bottom:3rem;">
+        <h3>Page Patterns</h3>
+        <p class="text-muted text-sm">These aren't single classes &mdash; they're the small structural patterns every list/detail page in the app repeats. Copy the markup, not just the class names.</p>
+
+        <strong class="text-sm">.page-header</strong>
+        <div class="card mt-2 mb-3" style="padding:1.5rem;">
+            <div class="page-header" style="margin-bottom:0;">
+                <h2>
+                    <svg class="page-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20V10M12 20V4M20 20v-7"/></svg>
+                    Example Page
+                </h2>
+                <a class="btn btn-primary btn-sm">+ New</a>
+            </div>
+        </div>
+
+        <strong class="text-sm">.filter-bar</strong> &mdash; houses a list page's toggle controls, kept separate from the title's primary action
+        <div class="filter-bar mt-2 mb-3">
+            <button class="btn btn-secondary btn-sm">View Archived</button>
+        </div>
+
+        <strong class="text-sm">.back-link</strong> &mdash; above a detail page's header
+        <p class="mt-2 mb-3"><a href="#" class="back-link">&larr; Back to list</a></p>
+
+        <strong class="text-sm">.empty-state</strong> &mdash; centered placeholder for a list with no rows yet
+        <div class="card card-table mt-2">
+            <div class="empty-state"><p>No projects tracked yet. Check back soon.</p></div>
+        </div>
+    </section>
+
+    <!-- Milestones -->
+    <section id="milestones" style="margin-bottom:3rem;">
+        <h3>Milestone Timeline</h3>
+        <p class="text-muted text-sm">
+            A connecting rail bridges the margin gap between each <code>.milestone-item</code> card &mdash; it only
+            spans the fixed-height gap, not the card itself, so it never has to guess a variable card height.
+        </p>
+        <div>
+            <div class="card milestone-item">
+                <div class="milestone-step">1</div>
+                <div class="milestone-body">
+                    <div class="milestone-head"><strong>Site Assessment &amp; Permitting</strong> <span class="badge badge-success">COMPLETED</span></div>
+                    <div class="milestone-meta">Due 2026-01-15</div>
+                </div>
+            </div>
+            <div class="card milestone-item">
+                <div class="milestone-step">2</div>
+                <div class="milestone-body">
+                    <div class="milestone-head"><strong>Foundation and Structural Work</strong> <span class="badge badge-info">IN_PROGRESS</span></div>
+                    <div class="milestone-meta">Due 2026-06-30</div>
+                </div>
+            </div>
+            <div class="card milestone-item">
+                <div class="milestone-step">3</div>
+                <div class="milestone-body">
+                    <div class="milestone-head"><strong>Final Inspection and Turnover</strong> <span class="badge badge-secondary">PLANNED</span></div>
+                    <div class="milestone-meta">Due 2026-12-31</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Misc -->
+    <section id="misc" style="margin-bottom:3rem;">
+        <h3>Misc Components</h3>
+        <p class="text-muted text-sm">Landing-page-only primitives (<code>.hero</code>, <code>.hero-photo</code>, <code>.features</code>, <code>.cta-band</code>, <code>.project-preview-card</code>) aren't demoed here &mdash; see <code>milestone-service/.../templates/index.html</code> for a full landing page built on them, since they only make sense at full page width and with real content.</p>
+        <div class="card flex items-center gap-3">
+            <span class="info-tooltip">
+                <button type="button" class="info-icon" tabindex="0">i</button>
+                <span class="info-tooltip-content"><p>Hover or focus me. Used for inline help text that would clutter the page if always visible.</p></span>
+            </span>
+            <span class="text-sm text-muted">.info-tooltip</span>
+        </div>
+    </section>
+</main>
+</body>
+</html>

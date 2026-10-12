@@ -117,11 +117,22 @@ Not using Eclipse? `mvn spring-boot:run` in the service folder works too.
 
 ## Theme & UI
 
-- CSS variables are defined in `static/css/theme.css`.
-- Use only these variables in your styles — no hardcoded hex colors:
-  - `--primary` (TrackPH red `#DA1219`)
-  - `--primary-dark`
-  - `--bg`, `--surface`, `--text`, `--border`
+- CSS variables are defined in `static/css/theme.css`. Use only these variables in your styles — no hardcoded hex
+  colors. The full set, with live swatches, is on `/style-guide` (see below); the ones worth knowing by name:
+  - `--primary` / `--primary-dark` / `--primary-light` (TrackPH red `#DA1219` and its hover/gradient shades)
+  - `--text-accent` — heading/link/stat-number color on top of `--bg`/`--surface`. Same as `--primary` in light
+    mode, but swaps to `--primary-light` in dark mode, since full-saturation red is harsh on a near-black page.
+    Use this, not `--primary` directly, for text that sits straight on the page — `--primary` itself stays correct
+    for anything with its own background (a button, a badge).
+  - `--bg` / `--surface` / `--surface-raised` — the base lightness steps a theme offers
+  - `--page-bg` / `--card-bg` — which of the above the page canvas vs. a `.card` actually uses. Kept as separate
+    tokens (not just "page = `--bg`, card = `--surface`") because the two themes need the relationship in opposite
+    directions for a card to read as "elevated": white-on-light-gray in light mode, light-gray-on-near-black in
+    dark mode. Use `.card`/`.card-table`/`.stat-tile` rather than wiring these up yourself.
+  - `--text`, `--text-muted`, `--border`
+  - `--success` / `--warning` / `--danger` / `--info`, each with a `-bg`/`-text`/`-border` triple for badges and
+    alerts. `--warning` also doubles as the landing page's single decorative accent color (feature icons, the
+    hero's highlighted word, the navbar brand's hover state) — reuse it there rather than adding a second accent.
 - Dark mode is toggled by setting `data-theme="dark"` on `<html>`. The `theme-toggle.js` script handles this and persists to `localStorage` under the `trackph-theme` key.
 - **Avoiding a flash of the wrong theme on page load**: this is a server-rendered multi-page app, so every navigation is a full page load/repaint, not client-side routing. `theme-toggle.js`'s `initTheme()` only runs on `DOMContentLoaded`, which is too late to prevent a flash of the default light `--bg` before it fires. `layout.html`'s `<head>` therefore has a small inline `<script>`, placed before the `theme.css` link, that reads `localStorage` synchronously and sets `data-theme` on `<html>` before first paint. Do not remove it or move it after the CSS link.
 - **Do not add a second theme toggle** — `layout.html` already has one in the navbar.
@@ -133,6 +144,7 @@ Not using Eclipse? `mvn spring-boot:run` in the service folder works too.
   - Brand name and footer tagline come from the `appName` / `appTagline` model attributes (used via `${appName} ?: 'TrackPH'` so a missing bean still degrades gracefully) rather than hardcoded text, supplied per service by a small `@ControllerAdvice` class — see `config/BrandConfig.java`. Edit its two constants for your service instead of editing strings in `layout.html`.
 - **Landing pages / public marketing content are not part of the shared template.** `theme.css` ships generic, reusable primitives for building one (`.hero`, `.features`, `.recent-projects`, `.cta-band`, etc.) but the template's own `index.html` stays a minimal generic placeholder. A service's actual landing page (see `milestone-service/.../index.html` for an example) will usually fetch from that service's own domain API, so it isn't portable as-is — build your own content on top of the shared CSS classes rather than copying another service's `index.html` wholesale.
 - **Hero photos are service-owned, not synced.** If a service's landing page uses a photo background (`.hero-photo` in `theme.css`), the image file lives at `<service>/src/main/resources/static/images/`, created by that service, not pushed by `sync-theme.sh` (only `theme.css`/`theme-toggle.js` are). Unlike the project's hand-rolled SVGs, a sourced photo has a real license to track — add a short `CREDITS.md` next to it recording where it came from and under what license.
+- **`/style-guide` is the living reference for every shared primitive** — colors, typography, buttons, badges, cards, stat tiles, tables, forms, alerts, the page-header/filter-bar/back-link/empty-state patterns, the milestone timeline, and the misc components (info tooltip, password-field toggle). It's template-only: defined in this service's own `PageController`/`style-guide.html`, permitted in `SecurityConfig`, and deliberately not linked from any navbar or synced to other services — open `/style-guide` directly on a running instance. Toggle dark mode from the navbar while you're on it to check both themes at once. When you add a new shared class to `theme.css`, add a matching example here in the same change; this page existing is also why a new component variant should be rare — check it before inventing a new class.
 
 ---
 
