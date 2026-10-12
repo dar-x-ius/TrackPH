@@ -4,11 +4,15 @@
 <body>
 <main>
     <div class="page-header">
-        <h2>Users</h2>
-        <div class="flex gap-2">
-            <button id="toggle-filter" class="btn btn-secondary btn-sm"></button>
-            <a th:href="@{/admin/users/new}" class="btn btn-primary btn-sm">+ Create Account</a>
-        </div>
+        <h2>
+            <svg class="page-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-3.5 3.5-6 8-6s8 2.5 8 6"/></svg>
+            Users
+        </h2>
+        <a th:href="@{/admin/users/new}" class="btn btn-primary btn-sm">+ Create Account</a>
+    </div>
+
+    <div class="filter-bar">
+        <button id="toggle-filter" class="btn btn-secondary btn-sm"></button>
     </div>
 
     <div class="card card-table">

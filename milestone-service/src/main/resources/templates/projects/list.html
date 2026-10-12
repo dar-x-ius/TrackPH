@@ -5,11 +5,15 @@
 <body>
 <main>
     <div class="page-header">
-        <h2>Projects</h2>
-        <div class="flex gap-2">
-            <a th:href="@{/projects/archived}" class="btn btn-secondary btn-sm">View Archived</a>
-            <a sec:authorize="isAuthenticated()" th:href="@{/projects/new}" class="btn btn-primary btn-sm">+ New Project</a>
-        </div>
+        <h2>
+            <svg class="page-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 3 8l9 5 9-5-9-5Z"/><path d="M3 12l9 5 9-5M3 16l9 5 9-5"/></svg>
+            Projects
+        </h2>
+        <a sec:authorize="isAuthenticated()" th:href="@{/projects/new}" class="btn btn-primary btn-sm">+ New Project</a>
+    </div>
+
+    <div class="filter-bar">
+        <a th:href="@{/projects/archived}" class="btn btn-secondary btn-sm">View Archived</a>
     </div>
 
     <div class="stats-row">

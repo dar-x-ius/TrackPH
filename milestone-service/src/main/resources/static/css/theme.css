@@ -4,6 +4,11 @@
     --primary-dark:   #A80F14;
     --primary-light:  #E8434A;
     --primary-text:   #FFFFFF;
+    /* Red text set directly on --bg/--surface (headings, links, stat numbers) — same as
+       --primary in light mode, but swapped to the lighter shade in dark mode, where the
+       full-saturation red reads harshly against a near-black page. Buttons/badges/borders
+       keep using --primary itself; they sit on their own background, not the page's. */
+    --text-accent:    var(--primary);
 
     --bg:             #FFFFFF;
     --surface:        #F5F5F5;
@@ -11,6 +16,11 @@
     --text:           #1A1A1A;
     --text-muted:     #666666;
     --border:         #E0E0E0;
+    /* Page canvas vs. card surface, kept as separate tokens because which one reads as
+       "elevated" flips between themes: a white card pops off a light-gray page, but in dark
+       mode a card needs to be LIGHTER than the canvas, not the same near-black, to pop at all. */
+    --page-bg:        var(--surface);
+    --card-bg:        var(--bg);
 
     --success:  #27AE60;
     --warning:  #F39C12;
@@ -52,6 +62,9 @@
     --info-bg:    #0d2a38; --info-text:    #7bc8e0; --info-border:    #1a3a4a;
 
     --focus-ring: 0 0 0 3px rgba(232, 67, 74, 0.45);
+    --text-accent: var(--primary-light);
+    --page-bg:     var(--bg);
+    --card-bg:     var(--surface-raised);
     /* Darker, near-black scrim for dark mode — blends into the already-dark surroundings
        instead of the lighter brand-red wash used against a light page. */
     --hero-scrim: linear-gradient(135deg, rgba(168, 15, 20, 0.55), rgba(16, 16, 18, 0.78));
@@ -68,14 +81,14 @@ body {
     font-family: 'Segoe UI', 'Noto Sans', Roboto, system-ui, -apple-system, sans-serif;
     font-size: 1rem;
     line-height: 1.6;
-    background-color: var(--bg);
+    background-color: var(--page-bg);
     color: var(--text);
     transition: background-color var(--transition), color var(--transition);
 }
 
 h1, h2, h3, h4 { line-height: 1.25; letter-spacing: -0.01em; }
 
-a { color: var(--primary); text-decoration: none; }
+a { color: var(--text-accent); text-decoration: none; }
 a:hover { color: var(--primary-dark); text-decoration: underline; }
 
 :focus-visible { outline: none; box-shadow: var(--focus-ring); border-radius: var(--radius); }
@@ -154,7 +167,9 @@ a:hover { color: var(--primary-dark); text-decoration: underline; }
     letter-spacing: -0.01em;
     color: var(--primary-text);
     text-decoration: none;
+    transition: color var(--transition);
 }
+.navbar-brand:hover { color: var(--warning); }
 
 .navbar-links {
     display: flex;
@@ -310,7 +325,7 @@ a:hover { color: var(--primary-dark); text-decoration: underline; }
 
 /* Cards */
 .card {
-    background: var(--bg);
+    background: var(--card-bg);
     border: 1px solid var(--border);
     border-radius: var(--radius);
     padding: 1.5rem;
@@ -319,8 +334,10 @@ a:hover { color: var(--primary-dark); text-decoration: underline; }
 }
 .card:hover { box-shadow: var(--shadow-raised); }
 
-/* Table wrapper: card with no internal padding, table provides its own */
-.card-table { padding: 0; overflow: hidden; }
+/* Table wrapper: card with no internal padding, table provides its own.
+   Stronger shadow than a plain .card by default (not just on hover) — a table is read while
+   sitting still, so it needs to visually separate from the page without needing interaction. */
+.card-table { padding: 0; overflow: hidden; box-shadow: var(--shadow-raised); }
 
 /* Stat tile: dashboard summary numbers, color-coded by left accent bar */
 .stats-row {
@@ -330,7 +347,7 @@ a:hover { color: var(--primary-dark); text-decoration: underline; }
     margin-bottom: 2rem;
 }
 .stat-tile {
-    background: var(--bg);
+    background: var(--card-bg);
     border: 1px solid var(--border);
     border-left: 3px solid var(--stat-color, var(--primary));
     border-radius: var(--radius);
@@ -344,6 +361,9 @@ a:hover { color: var(--primary-dark); text-decoration: underline; }
 .stat-success { --stat-color: var(--success); }
 .stat-warning { --stat-color: var(--warning); }
 .stat-danger  { --stat-color: var(--danger); }
+/* The left-accent border stays full-saturation --primary (a thin bar, not a readability concern);
+   only the big bold number text gets the eye-friendlier --text-accent in dark mode. */
+.stat-primary .stat-value { color: var(--text-accent); }
 
 .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
 @media (max-width: 720px) { .grid-2 { grid-template-columns: 1fr; } }
@@ -405,8 +425,9 @@ a:hover { color: var(--primary-dark); text-decoration: underline; }
 /* Tables */
 .table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
 .table th {
-    background: var(--surface);
-    color: var(--text-muted);
+    /* Same gradient formula as .navbar/.cta-band — one brand treatment, not a third red. */
+    background: linear-gradient(180deg, var(--primary-light), var(--primary));
+    color: var(--primary-text);
     font-weight: 600;
     text-align: left;
     padding: 0.7rem 1.1rem;
@@ -421,7 +442,8 @@ a:hover { color: var(--primary-dark); text-decoration: underline; }
     vertical-align: middle;
 }
 .table tr:last-child td { border-bottom: none; }
-.table tr:hover td { background: var(--surface); }
+.table tbody tr:nth-child(even) td { background: var(--surface); }
+.table tr:hover td { background: var(--surface-raised); }
 .table tr { transition: background var(--transition); }
 
 /* Forms */
@@ -475,9 +497,24 @@ main input:focus, main textarea:focus, main select:focus {
     align-items: center;
     justify-content: space-between;
     gap: 1rem;
+    padding-bottom: 1rem;
     margin-bottom: 1.5rem;
+    border-bottom: 1px solid var(--border);
 }
-.page-header h1, .page-header h2 { margin: 0; font-size: 1.5rem; color: var(--primary); }
+.page-header h1, .page-header h2 { margin: 0; font-size: 1.5rem; color: var(--text-accent); display: flex; align-items: center; gap: 0.6rem; }
+.page-icon { width: 26px; height: 26px; flex-shrink: 0; color: var(--text-accent); }
+
+/* Filter bar: houses a list page's toggle/filter controls, separate from the title's primary action */
+.filter-bar {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    margin-bottom: 1rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+}
 
 /* Empty state: centered placeholder for lists with no rows yet */
 .empty-state {
@@ -496,7 +533,7 @@ main input:focus, main textarea:focus, main select:focus {
     font-size: 0.85rem;
     font-weight: 500;
 }
-.back-link:hover { color: var(--primary); text-decoration: none; }
+.back-link:hover { color: var(--text-accent); text-decoration: none; }
 
 /* Full-bleed: breaks a section out of page-container's centered max-width */
 .full-bleed { width: 100vw; position: relative; left: 50%; margin-left: -50vw; }
@@ -518,13 +555,13 @@ main input:focus, main textarea:focus, main select:focus {
     margin-bottom: 1.5rem;
 }
 .hero h1 { color: var(--text); font-size: clamp(2.1rem, 5vw, 3.15rem); font-weight: 800; letter-spacing: -0.02em; line-height: 1.1; margin: 0 0 0.75rem; }
-.hero h1 .accent { color: var(--primary); }
+.hero h1 .accent { color: var(--text-accent); }
 .hero .hero-sub { color: var(--text-muted); font-size: 1.08rem; max-width: 560px; margin: 0 auto 2.25rem; }
 .hero .btn { margin: 0 0.4rem; padding: 0.65rem 1.5rem; font-size: 0.95rem; }
 
 .hero-stats { display: flex; justify-content: center; gap: 2.5rem; flex-wrap: wrap; margin-top: 3rem; }
 .hero-stat { text-align: center; min-width: 100px; }
-.hero-stat .value { font-size: 1.9rem; font-weight: 800; color: var(--primary); line-height: 1; }
+.hero-stat .value { font-size: 1.9rem; font-weight: 800; color: var(--text-accent); line-height: 1; }
 .hero-stat .label { font-size: 0.78rem; color: var(--text-muted); margin-top: 0.3rem; text-transform: uppercase; letter-spacing: 0.05em; }
 
 /* Photo-backed hero: a modifier on .hero, not a replacement, so the template's own
@@ -562,8 +599,9 @@ main input:focus, main textarea:focus, main select:focus {
     width: 52px; height: 52px;
     display: flex; align-items: center; justify-content: center;
     margin: 0 auto 1.1rem;
-    background: var(--danger-bg);
-    color: var(--primary);
+    /* Same warm-yellow accent as the hero's "public projects" text — one accent color, not a second one. */
+    background: var(--warning-bg);
+    color: var(--warning);
     border-radius: 50%;
 }
 .feature-icon svg { width: 24px; height: 24px; }
@@ -578,7 +616,7 @@ main input:focus, main textarea:focus, main select:focus {
 .project-preview-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 1.25rem; max-width: 1100px; margin: 0 auto; }
 .project-preview-grid .empty-state { grid-column: 1 / -1; }
 .project-preview-card {
-    background: var(--bg);
+    background: var(--card-bg);
     border: 1px solid var(--border);
     border-radius: var(--radius);
     padding: 1.25rem;
@@ -671,7 +709,7 @@ main input:focus, main textarea:focus, main select:focus {
    so templates stop hand-writing the same style="..." attribute over and over. Values
    match what the codebase already used inline before this existed. */
 .text-muted { color: var(--text-muted); }
-.text-primary { color: var(--primary); }
+.text-primary { color: var(--text-accent); }
 .text-xs { font-size: 0.75rem; }
 .text-sm { font-size: 0.85rem; }
 .text-center { text-align: center; }
@@ -702,6 +740,18 @@ main input:focus, main textarea:focus, main select:focus {
     align-items: flex-start;
     gap: 1rem;
     margin-bottom: 1rem;
+    position: relative;
+}
+/* Short connector through the gap between cards, at the step circle's x-position (card padding + half circle width).
+   Deliberately only spans the margin gap, not the card itself, so it never has to guess a variable card height. */
+.milestone-item:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    bottom: -1rem;
+    left: calc(1.5rem + 16px - 1px);
+    width: 2px;
+    height: 1rem;
+    background: var(--border);
 }
 .milestone-step {
     background: var(--primary);

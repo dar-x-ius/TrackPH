@@ -3,7 +3,12 @@
       th:replace="~{layout :: layout(pageTitle='Audit Logs', content=~{::main})}">
 <body>
 <main>
-    <div class="page-header"><h2>Audit Logs</h2></div>
+    <div class="page-header">
+        <h2>
+            <svg class="page-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 3h7l4 4v13a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z"/><path d="M9 11h6M9 15h6M9 7h2"/></svg>
+            Audit Logs
+        </h2>
+    </div>
 
     <div class="card card-table">
         <table class="table" id="audit-table">

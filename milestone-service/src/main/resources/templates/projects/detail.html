@@ -6,9 +6,12 @@
 <main>
     <a th:href="@{/projects}" class="back-link">&larr; Back to Projects</a>
 
-    <div id="project-header" style="margin: 1.5rem 0;">
+    <div id="project-header" class="page-header" style="align-items: flex-start; flex-direction: column;">
         <div class="flex items-center gap-3 flex-wrap">
-            <h2 id="proj-name" class="text-primary mt-0 mb-0">Loading&hellip;</h2>
+            <h2 class="mt-0 mb-0">
+                <svg class="page-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg>
+                <span id="proj-name">Loading&hellip;</span>
+            </h2>
             <span id="proj-status" class="badge"></span>
             <span id="proj-edited"></span>
             <button sec:authorize="hasAnyRole('AGENCY','ADMIN')" class="btn btn-secondary btn-sm" onclick="toggleEditProject()">Edit</button>
