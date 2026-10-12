@@ -17,7 +17,7 @@ A modular platform for monitoring Philippine government project implementation (
 
 ```
 TrackPH/
-├── trackph-microservice-template/        ← clone/hand off this to start a new service
+├── trackph-microservice-template/        ← copy this folder to start a new service
 │   ├── docs/dev-guide.md                 ← full developer guide: architecture, conventions, auth, Flyway, theme, anti-patterns
 │   ├── src/main/resources/static/css/
 │   │   └── theme.css                     ← canonical stylesheet; every service's copy must match it byte for byte

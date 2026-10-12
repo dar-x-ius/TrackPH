@@ -31,7 +31,7 @@ TrackPH is a modular platform for monitoring Philippine government project imple
 
 ```
 TrackPH/
-├── trackph-microservice-template/        ← clone this to start a new service
+├── trackph-microservice-template/        ← copy this folder to start a new service
 │   ├── docs/                             ← you are here
 │   └── src/main/resources/static/css/
 │       └── theme.css                     ← canonical stylesheet; see "Theme & UI" below
@@ -194,7 +194,7 @@ Follow this order — skipping steps causes JPA startup failures:
 
 ---
 
-## Cloning the Template for a New Microservice
+## Copying the Template for a New Microservice
 
 1. Copy `trackph-microservice-template/` to a new folder (e.g., `budget-service/`).
 2. Global replace: `ph.trackph.template` → `ph.trackph.{your-service}`.
