@@ -31,13 +31,16 @@ TrackPH is a modular platform for monitoring Philippine government project imple
 
 ```
 TrackPH/
-├── trackph-microservice-template/ ← clone this to start a new service
-│   └── docs/                      ← you are here
-├── milestone-service/             ← Milestone & Timeline Tracking
-└── <future-services>/
+├── trackph-microservice-template/        ← clone this to start a new service
+│   ├── docs/                             ← you are here
+│   └── src/main/resources/static/css/
+│       └── theme.css                     ← canonical stylesheet; see "Theme & UI" below
+├── milestone-service/                    ← Milestone & Timeline Monitoring
+└── scripts/
+    └── sync-theme.sh                     ← pushes theme.css/theme-toggle.js to every service
 ```
 
-Each microservice folder is a complete, self-contained Maven project. This guide lives inside the template (not at the repo root) so the template folder is self-contained when handed off to another team on its own — see "Maintaining This Documentation" below.
+Each microservice folder is a complete, self-contained Maven project. This guide lives inside the template (not at the repo root) so the template folder is self-contained when handed off to another team on its own — see "Maintaining This Documentation" below. For the full, current layout (every service folder, what each one contains), see the root `README.md`'s own "Repo Layout" section — this copy is kept intentionally short, just enough to orient a reader of this guide.
 
 ---
 
@@ -83,7 +86,8 @@ Not using Eclipse? `mvn spring-boot:run` in the service folder works too.
 - It extracts the user from the JWT, records the action, entity type, entity ID, and IP address in `audit_logs`.
 - **Do NOT call `AuditLogService` from your controllers** — the interceptor already handles it.
 - A service can attach a before/after diff to the row the interceptor is about to write, without becoming a second writer: inject `AuditContext` and call `recordChange(entityType, entityId, before, after)` (or `recordDeletion(...)` for a delete) before the method returns. The interceptor picks these request attributes up if present; if a service doesn't call it, the row is still written, just without a `details` payload.
-- **Default audit logs to public, not `ADMIN`/`AGENCY`-only.** This is a transparency platform — an audit trail only staff can see doesn't actually constrain staff, since nothing stops a bad actor from acting with no outside witness. Withhold two things from a non-`ADMIN` reader instead of the whole log: the IP address (a privacy/data-minimization concern, not a transparency one), and rows that are account-management noise rather than project activity — sign-ins, registrations, "marked an alert read." Everything else (who changed what project/milestone, and what the before/after values were) stays visible to the public. See `milestone-service`'s `AuditLogController`/`AuditLogRepository` for a worked example of this split.
+- **Default audit logs to public, not `ADMIN`/`AGENCY`-only.** This is a transparency platform, and an audit trail only staff can see doesn't actually constrain staff: nothing stops a bad actor from acting with no outside witness.
+- Withhold only two things from a non-`ADMIN` reader, not the whole log: the IP address (a privacy concern, not a transparency one), and rows that are account-management noise rather than project activity, like sign-ins, registrations, and "marked an alert read." Everything else, who changed what project or milestone and what the before/after values were, stays visible to the public. See `milestone-service`'s `AuditLogController`/`AuditLogRepository` for a worked example.
 
 ---
 
