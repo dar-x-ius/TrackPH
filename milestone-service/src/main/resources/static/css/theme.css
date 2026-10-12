@@ -29,6 +29,10 @@
     --info-bg:    #d1ecf1; --info-text:    #0c5460; --info-border:    #bee5eb;
 
     --focus-ring: 0 0 0 3px rgba(218, 18, 25, 0.35);
+
+    /* Scrim for photo-backed sections, overridden per theme below — a brand-red wash in
+       light mode so it doesn't read as a harsh black vignette dropped onto a light page. */
+    --hero-scrim: linear-gradient(135deg, rgba(218, 18, 25, 0.55), rgba(168, 15, 20, 0.78));
 }
 
 [data-theme="dark"] {
@@ -48,6 +52,9 @@
     --info-bg:    #0d2a38; --info-text:    #7bc8e0; --info-border:    #1a3a4a;
 
     --focus-ring: 0 0 0 3px rgba(232, 67, 74, 0.45);
+    /* Darker, near-black scrim for dark mode — blends into the already-dark surroundings
+       instead of the lighter brand-red wash used against a light page. */
+    --hero-scrim: linear-gradient(135deg, rgba(168, 15, 20, 0.55), rgba(16, 16, 18, 0.78));
 }
 
 /* Base reset */
@@ -135,6 +142,9 @@ a:hover { color: var(--primary-dark); text-decoration: underline; }
     gap: 2rem;
     box-shadow: 0 1px 0 rgba(0,0,0,0.08), 0 4px 16px rgba(0,0,0,0.12);
 }
+/* The default red focus ring (--focus-ring) nearly disappears against this red background —
+   swap in a white ring here so keyboard focus stays visible inside the navbar. */
+.navbar :focus-visible { outline: none; box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.7); border-radius: var(--radius); }
 
 .navbar-brand {
     display: flex;
@@ -207,6 +217,59 @@ a:hover { color: var(--primary-dark); text-decoration: underline; }
 }
 .nav-action:hover { background: rgba(255,255,255,0.15); color: #fff; text-decoration: none; }
 
+/* Hamburger toggle: hidden on desktop, shown below the collapse breakpoint (see media query). */
+.nav-toggle {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    flex-shrink: 0;
+    margin-left: auto;
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    color: var(--primary-text);
+    border-radius: var(--radius);
+    cursor: pointer;
+    padding: 0;
+    transition: background var(--transition);
+}
+.nav-toggle:hover { background: rgba(255, 255, 255, 0.15); }
+
+/* Collapsed navbar: below this width .navbar-links + .navbar-right can't fit the brand and
+   each other on one line (measured ~830px of content), so they move behind the hamburger
+   into a dropdown. The dropdown isn't absolutely positioned — .navbar just wraps and grows
+   taller while staying fixed, so it overlays page content underneath instead of pushing it
+   down (.app-scroll's margin-top stays a flat 60px regardless). */
+@media (max-width: 900px) {
+    .nav-toggle { display: flex; }
+
+    .navbar-links,
+    .navbar-right { display: none; }
+
+    .navbar.nav-open {
+        flex-wrap: wrap;
+        height: auto;
+        min-height: 60px;
+        padding-bottom: 1rem;
+    }
+    .navbar.nav-open .navbar-links,
+    .navbar.nav-open .navbar-right {
+        display: flex;
+        flex-basis: 100%;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.5rem;
+        margin-top: 0.5rem;
+        padding-top: 0.75rem;
+        border-top: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    .navbar.nav-open .navbar-right { border-left: none; padding-left: 0; }
+    .navbar.nav-open .navbar-user-list { flex-direction: column; align-items: stretch; gap: 0.5rem; }
+    .navbar.nav-open .navbar-links a,
+    .navbar.nav-open .nav-action { padding: 0.6rem 0.5rem; }
+}
+
 .nav-badge {
     background: var(--primary-light);
     color: #fff;
@@ -252,7 +315,9 @@ a:hover { color: var(--primary-dark); text-decoration: underline; }
     border-radius: var(--radius);
     padding: 1.5rem;
     box-shadow: var(--shadow);
+    transition: box-shadow var(--transition);
 }
+.card:hover { box-shadow: var(--shadow-raised); }
 
 /* Table wrapper: card with no internal padding, table provides its own */
 .card-table { padding: 0; overflow: hidden; }
@@ -294,17 +359,22 @@ a:hover { color: var(--primary-dark); text-decoration: underline; }
     font-weight: 500;
     cursor: pointer;
     border: none;
-    transition: opacity var(--transition), background var(--transition);
+    transition: opacity var(--transition), background var(--transition), transform var(--transition);
     text-decoration: none;
 }
-.btn:hover { opacity: 0.9; }
+.btn:hover { opacity: 0.9; transform: translateY(-1px); }
 .btn:active { transform: translateY(1px); }
 
+/* .btn is often an <a>, and the global `a:hover` rule above (0,1,1) outranks a plain
+   `.btn-primary { color }` (0,1,0) on specificity — without redeclaring color here the
+   link turns var(--primary-dark), which is the exact hover background, making the text
+   invisible. Every :hover variant below must keep restating its own text color. */
 .btn-primary   { background: var(--primary);  color: var(--primary-text); box-shadow: 0 1px 2px rgba(218, 18, 25, 0.25); }
-.btn-primary:hover { background: var(--primary-dark); opacity: 1; }
+.btn-primary:hover { background: var(--primary-dark); color: var(--primary-text); opacity: 1; }
 .btn-secondary { background: var(--surface); color: var(--text); border: 1px solid var(--border); }
-.btn-secondary:hover { background: var(--surface-raised); opacity: 1; }
+.btn-secondary:hover { background: var(--surface-raised); color: var(--text); opacity: 1; }
 .btn-danger    { background: var(--danger);   color: #fff; }
+.btn-danger:hover { color: #fff; }
 .btn-sm        { padding: 0.3rem 0.75rem; font-size: 0.8rem; }
 
 .btn:disabled, .btn[disabled] {
@@ -457,6 +527,33 @@ main input:focus, main textarea:focus, main select:focus {
 .hero-stat .value { font-size: 1.9rem; font-weight: 800; color: var(--primary); line-height: 1; }
 .hero-stat .label { font-size: 0.78rem; color: var(--text-muted); margin-top: 0.3rem; text-transform: uppercase; letter-spacing: 0.05em; }
 
+/* Photo-backed hero: a modifier on .hero, not a replacement, so the template's own
+   plain placeholder landing page is unaffected. The scrim is fixed (see --hero-scrim)
+   so every element below assumes white-on-dark instead of the plain-background colors
+   .hero normally uses. */
+.hero-photo {
+    background-image: var(--hero-scrim), url('/images/hero-bg.jpg');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed; /* parallax: image holds still against the viewport while .app-scroll scrolls past it. iOS Safari ignores this and falls back to a plain static image — acceptable degradation. */
+    color: #fff;
+}
+/* Cancels .page-container's top padding so a full-bleed photo hero sits flush under the navbar. */
+.hero-photo.full-bleed { margin-top: -2rem; }
+.hero-photo .hero-badge { background: rgba(255, 255, 255, 0.15); color: #fff; border-color: rgba(255, 255, 255, 0.4); }
+.hero-photo h1 { color: #fff; }
+.hero-photo h1 .accent { color: var(--warning); text-shadow: 0 2px 10px rgba(0, 0, 0, 0.4); }
+.hero-photo .hero-sub { color: rgba(255, 255, 255, 0.85); }
+.hero-photo .btn-secondary {
+    background: rgba(255, 255, 255, 0.12);
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.6);
+}
+.hero-photo .btn-secondary:hover { background: rgba(255, 255, 255, 0.22); color: #fff; }
+.hero-photo .hero-stat { background: rgba(0, 0, 0, 0.28); border-radius: var(--radius); padding: 0.75rem 1.25rem; }
+.hero-photo .hero-stat .value { color: #fff; }
+.hero-photo .hero-stat .label { color: rgba(255, 255, 255, 0.75); }
+
 /* Feature grid, used below the landing hero */
 .features { padding: 1rem 1.5rem 5rem; }
 .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 2.5rem; max-width: 1000px; margin: 0 auto; }
@@ -500,7 +597,9 @@ main input:focus, main textarea:focus, main select:focus {
 
 /* CTA band, full-bleed closing section on the landing page */
 .cta-band {
-    background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+    /* Same understated two-tone gradient as .navbar, so the two red chrome elements read
+       as one consistent brand treatment instead of two different gradient styles. */
+    background: linear-gradient(180deg, var(--primary-light), var(--primary));
     color: #fff;
     text-align: center;
     padding: 4rem 1.5rem;
@@ -508,7 +607,7 @@ main input:focus, main textarea:focus, main select:focus {
 .cta-band h2 { font-size: clamp(1.5rem, 3.5vw, 2rem); margin: 0 0 0.5rem; }
 .cta-band p { color: rgba(255,255,255,0.85); margin: 0 0 1.75rem; }
 .cta-band .btn-primary { background: #fff; color: var(--primary); box-shadow: 0 2px 10px rgba(0,0,0,0.15); }
-.cta-band .btn-primary:hover { background: rgba(255,255,255,0.9); }
+.cta-band .btn-primary:hover { background: rgba(255,255,255,0.9); color: var(--primary); }
 
 /* Info tooltip: small (i) icon that reveals a hover/focus panel, e.g. demo credentials on login */
 .info-tooltip { position: relative; display: inline-flex; }
