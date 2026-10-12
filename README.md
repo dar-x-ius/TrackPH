@@ -1,6 +1,6 @@
 # TrackPH
 
-A modular platform for monitoring Philippine government project implementation (flood control, confidential funds, and similar), built as independent Spring Boot microservices. BSIT 3-1 capstone project, SY 2025-2026.
+A modular platform for monitoring Philippine government project implementation (flood control, confidential funds, and similar), built as independent Spring Boot microservices.
 
 **Status:** `milestone-service` is the first deliverable and is feature-complete. Later deliverables will land as their own service folders alongside it.
 

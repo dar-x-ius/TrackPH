@@ -4,6 +4,11 @@ bin/
 .claude/
 /.project
 
+# Research paper PDFs aren't code deliverables; keep them out of the repo.
+# Milestone attachments live under uploads/ (already ignored separately), so this never
+# touches anything the app itself stores or serves.
+*.pdf
+
 .settings/
 .vscode/
 
