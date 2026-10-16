@@ -6,6 +6,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ph.trackph.milestone.dto.request.ProjectRequest;
+import ph.trackph.milestone.dto.response.HeatmapPointResponse;
 import ph.trackph.milestone.dto.response.ProjectResponse;
 import ph.trackph.milestone.exception.ResourceNotFoundException;
 import ph.trackph.milestone.exception.UnauthorizedException;
@@ -41,6 +42,27 @@ public class ProjectService {
 
     public ProjectResponse findById(Long id) {
         return ProjectResponse.from(getOrThrow(id));
+    }
+
+    /**
+     * Weighted points for the Projects map's heat layer. "density" weighs every geocoded
+     * project equally; "budget" and "risk" weigh it by spend or by how overdue/delayed it is,
+     * so the same geocoded point can look very different depending on which lens is active.
+     */
+    public List<HeatmapPointResponse> findHeatmapPoints(String metric) {
+        List<Project> geocoded = projectRepository.findByGeocodeStatusAndLatitudeIsNotNullAndLongitudeIsNotNull(Project.GeocodeStatus.DONE);
+        return geocoded.stream()
+                .map(p -> new HeatmapPointResponse(p.getLatitude(), p.getLongitude(), weightFor(p, metric)))
+                .filter(point -> point.weight() > 0)
+                .toList();
+    }
+
+    private double weightFor(Project p, String metric) {
+        return switch (metric == null ? "density" : metric) {
+            case "budget" -> p.getBudget() == null ? 0 : p.getBudget().doubleValue();
+            case "risk" -> p.getStatus() == Project.Status.DELAYED ? 1 : 0;
+            default -> 1;
+        };
     }
 
     @Transactional
@@ -124,9 +146,20 @@ public class ProjectService {
         if (req.description() != null) project.setDescription(req.description());
         if (req.startDate() != null) project.setStartDate(req.startDate());
         if (req.endDate() != null) project.setEndDate(req.endDate());
-        if (req.location() != null) project.setLocation(req.location());
         if (req.budget() != null) project.setBudget(req.budget());
         if (req.status() != null) project.setStatus(req.status());
+
+        boolean locationChanged = req.location() != null && !req.location().equals(project.getLocation());
+        if (req.location() != null) project.setLocation(req.location());
+
+        if (req.latitude() != null && req.longitude() != null) {
+            // Manual pin from the map picker takes precedence — exact and immediate, no need to wait on the geocoder.
+            project.setLatitude(req.latitude());
+            project.setLongitude(req.longitude());
+            project.setGeocodeStatus(Project.GeocodeStatus.DONE);
+        } else if (locationChanged) {
+            project.setGeocodeStatus(Project.GeocodeStatus.PENDING);
+        }
     }
 
     private Project getOrThrow(Long id) {

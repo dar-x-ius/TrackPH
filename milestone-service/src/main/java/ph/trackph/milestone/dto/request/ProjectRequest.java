@@ -12,6 +12,8 @@ public record ProjectRequest(
         LocalDate startDate,
         LocalDate endDate,
         String location,
+        Double latitude,
+        Double longitude,
         BigDecimal budget,
         Project.Status status) {
 

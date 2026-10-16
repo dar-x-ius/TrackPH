@@ -73,6 +73,6 @@ This only runs outside the `dev` profile (`dev` uses an in-memory H2 database in
 
 ## Tech Stack
 
-Java 21 · Spring Boot 3.x · MySQL 8 · Flyway · Thymeleaf · JWT auth · SpringDoc OpenAPI
+Java 21 · Spring Boot 3.x · MySQL 8 · Flyway · Thymeleaf · JWT auth · SpringDoc OpenAPI · Leaflet/OpenStreetMap (maps, geocoded via Nominatim)
 
 SpringDoc OpenAPI also doubles as the inter-team contract: each service documents its REST API at `/swagger-ui.html`, which is how other teams' microservices are meant to integrate with it.

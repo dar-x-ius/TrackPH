@@ -32,6 +32,11 @@ public class Project {
     @Column(name = "end_date")
     private LocalDate endDate;
     private String location;
+    private Double latitude;
+    private Double longitude;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "geocode_status", nullable = false)
+    private GeocodeStatus geocodeStatus = GeocodeStatus.PENDING;
     private BigDecimal budget;
     @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("sequenceOrder ASC")
@@ -48,6 +53,11 @@ public class Project {
 
     public enum Status {
         PLANNED, IN_PROGRESS, DELAYED, COMPLETED, CANCELLED
+    }
+
+    /** Tracks whether {@link #location} has been turned into map coordinates yet. */
+    public enum GeocodeStatus {
+        PENDING, DONE, FAILED
     }
 
     public Long getId() {
@@ -80,6 +90,18 @@ public class Project {
 
     public String getLocation() {
         return this.location;
+    }
+
+    public Double getLatitude() {
+        return this.latitude;
+    }
+
+    public Double getLongitude() {
+        return this.longitude;
+    }
+
+    public GeocodeStatus getGeocodeStatus() {
+        return this.geocodeStatus;
     }
 
     public BigDecimal getBudget() {
@@ -136,6 +158,18 @@ public class Project {
 
     public void setLocation(final String location) {
         this.location = location;
+    }
+
+    public void setLatitude(final Double latitude) {
+        this.latitude = latitude;
+    }
+
+    public void setLongitude(final Double longitude) {
+        this.longitude = longitude;
+    }
+
+    public void setGeocodeStatus(final GeocodeStatus geocodeStatus) {
+        this.geocodeStatus = geocodeStatus;
     }
 
     public void setBudget(final BigDecimal budget) {

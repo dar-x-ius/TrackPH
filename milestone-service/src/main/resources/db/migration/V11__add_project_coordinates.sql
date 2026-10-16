@@ -1,0 +1,4 @@
+ALTER TABLE projects
+    ADD COLUMN latitude DOUBLE NULL,
+    ADD COLUMN longitude DOUBLE NULL,
+    ADD COLUMN geocode_status VARCHAR(20) NOT NULL DEFAULT 'PENDING';

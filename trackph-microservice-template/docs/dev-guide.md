@@ -24,6 +24,7 @@ TrackPH is a modular platform for monitoring Philippine government project imple
 | Auth | Stateless JWT (`jjwt`) |
 | API Docs | SpringDoc OpenAPI (Swagger UI at `/swagger-ui.html`) |
 | Dev DB | H2 in-memory (activated by `dev` profile) |
+| Maps | Leaflet + OpenStreetMap, geocoded via Nominatim (see "Maps & Geocoding") |
 
 ---
 
@@ -97,6 +98,16 @@ Not using Eclipse? `mvn spring-boot:run` in the service folder works too.
 - It scans milestones whose `due_date` has passed without a `completed_date` and creates `Alert` records.
 - Severity is derived from delay duration: 1–3 days → LOW, 4–7 → MEDIUM, 8–14 → HIGH, 15+ → CRITICAL.
 - **Dev-only trigger**: `POST /api/v1/dev/alerts/trigger` (only available when `spring.profiles.active=dev`).
+
+---
+
+## Maps & Geocoding
+
+- No Google Maps, Mapbox, or any other paid mapping service — there's no billing account behind this project. Maps are **Leaflet** (a free JS library) tiled from the public **OpenStreetMap** server, and a location string is turned into coordinates via **Nominatim**, OSM's free geocoder. None of this needs an API key.
+- `milestone-service/static/js/maps-widget.js` is the frontend helper for this — not yet synced across services the way `theme.css` is (see "Theme & UI"), so a second service that wants a map should start by copying it over. It lazy-loads Leaflet (plus the `leaflet.heat` plugin for heat layers) from a CDN the first time a page actually calls `TrackPHMaps.load()`, so a page that never shows a map pays nothing for it. It also exposes `initPinPicker(elementId, initialLatLng, onChange)` for a click-to-place marker (used on a create/edit form) and `baseLayer()` for the shared OSM tile layer, so a new page doesn't have to re-implement either from scratch.
+- Geocoding a free-text address happens server-side and in the background, not on the request that saves the record — Nominatim's public server is rate-limited to about one request per second, which is far too slow to hold a save request open for. The pattern: give the entity a `latitude`/`longitude` pair plus a `geocodeStatus` enum (`PENDING` / `DONE` / `FAILED`), set it to `PENDING` whenever the address text changes, and let a scheduler pick up pending rows and fill them in.
+- `GeocodingScheduler` is that scheduler for `milestone-service`'s projects, built on the same `@Scheduled` pattern as `AlertScheduler` above, polling every 60 seconds. It's deliberately *not* `@Transactional`: geocoding a batch means sleeping ~1.1 seconds between calls to stay under Nominatim's rate limit, and holding a database transaction open for that whole sleep would tie up a connection for no reason. It geocodes the batch first with no transaction open, then saves the results in one short write.
+- `GeocodingService.geocode()` sends a descriptive `User-Agent` header identifying the app, which Nominatim's usage policy requires of anyone calling its public server. Don't strip that header if you touch this class — a generic or missing one risks getting the server's IP blocked.
 
 ---
 
@@ -219,6 +230,7 @@ Follow this order — skipping steps causes JPA startup failures:
 - Do not hardcode navbar links directly into `layout.html` — add them to your service's `templates/fragments/nav.html`.
 - Do not hardcode the brand name or footer tagline into `layout.html` — edit the constants in `config/BrandConfig.java`.
 - Do not add Lombok — write getters, setters and constructors by hand.
+- Do not reach for Google Maps, Mapbox, or another paid/API-key mapping service — see "Maps & Geocoding" for the free Leaflet + OpenStreetMap + Nominatim stack this project already uses.
 
 ---
 

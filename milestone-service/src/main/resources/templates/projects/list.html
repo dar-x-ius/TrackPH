@@ -35,23 +35,60 @@
         </div>
     </div>
 
-    <div class="card card-table">
-        <table class="table" id="projects-table">
-            <thead>
-                <tr>
-                    <th data-sort="name">Name</th>
-                    <th data-sort="agencyName">Agency</th>
-                    <th data-sort="status">Status</th>
-                    <th data-sort="startDate">Start</th>
-                    <th data-sort="endDate">End</th>
-                    <th data-sort="milestoneCount">Milestones</th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody id="projects-body">
-                <tr><td colspan="7"><div class="empty-state">Loading&hellip;</div></td></tr>
-            </tbody>
-        </table>
+    <style>
+        /* minmax(0, ...) is load-bearing: without it a grid track won't shrink below its
+           content's min-content width, so the table pushed itself (and the "View" button)
+           wider than the column and off the right edge instead of scrolling inside it. */
+        .projects-split { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); gap: 1.5rem; align-items: start; }
+        @media (max-width: 1100px) { .projects-split { grid-template-columns: minmax(0, 1fr); } }
+        .map-toggle { display: flex; gap: 0.4rem; margin-bottom: 0.75rem; }
+        .map-toggle .btn[aria-pressed="true"] { background: var(--primary); color: var(--primary-text); }
+        #projects-map { height: 420px; border-radius: var(--radius); background: var(--surface-raised); }
+        #projects-table tbody tr.map-highlighted { background: var(--surface-raised); }
+        /* Narrower columns for the split layout: Agency becomes a subtitle under Name, Start/End
+           merge into one Timeline column, and the action is an icon button — five columns instead
+           of seven fits inside the table's half of the split without needing horizontal scroll
+           (which a plain mouse wheel can't reach anyway, so it's not a usable fallback here). */
+        #projects-table th, #projects-table td { padding: 0.6rem 0.75rem; }
+        #projects-table .agency-sub { display: block; font-size: 0.75rem; color: var(--text-muted); font-weight: 400; }
+        #projects-table .view-link { display: inline-flex; align-items: center; justify-content: center; width: 2rem; height: 2rem; padding: 0; }
+        /* Safety net for an unusually long project name — scrolls instead of pushing the action column off-screen. */
+        .card-table { overflow-x: auto; }
+        /* Below ~480px even the 5-column table doesn't fit; drop Timeline and Milestones (both
+           visible on the project's own detail page) so Name/Status/Action — the action button
+           above all — stay reachable without relying on a horizontal scroll a plain swipe/wheel
+           won't discover. */
+        @media (max-width: 480px) {
+            #projects-table .col-timeline, #projects-table .col-milestones { display: none; }
+        }
+    </style>
+
+    <div class="projects-split">
+        <div class="card card-table">
+            <table class="table" id="projects-table">
+                <thead>
+                    <tr>
+                        <th data-sort="name">Name</th>
+                        <th data-sort="status">Status</th>
+                        <th data-sort="startDate" class="col-timeline">Timeline</th>
+                        <th data-sort="milestoneCount" class="col-milestones">Milestones</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody id="projects-body">
+                    <tr><td colspan="5"><div class="empty-state">Loading&hellip;</div></td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="card">
+            <div class="map-toggle" role="group" aria-label="Heat map metric">
+                <button type="button" class="btn btn-secondary btn-sm" data-metric="density" aria-pressed="true" onclick="setHeatMetric('density')">Density</button>
+                <button type="button" class="btn btn-secondary btn-sm" data-metric="budget" aria-pressed="false" onclick="setHeatMetric('budget')">Budget</button>
+                <button type="button" class="btn btn-secondary btn-sm" data-metric="risk" aria-pressed="false" onclick="setHeatMetric('risk')">Risk</button>
+            </div>
+            <div id="projects-map"></div>
+        </div>
     </div>
 
     <script>
@@ -66,18 +103,16 @@
         function renderProjects(projects) {
             const tbody = document.getElementById('projects-body');
             if (!projects.length) {
-                tbody.innerHTML = '<tr><td colspan="7"><div class="empty-state"><p>No projects yet. Create the first one to get started.</p></div></td></tr>';
+                tbody.innerHTML = '<tr><td colspan="5"><div class="empty-state"><p>No projects yet. Create the first one to get started.</p></div></td></tr>';
                 return;
             }
             tbody.innerHTML = projects.map(p => `
-                <tr>
-                    <td><strong>${p.name}</strong></td>
-                    <td>${p.agencyName ?? '—'}</td>
+                <tr id="project-row-${p.id}" onclick="focusProjectOnMap(${p.id})" style="cursor:pointer;">
+                    <td><strong>${p.name}</strong><span class="agency-sub">${p.agencyName ?? '—'}</span></td>
                     <td><span class="badge ${statusBadge[p.status] || 'badge-secondary'}">${p.status}</span></td>
-                    <td>${p.startDate ?? '—'}</td>
-                    <td>${p.endDate ?? '—'}</td>
-                    <td>${p.milestoneCount}</td>
-                    <td><a href="/projects/${p.id}" class="btn btn-secondary btn-sm">View</a></td>
+                    <td class="col-timeline">${p.startDate ?? '—'} &rarr; ${p.endDate ?? '—'}</td>
+                    <td class="col-milestones">${p.milestoneCount}</td>
+                    <td><a href="/projects/${p.id}" class="btn btn-secondary btn-sm view-link" title="View project" aria-label="View project" onclick="event.stopPropagation()">&rarr;</a></td>
                 </tr>
             `).join('');
         }
@@ -96,7 +131,62 @@
 
                 renderProjects(projects);
                 makeSortable(document.getElementById('projects-table'), () => projects, renderProjects);
+                initMap();
             });
+
+        // --- Map / heat map ---
+        let map, heatLayer, markers = {}, currentMetric = 'density';
+
+        function initMap() {
+            const mapEl = document.getElementById('projects-map');
+            TrackPHMaps.load().then(L => {
+                map = L.map(mapEl).setView([12.8797, 121.7740], 6);
+                TrackPHMaps.baseLayer().addTo(map);
+                heatLayer = L.heatLayer([], { radius: 28, blur: 20 }).addTo(map);
+
+                const geocoded = projects.filter(p => p.geocodeStatus === 'DONE' && p.latitude != null && p.longitude != null);
+                geocoded.forEach(p => {
+                    const marker = L.marker([p.latitude, p.longitude]).addTo(map)
+                        .bindPopup(`<strong>${p.name}</strong><br>${p.location ?? ''}<br>${p.status}`);
+                    marker.on('click', () => highlightRow(p.id));
+                    markers[p.id] = marker;
+                });
+
+                loadHeatLayer();
+            }).catch(() => TrackPHMaps.unavailable(mapEl));
+        }
+
+        function loadHeatLayer() {
+            if (!heatLayer) return;
+            fetch('/api/v1/projects/heatmap?metric=' + currentMetric, { headers })
+                .then(r => r.json())
+                .then(data => {
+                    const points = (data.data ?? []).map(pt => [pt.latitude, pt.longitude, pt.weight]);
+                    heatLayer.setLatLngs(points);
+                });
+        }
+
+        function setHeatMetric(metric) {
+            currentMetric = metric;
+            document.querySelectorAll('.map-toggle .btn').forEach(btn => {
+                btn.setAttribute('aria-pressed', btn.dataset.metric === metric ? 'true' : 'false');
+            });
+            loadHeatLayer();
+        }
+
+        function focusProjectOnMap(projectId) {
+            const marker = markers[projectId];
+            if (!map || !marker) return;
+            map.setView(marker.getLatLng(), Math.max(map.getZoom(), 11));
+            marker.openPopup();
+            highlightRow(projectId);
+        }
+
+        function highlightRow(projectId) {
+            document.querySelectorAll('#projects-table tbody tr').forEach(tr => tr.classList.remove('map-highlighted'));
+            const row = document.getElementById('project-row-' + projectId);
+            if (row) row.classList.add('map-highlighted');
+        }
     </script>
 </main>
 </body>

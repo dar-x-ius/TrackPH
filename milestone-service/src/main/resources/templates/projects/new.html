@@ -19,6 +19,10 @@
                 <label class="form-label" for="location">Location</label>
                 <input type="text" id="location" class="form-control"/>
             </div>
+            <div class="form-group">
+                <label class="form-label">Pin on Map (optional &mdash; leave blank to auto-locate from the text above)</label>
+                <div id="location-picker" style="height:220px; border-radius:var(--radius); background:var(--surface-raised);"></div>
+            </div>
             <div class="grid-2">
                 <div class="form-group">
                     <label class="form-label" for="startDate">Start Date</label>
@@ -39,6 +43,9 @@
     </div>
 
     <script>
+        let pickedLat = null, pickedLng = null;
+        TrackPHMaps.initPinPicker('location-picker', null, (lat, lng) => { pickedLat = lat; pickedLng = lng; });
+
         document.getElementById('new-project-form').addEventListener('submit', function (e) {
             e.preventDefault();
             const token = localStorage.getItem('trackph-token') || '';
@@ -54,6 +61,8 @@
                     name: document.getElementById('name').value,
                     description: document.getElementById('description').value,
                     location: document.getElementById('location').value,
+                    latitude: pickedLat,
+                    longitude: pickedLng,
                     startDate: document.getElementById('startDate').value || null,
                     endDate: document.getElementById('endDate').value || null,
                     budget: document.getElementById('budget').value || null

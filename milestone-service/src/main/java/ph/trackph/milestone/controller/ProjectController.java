@@ -11,6 +11,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.web.bind.annotation.*;
 import ph.trackph.milestone.dto.request.ProjectRequest;
+import ph.trackph.milestone.dto.response.HeatmapPointResponse;
 import ph.trackph.milestone.dto.response.ProjectResponse;
 import ph.trackph.milestone.service.ProjectService;
 import ph.trackph.milestone.util.ApiResponse;
@@ -35,6 +36,12 @@ public class ProjectController {
     @Operation(summary = "Get project by ID")
     public ResponseEntity<ApiResponse<ProjectResponse>> get(@PathVariable Long id) {
         return ResponseEntity.ok(ApiResponse.success(projectService.findById(id)));
+    }
+
+    @GetMapping("/heatmap")
+    @Operation(summary = "Weighted points for the map's heat layer (metric: density | budget | risk)")
+    public ResponseEntity<ApiResponse<List<HeatmapPointResponse>>> heatmap(@RequestParam(defaultValue = "density") String metric) {
+        return ResponseEntity.ok(ApiResponse.success(projectService.findHeatmapPoints(metric)));
     }
 
     @GetMapping("/archived")
