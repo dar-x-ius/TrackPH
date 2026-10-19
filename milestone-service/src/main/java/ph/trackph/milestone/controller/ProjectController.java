@@ -39,7 +39,7 @@ public class ProjectController {
     }
 
     @GetMapping("/heatmap")
-    @Operation(summary = "Weighted points for the map's heat layer (metric: density | budget | risk)")
+    @Operation(summary = "Weighted points for the map's heat layer (metric: density | budget | delays)")
     public ResponseEntity<ApiResponse<List<HeatmapPointResponse>>> heatmap(@RequestParam(defaultValue = "density") String metric) {
         return ResponseEntity.ok(ApiResponse.success(projectService.findHeatmapPoints(metric)));
     }

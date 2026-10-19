@@ -46,7 +46,7 @@ public class ProjectService {
 
     /**
      * Weighted points for the Projects map's heat layer. "density" weighs every geocoded
-     * project equally; "budget" and "risk" weigh it by spend or by how overdue/delayed it is,
+     * project equally; "budget" and "delays" weigh it by spend or by whether it's delayed,
      * so the same geocoded point can look very different depending on which lens is active.
      */
     public List<HeatmapPointResponse> findHeatmapPoints(String metric) {
@@ -60,7 +60,7 @@ public class ProjectService {
     private double weightFor(Project p, String metric) {
         return switch (metric == null ? "density" : metric) {
             case "budget" -> p.getBudget() == null ? 0 : p.getBudget().doubleValue();
-            case "risk" -> p.getStatus() == Project.Status.DELAYED ? 1 : 0;
+            case "delays" -> p.getStatus() == Project.Status.DELAYED ? 1 : 0;
             default -> 1;
         };
     }
