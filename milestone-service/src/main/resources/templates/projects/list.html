@@ -142,7 +142,10 @@
             TrackPHMaps.load().then(L => {
                 map = L.map(mapEl).setView([12.8797, 121.7740], 6);
                 TrackPHMaps.baseLayer().addTo(map);
-                heatLayer = L.heatLayer([], { radius: 28, blur: 20 }).addTo(map);
+                // leaflet.heat fades points out based on (tile maxZoom - current zoom); with the
+                // tile layer's maxZoom of 18 and this map sitting at country-wide zoom 6-11, that
+                // faded everything down to minOpacity. maxZoom here re-anchors the fade to our own range.
+                heatLayer = L.heatLayer([], { radius: 28, blur: 20, maxZoom: 10, minOpacity: 0.3 }).addTo(map);
 
                 const geocoded = projects.filter(p => p.geocodeStatus === 'DONE' && p.latitude != null && p.longitude != null);
                 geocoded.forEach(p => {
