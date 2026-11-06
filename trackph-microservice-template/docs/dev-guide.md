@@ -95,9 +95,26 @@ Not using Eclipse? `mvn spring-boot:run` in the service folder works too.
 ## Alert System
 
 - `AlertScheduler` runs a cron job daily at midnight (`0 0 0 * * ?`).
-- It scans milestones whose `due_date` has passed without a `completed_date` and creates `Alert` records.
+- It scans milestones whose `due_date` has passed without a proof and asks `StatusService` to recompute them. That flips them to OVERDUE (and their project to DELAYED), and `StatusService` raises the `Alert`.
+- `StatusService` raises the alert on any route into a new status, not only at midnight: going overdue gives a `DEADLINE_MISSED` alert, any other change gives `STATUS_CHANGE`. An edit that moves a due date into the past, a deleted proof, or a restore can all turn a milestone overdue, and the midnight scan never revisits milestones that are already overdue.
+- On startup `StatusBackfillRunner` runs the same midnight check first, so a deadline that passed while the app was down still alerts, then does a silent catch-up of everything else (logged, no alerts).
 - Severity is derived from delay duration: 1–3 days → LOW, 4–7 → MEDIUM, 8–14 → HIGH, 15+ → CRITICAL.
 - **Dev-only trigger**: `POST /api/v1/dev/alerts/trigger` (only available when `spring.profiles.active=dev`).
+
+---
+
+## Derived Status (milestone-service)
+
+Nobody picks a milestone or project status by hand anymore. Proofs decide the milestone, and the milestones decide the project.
+
+- `StatusDeriver` holds every rule as pure static methods (no database, no clock), so the rules are easy to test. `StatusService` loads the facts, asks the deriver, and is the **only** code that writes `status` and `completedDate`. The stored column stays because the dashboard, the map's Delays lens and the sort columns all query it.
+- Milestone: COMPLETED once it has enough proofs, else OVERDUE if the due date has passed, else IN_PROGRESS if it has some proof, else PENDING. A milestone due today isn't overdue yet.
+- Project: PLANNED with no milestones, COMPLETED when every milestone is, DELAYED if any is OVERDUE, IN_PROGRESS if any has started, otherwise PLANNED.
+- CANCELLED is the one manual status. `POST /api/v1/projects/{id}/cancel` needs a written reason, and `StatusService` never moves a project out of it.
+- The leading asterisk (`*COMPLETED`) means the status rests on a proof nobody has reviewed yet. It's worked out in `MilestoneResponse` and `ProjectResponse` on every read and never stored. It leads rather than trails so a label cut off by a narrow column keeps it. `statusLabel()` in `static/js/status-label.js` is the one place the pages build it.
+- Every event that can change a status calls `StatusService`: attaching, deleting or restoring a proof, creating or editing a milestone, restoring a project, the midnight job, and a startup pass (`StatusBackfillRunner`) that catches old data up and heals drift without raising alerts.
+- Phase 1 uses a stand-in rule: every milestone needs one proof and any attachment counts, so a milestone with a proof shows `*COMPLETED` and IN_PROGRESS can't be reached yet. Categories, required-proof lists and reviewer votes are phases 2 and 3 in `docs/superpowers/specs/2026-11-06-proof-driven-status-design.md`.
+- The seed migration `V13` adds a placeholder proof to the demo agency's COMPLETED milestones so the demo still shows every status. Those rows point at `seed-proof-*` files that don't exist on disk; `FileStorageService.read` serves one bundled PDF for them.
 
 ---
 
@@ -225,6 +242,7 @@ Follow this order — skipping steps causes JPA startup failures:
 - Do not add `@Transactional` on controller methods — it belongs in the service layer.
 - Do not write inline styles in Thymeleaf templates — use `theme.css` variables.
 - Do not call `AuditLogService` from controllers — the interceptor handles it.
+- Do not set a milestone's or project's `status` anywhere except `StatusService`, and do not add a status dropdown back. Cancelling a project is the only manual status, and it goes through `ProjectService.cancel`.
 - Do not gate a whole feature behind `ADMIN` just because it touches account or security data — gate the specific field or row that's actually sensitive (see "Audit Logging" above) and leave the rest visible.
 - Do not create a new `theme.css` — every service shares the same one from the template.
 - Do not hardcode navbar links directly into `layout.html` — add them to your service's `templates/fragments/nav.html`.
