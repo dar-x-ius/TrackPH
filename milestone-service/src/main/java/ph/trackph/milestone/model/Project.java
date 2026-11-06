@@ -38,6 +38,8 @@ public class Project {
     @Column(name = "geocode_status", nullable = false)
     private GeocodeStatus geocodeStatus = GeocodeStatus.PENDING;
     private BigDecimal budget;
+    @Column(name = "cancel_reason", columnDefinition = "TEXT")
+    private String cancelReason;
     @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("sequenceOrder ASC")
     private List<Milestone> milestones = new ArrayList<>();
@@ -174,6 +176,14 @@ public class Project {
 
     public void setBudget(final BigDecimal budget) {
         this.budget = budget;
+    }
+
+    public String getCancelReason() {
+        return this.cancelReason;
+    }
+
+    public void setCancelReason(final String cancelReason) {
+        this.cancelReason = cancelReason;
     }
 
     public void setCreatedAt(final LocalDateTime createdAt) {

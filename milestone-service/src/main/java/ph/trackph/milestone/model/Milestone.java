@@ -7,6 +7,8 @@ import org.hibernate.annotations.UpdateTimestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "milestones")
@@ -31,6 +33,8 @@ public class Milestone {
     private Status status = Status.PENDING;
     @Column(name = "sequence_order")
     private int sequenceOrder = 0;
+    @OneToMany(mappedBy = "milestone")
+    private List<Attachment> attachments = new ArrayList<>();
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
@@ -82,6 +86,10 @@ public class Milestone {
 
     public int getSequenceOrder() {
         return this.sequenceOrder;
+    }
+
+    public List<Attachment> getAttachments() {
+        return this.attachments;
     }
 
     public LocalDateTime getCreatedAt() {

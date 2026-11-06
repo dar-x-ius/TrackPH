@@ -10,6 +10,9 @@ import java.util.List;
 public interface AttachmentRepository extends JpaRepository<Attachment, Long> {
     List<Attachment> findByMilestoneIdOrderByCreatedAtDesc(Long milestoneId);
 
+    /** A query, so it flushes pending writes first and honours @SQLRestriction (soft-deleted proofs don't count). */
+    long countByMilestoneId(Long milestoneId);
+
     @Modifying
     @Query(value = "UPDATE milestone_attachments SET deleted_at = NULL WHERE milestone_id IN (SELECT id FROM milestones WHERE project_id = :projectId) AND deleted_at IS NOT NULL", nativeQuery = true)
     void restoreArchivedByProjectId(@Param("projectId") Long projectId);
