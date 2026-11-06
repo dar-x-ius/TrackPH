@@ -66,7 +66,7 @@
     <script>
         const statusBadge = {
             PLANNED: 'badge-secondary', IN_PROGRESS: 'badge-info',
-            DELAYED: 'badge-danger', COMPLETED: 'badge-success', CANCELLED: 'badge-secondary'
+            DELAYED: 'badge-danger', COMPLETED: 'badge-success', COMPLETED_LATE: 'badge-warning', CANCELLED: 'badge-secondary'
         };
 
         fetch('/api/v1/projects?size=200&sort=createdAt,desc')
@@ -75,7 +75,7 @@
                 const projects = data.data?.content ?? [];
                 const total = projects.length;
                 const inProgress = projects.filter(p => p.status === 'IN_PROGRESS').length;
-                const completed = projects.filter(p => p.status === 'COMPLETED').length;
+                const completed = projects.filter(p => p.status === 'COMPLETED' || p.status === 'COMPLETED_LATE').length;
                 document.getElementById('stat-total').textContent = total;
                 document.getElementById('stat-progress').textContent = inProgress;
                 document.getElementById('stat-completed').textContent = completed;

@@ -12,6 +12,7 @@ import ph.trackph.milestone.repository.ProjectRepository;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * The only writer of {@code status} (and {@code completedDate}) on milestones and projects.
@@ -33,6 +34,16 @@ public class StatusService {
                 .orElseThrow(() -> new ResourceNotFoundException("Milestone", milestoneId));
         refresh(milestone, true);
         refreshProject(milestone.getProject().getId());
+    }
+
+    /** Called when a proof is uploaded: the agency says what state the milestone is in, and the proof backs it. */
+    @Transactional
+    public void recordClaim(Long milestoneId, Milestone.Claim claim) {
+        Milestone milestone = milestoneRepository.findById(milestoneId)
+                .orElseThrow(() -> new ResourceNotFoundException("Milestone", milestoneId));
+        milestone.setClaim(claim);
+        milestoneRepository.save(milestone);
+        refreshMilestone(milestoneId);
     }
 
     @Transactional
@@ -58,18 +69,25 @@ public class StatusService {
     }
 
     private void refresh(Milestone milestone, boolean alert) {
-        long counting = attachmentRepository.countByMilestoneId(milestone.getId());
-        Milestone.Status derived = StatusDeriver.deriveMilestone(
-                milestone.getDueDate(), LocalDate.now(), (int) counting, StatusDeriver.DEFAULT_REQUIRED_PROOFS);
-        if (derived == milestone.getStatus()) return;
+        boolean hasProof = attachmentRepository.countByMilestoneId(milestone.getId()) > 0;
+        // A claim only lives as long as a proof backs it. Deleting the last proof withdraws it.
+        Milestone.Claim claim = hasProof ? milestone.getClaim() : null;
+        LocalDate completedDate = milestone.getCompletedDate();
+        if (claim != Milestone.Claim.COMPLETED) {
+            completedDate = null;
+        } else if (completedDate == null) {
+            completedDate = LocalDate.now();
+        }
+        Milestone.Status derived = StatusDeriver.deriveMilestone(milestone.getDueDate(), LocalDate.now(), hasProof, claim, completedDate);
+
+        boolean statusChanged = derived != milestone.getStatus();
+        if (!statusChanged && claim == milestone.getClaim() && Objects.equals(completedDate, milestone.getCompletedDate())) return;
 
         milestone.setStatus(derived);
-        if (derived == Milestone.Status.COMPLETED) {
-            if (milestone.getCompletedDate() == null) milestone.setCompletedDate(LocalDate.now());
-        } else {
-            milestone.setCompletedDate(null);
-        }
+        milestone.setClaim(claim);
+        milestone.setCompletedDate(completedDate);
         milestoneRepository.save(milestone);
+        if (!statusChanged) return;
 
         if (!alert) {
             log.info("Status catch-up: milestone {} is now {}", milestone.getId(), derived);
@@ -87,9 +105,9 @@ public class StatusService {
     }
 
     private void refresh(Project project) {
-        List<Milestone.Status> statuses = milestoneRepository.findByProjectIdOrderBySequenceOrderAsc(project.getId())
-                .stream().map(Milestone::getStatus).toList();
-        Project.Status derived = StatusDeriver.deriveProject(project.getStatus(), statuses);
+        List<StatusDeriver.MilestoneFacts> facts = milestoneRepository.findByProjectIdOrderBySequenceOrderAsc(project.getId())
+                .stream().map(m -> new StatusDeriver.MilestoneFacts(m.getStatus(), m.getDueDate(), m.getCompletedDate())).toList();
+        Project.Status derived = StatusDeriver.deriveProject(project.getStatus(), project.getEndDate(), LocalDate.now(), facts);
         if (derived != project.getStatus()) {
             project.setStatus(derived);
             projectRepository.save(project);

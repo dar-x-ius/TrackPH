@@ -21,6 +21,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 @SpringBootTest(properties = "spring.profiles.active=dev")
@@ -45,13 +46,18 @@ class StatusServiceTest {
         return userRepository.save(u);
     }
 
-    private Project project(User agency) {
+    private Project project(User agency, int endInDays) {
         Project p = new Project();
         p.setName("Test project");
         p.setAgency(agency);
         p.setStartDate(LocalDate.now().minusDays(100));
-        p.setEndDate(LocalDate.now().plusDays(100));
+        p.setEndDate(LocalDate.now().plusDays(endInDays));
+        p.setOriginalEndDate(p.getEndDate());
         return projectRepository.save(p);
+    }
+
+    private Project project(User agency) {
+        return project(agency, 100);
     }
 
     private Milestone milestone(Project p, int dueInDays, int order) {
@@ -74,6 +80,10 @@ class StatusServiceTest {
         return attachmentRepository.save(a);
     }
 
+    private void claim(Milestone m, Milestone.Claim claim) {
+        statusService.recordClaim(m.getId(), claim);
+    }
+
     private Milestone reload(Milestone m) {
         entityManager.flush();
         entityManager.clear();
@@ -87,23 +97,38 @@ class StatusServiceTest {
     }
 
     @Test
-    void attachingProofCompletesMilestoneAndStartsProject() {
+    void completedClaimCompletesMilestonesAndFinishesProject() {
         User agency = agency();
-        Project p = project(agency);
+        Project p = project(agency, 60);
         Milestone m1 = milestone(p, 30, 1);
         Milestone m2 = milestone(p, 60, 2);
 
         attach(m1, agency);
-        statusService.refreshMilestone(m1.getId());
+        claim(m1, Milestone.Claim.COMPLETED);
 
-        assertEquals(Milestone.Status.COMPLETED, reload(m1).getStatus());
-        assertEquals(LocalDate.now(), milestoneRepository.findById(m1.getId()).orElseThrow().getCompletedDate());
+        Milestone first = reload(m1);
+        assertEquals(Milestone.Status.COMPLETED, first.getStatus());
+        assertEquals(LocalDate.now(), first.getCompletedDate());
         assertEquals(Project.Status.IN_PROGRESS, reload(p).getStatus());
 
         attach(m2, agency);
-        statusService.refreshMilestone(m2.getId());
+        claim(m2, Milestone.Claim.COMPLETED);
 
         assertEquals(Project.Status.COMPLETED, reload(p).getStatus());
+    }
+
+    @Test
+    void inProgressClaimShowsInProgress() {
+        User agency = agency();
+        Project p = project(agency);
+        Milestone m = milestone(p, 30, 1);
+
+        attach(m, agency);
+        claim(m, Milestone.Claim.IN_PROGRESS);
+
+        assertEquals(Milestone.Status.IN_PROGRESS, reload(m).getStatus());
+        assertNull(milestoneRepository.findById(m.getId()).orElseThrow().getCompletedDate());
+        assertEquals(Project.Status.IN_PROGRESS, reload(p).getStatus());
     }
 
     @Test
@@ -120,12 +145,41 @@ class StatusServiceTest {
     }
 
     @Test
-    void softDeletingTheOnlyProofDropsMilestoneBack() {
+    void completedClaimAfterTheDueDateIsCompletedLate() {
+        User agency = agency();
+        Project p = project(agency);
+        Milestone m = milestone(p, -3, 1);
+
+        attach(m, agency);
+        claim(m, Milestone.Claim.COMPLETED);
+
+        Milestone after = reload(m);
+        assertEquals(Milestone.Status.COMPLETED_LATE, after.getStatus());
+        assertEquals(LocalDate.now(), after.getCompletedDate());
+    }
+
+    @Test
+    void completedLateIsNotFlaggedAgainByTheMidnightJob() {
+        User agency = agency();
+        Project p = project(agency);
+        Milestone m = milestone(p, -3, 1);
+        attach(m, agency);
+        claim(m, Milestone.Claim.COMPLETED);
+        entityManager.flush();
+
+        boolean flagged = milestoneRepository.findNewlyOverdue(LocalDate.now()).stream()
+                .anyMatch(found -> found.getId().equals(m.getId()));
+
+        assertFalse(flagged);
+    }
+
+    @Test
+    void softDeletingTheOnlyProofClearsClaimAndCompletedDate() {
         User agency = agency();
         Project p = project(agency);
         Milestone m = milestone(p, 30, 1);
         Attachment proof = attach(m, agency);
-        statusService.refreshMilestone(m.getId());
+        claim(m, Milestone.Claim.COMPLETED);
         assertEquals(Milestone.Status.COMPLETED, reload(m).getStatus());
 
         Attachment managed = attachmentRepository.findById(proof.getId()).orElseThrow();
@@ -135,7 +189,24 @@ class StatusServiceTest {
 
         Milestone after = reload(m);
         assertEquals(Milestone.Status.PENDING, after.getStatus());
+        assertNull(after.getClaim());
         assertNull(after.getCompletedDate());
+
+        attach(after, agency);
+        claim(after, Milestone.Claim.COMPLETED);
+        assertEquals(LocalDate.now(), reload(m).getCompletedDate());
+    }
+
+    @Test
+    void proofWithoutClaimStaysPending() {
+        User agency = agency();
+        Project p = project(agency);
+        Milestone m = milestone(p, 30, 1);
+        attach(m, agency);
+
+        statusService.refreshMilestone(m.getId());
+
+        assertEquals(Milestone.Status.PENDING, reload(m).getStatus());
     }
 
     @Test
@@ -147,11 +218,25 @@ class StatusServiceTest {
         p.setStatus(Project.Status.CANCELLED);
         projectRepository.save(p);
 
-        statusService.refreshMilestone(m.getId());
+        claim(m, Milestone.Claim.COMPLETED);
         statusService.refreshProject(p.getId());
 
         assertEquals(Milestone.Status.COMPLETED, reload(m).getStatus());
         assertEquals(Project.Status.CANCELLED, reload(p).getStatus());
+    }
+
+    @Test
+    void projectWithNoEndDateStillDerives() {
+        User agency = agency();
+        Project p = project(agency);
+        p.setEndDate(null);
+        projectRepository.save(p);
+        Milestone m = milestone(p, 30, 1);
+        attach(m, agency);
+
+        claim(m, Milestone.Claim.COMPLETED);
+
+        assertEquals(Project.Status.COMPLETED, reload(p).getStatus());
     }
 
     @Test
@@ -161,6 +246,7 @@ class StatusServiceTest {
         Milestone done = milestone(p, 30, 1);
         Milestone late = milestone(p, -5, 2);
         attach(done, agency);
+        claim(done, Milestone.Claim.COMPLETED);
         entityManager.flush();
         long alertsBefore = alertRepository.count();
 
@@ -188,7 +274,7 @@ class StatusServiceTest {
         attach(done, agency);
         long before = alertRepository.count();
 
-        statusService.refreshMilestone(done.getId());
+        claim(done, Milestone.Claim.COMPLETED);
         assertEquals(before + 1, alertRepository.count());
         assertEquals(Alert.AlertType.STATUS_CHANGE, alertFor(done).getType());
 

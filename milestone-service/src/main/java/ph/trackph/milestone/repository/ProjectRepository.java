@@ -12,6 +12,7 @@ import java.util.List;
 public interface ProjectRepository extends JpaRepository<Project, Long> {
     Page<Project> findByAgencyId(Long agencyId, Pageable pageable);
     long countByStatus(Project.Status status);
+    List<Project> findByEndDateBeforeAndStatusNot(java.time.LocalDate date, Project.Status status);
     Page<Project> findByStatus(Project.Status status, Pageable pageable);
     List<Project> findByGeocodeStatus(Project.GeocodeStatus geocodeStatus, Pageable pageable);
     List<Project> findByGeocodeStatusAndLatitudeIsNotNullAndLongitudeIsNotNull(Project.GeocodeStatus geocodeStatus);

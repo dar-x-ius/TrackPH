@@ -83,7 +83,10 @@ public class ProjectService {
         requireOwnerOrAdmin(project, requesterId, requesterIsAdmin);
         ProjectResponse before = ProjectResponse.from(project);
         applyRequest(project, request);
-        ProjectResponse after = ProjectResponse.from(projectRepository.save(project));
+        projectRepository.save(project);
+        // The end date is part of the status rules now, so an edit can change the status.
+        statusService.refreshProject(id);
+        ProjectResponse after = ProjectResponse.from(project);
         auditContext.recordChange("Project", id, before, after);
         return after;
     }
@@ -165,6 +168,7 @@ public class ProjectService {
         if (req.description() != null) project.setDescription(req.description());
         if (req.startDate() != null) project.setStartDate(req.startDate());
         if (req.endDate() != null) project.setEndDate(req.endDate());
+        if (project.getOriginalEndDate() == null && project.getEndDate() != null) project.setOriginalEndDate(project.getEndDate());
         if (req.budget() != null) project.setBudget(req.budget());
 
         boolean locationChanged = req.location() != null && !req.location().equals(project.getLocation());

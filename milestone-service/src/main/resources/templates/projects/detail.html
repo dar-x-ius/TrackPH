@@ -20,6 +20,7 @@
         </div>
         <p id="proj-desc" class="text-muted mt-2"></p>
         <p id="proj-cancel-reason" class="text-muted mt-0"></p>
+        <p id="proj-dates" class="text-sm text-muted mt-0"></p>
         <p class="text-sm text-muted">* counted automatically, awaiting human check</p>
     </div>
 
@@ -100,11 +101,11 @@
 
         const statusBadge = {
             PLANNED: 'badge-secondary', IN_PROGRESS: 'badge-info',
-            DELAYED: 'badge-danger', COMPLETED: 'badge-success', CANCELLED: 'badge-secondary'
+            DELAYED: 'badge-danger', COMPLETED: 'badge-success', COMPLETED_LATE: 'badge-warning', CANCELLED: 'badge-secondary'
         };
         const msBadge = {
             PENDING: 'badge-secondary', IN_PROGRESS: 'badge-info',
-            COMPLETED: 'badge-success', OVERDUE: 'badge-danger'
+            COMPLETED: 'badge-success', COMPLETED_LATE: 'badge-warning', OVERDUE: 'badge-danger'
         };
 
         let currentProject = null;
@@ -120,6 +121,9 @@
                     const badge = document.getElementById('proj-status');
                     badge.textContent = statusLabel(currentProject.status, currentProject.needsReview);
                     badge.className = 'badge ' + (statusBadge[currentProject.status] || 'badge-secondary');
+                    const p = currentProject;
+                    document.getElementById('proj-dates').innerHTML = `${p.startDate ?? '—'} &rarr; ${p.endDate ?? '—'}`
+                        + (p.endDateExtended ? ` <span class="badge badge-warning">Extended</span> (originally ${p.originalEndDate})` : '');
                     const cancelled = currentProject.status === 'CANCELLED';
                     document.getElementById('proj-cancel-reason').textContent = cancelled && currentProject.cancelReason ? 'Cancelled: ' + currentProject.cancelReason : '';
                     const cancelBtn = document.getElementById('cancel-project-btn');
@@ -303,9 +307,14 @@
                                 </form>
                                 ` : ''}
                                 <div id="attachments-${m.id}" class="mt-3"></div>
+                                <p id="deleted-note-${m.id}" class="text-sm text-muted mt-1 mb-0"></p>
                                 ${role === 'AGENCY' ? `
                                 <form class="mt-2 flex gap-2 items-center" onsubmit="uploadAttachment(event, ${m.id})">
                                     <input type="file" id="attach-file-${m.id}" class="form-control" style="width:auto;" required/>
+                                    <select id="attach-claim-${m.id}" class="form-control" style="width:auto;" required title="Your choice shows with a * until someone checks the proof">
+                                        <option value="IN_PROGRESS">Work in progress</option>
+                                        <option value="COMPLETED">Completed</option>
+                                    </select>
                                     <button type="submit" class="btn btn-secondary btn-sm">Upload Proof</button>
                                 </form>
                                 ` : ''}
@@ -316,6 +325,7 @@
                     `).join('');
                     milestones.forEach(m => {
                         loadAttachments(m.id);
+                        loadDeletedNote(m.id);
                         loadEditHistory('Milestone', m.id, `ms-edited-${m.id}`);
                         if (!canManageMilestones) return;
                         document.getElementById(`edit-ms-title-${m.id}`).value = m.title;
@@ -331,8 +341,16 @@
             form.style.display = form.style.display === 'none' ? 'block' : 'none';
         }
 
+        // A milestone past the project end date is allowed, but it makes the project late for good unless the end date moves.
+        function pastEndDateOk(dueDate) {
+            if (!currentProject || !currentProject.endDate || dueDate <= currentProject.endDate) return true;
+            return confirm('This milestone is due after the project end date. The project will show DELAYED and finish as COMPLETED_LATE. '
+                + 'If the delay is real, extend the project end date instead. Save anyway?');
+        }
+
         function saveMilestone(e, id) {
             e.preventDefault();
+            if (!pastEndDateOk(document.getElementById(`edit-ms-dueDate-${id}`).value)) return;
             fetch(`/api/v1/milestones/${id}`, { headers })
                 .then(r => r.json())
                 .then(data => {
@@ -425,6 +443,17 @@
             modal.style.display = 'flex';
         }
 
+        // The public trail: that a proof was deleted, never what it was.
+        function loadDeletedNote(milestoneId) {
+            fetch(`/api/v1/milestones/${milestoneId}/attachments/archived`, { headers })
+                .then(r => r.json())
+                .then(data => {
+                    const n = (data.data ?? []).length;
+                    document.getElementById(`deleted-note-${milestoneId}`).textContent =
+                        n ? `${n} proof${n === 1 ? '' : 's'} deleted. See archived attachments below.` : '';
+                });
+        }
+
         function uploadAttachment(e, milestoneId) {
             e.preventDefault();
             const input = document.getElementById(`attach-file-${milestoneId}`);
@@ -432,6 +461,7 @@
             if (!file) return;
             const formData = new FormData();
             formData.append('file', file);
+            formData.append('claim', document.getElementById(`attach-claim-${milestoneId}`).value);
             fetch(`/api/v1/milestones/${milestoneId}/attachments`, { method: 'POST', headers, body: formData })
                 .then(r => r.json().then(body => ({ ok: r.ok, body })))
                 .then(({ ok, body }) => {
@@ -472,7 +502,7 @@
                     }
                     el.innerHTML = rows.map(a => `
                         <div class="flex items-center gap-2 mt-1">
-                            <span>${a.originalFilename} <span class="text-muted">(deleted by ${a.uploadedByUsername}, ${a.deletedAt})</span></span>
+                            <span>Proof uploaded by ${a.uploadedByUsername}, <span class="text-muted">deleted ${a.deletedAt}</span></span>
                             ${role === 'ADMIN' ? `<button type="button" class="btn btn-secondary btn-sm" style="padding:0.1rem 0.4rem;" onclick="restoreAttachment(${milestoneId}, ${a.id})">Restore</button>` : ''}
                         </div>
                     `).join('');
@@ -497,6 +527,7 @@
 
         function addMilestone(e) {
             e.preventDefault();
+            if (!pastEndDateOk(document.getElementById('ms-dueDate').value)) return;
             fetch(`/api/v1/projects/${projectId}/milestones`, {
                 method: 'POST',
                 headers: jsonHeaders,

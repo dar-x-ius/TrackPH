@@ -39,12 +39,22 @@ public class AttachmentService {
     public record FileDownload(byte[] content, String contentType, String filename) {
     }
 
+    /** What the public audit log may show of a proof. The file name is left out on purpose: proofs can hold sensitive details. */
+    record AuditView(Long id, Long milestoneId, String contentType, long fileSize, String uploadedByUsername, LocalDateTime createdAt) {
+        static AuditView of(AttachmentResponse r) {
+            return new AuditView(r.id(), r.milestoneId(), r.contentType(), r.fileSize(), r.uploadedByUsername(), r.createdAt());
+        }
+    }
+
     public List<AttachmentResponse> findByMilestone(Long milestoneId) {
         return attachmentRepository.findByMilestoneIdOrderByCreatedAtDesc(milestoneId).stream().map(AttachmentResponse::from).toList();
     }
 
     @Transactional
-    public AttachmentResponse upload(Long milestoneId, MultipartFile file, Long uploaderId, boolean uploaderIsAdmin) throws IOException {
+    public AttachmentResponse upload(Long milestoneId, MultipartFile file, Milestone.Claim claim, Long uploaderId, boolean uploaderIsAdmin) throws IOException {
+        if (claim == null) {
+            throw new IllegalArgumentException("Choose a status for this proof: IN_PROGRESS or COMPLETED");
+        }
         if (file.isEmpty()) {
             throw new IllegalArgumentException("Attached file is empty");
         }
@@ -68,8 +78,8 @@ public class AttachmentService {
         attachment.setContentType(file.getContentType());
         attachment.setFileSize(file.getSize());
         AttachmentResponse created = AttachmentResponse.from(attachmentRepository.save(attachment));
-        statusService.refreshMilestone(milestoneId);
-        auditContext.recordChange("Attachment", created.id(), null, created);
+        statusService.recordClaim(milestoneId, claim);
+        auditContext.recordChange("Attachment", created.id(), null, AuditView.of(created));
         return created;
     }
 
@@ -95,12 +105,13 @@ public class AttachmentService {
         attachment.setDeletedAt(LocalDateTime.now());
         attachmentRepository.save(attachment);
         statusService.refreshMilestone(milestoneId);
-        auditContext.recordDeletion("Attachment", attachmentId, snapshot);
+        auditContext.recordDeletion("Attachment", attachmentId, AuditView.of(snapshot));
     }
 
+    /** Proofs can hold sensitive details, so the public trail says who deleted one and when, never what it was called. */
     public List<Map<String, Object>> findArchivedByMilestone(Long milestoneId) {
         return jdbcTemplate.queryForList(
-                "SELECT a.id, a.original_filename AS originalFilename, u.username AS uploadedByUsername, a.deleted_at AS deletedAt " +
+                "SELECT a.id, u.username AS uploadedByUsername, a.deleted_at AS deletedAt " +
                         "FROM milestone_attachments a JOIN users u ON u.id = a.uploaded_by " +
                         "WHERE a.milestone_id = ? AND a.deleted_at IS NOT NULL ORDER BY a.deleted_at DESC",
                 milestoneId);
@@ -112,7 +123,7 @@ public class AttachmentService {
             throw new ResourceNotFoundException("Attachment", attachmentId);
         }
         statusService.refreshMilestone(milestoneId);
-        auditContext.recordChange("Attachment", attachmentId, null, AttachmentResponse.from(getOrThrow(milestoneId, attachmentId)));
+        auditContext.recordChange("Attachment", attachmentId, null, AuditView.of(AttachmentResponse.from(getOrThrow(milestoneId, attachmentId))));
     }
 
     private Attachment getOrThrow(Long milestoneId, Long attachmentId) {

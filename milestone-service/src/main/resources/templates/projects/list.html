@@ -102,7 +102,7 @@
 
         const statusBadge = {
             PLANNED: 'badge-secondary', IN_PROGRESS: 'badge-info',
-            DELAYED: 'badge-danger', COMPLETED: 'badge-success', CANCELLED: 'badge-secondary'
+            DELAYED: 'badge-danger', COMPLETED: 'badge-success', COMPLETED_LATE: 'badge-warning', CANCELLED: 'badge-secondary'
         };
 
         function renderProjects(projects) {
@@ -115,7 +115,7 @@
                 <tr id="project-row-${p.id}" onclick="focusProjectOnMap(${p.id})" style="cursor:pointer;">
                     <td><strong>${p.name}</strong><span class="agency-sub">${p.agencyName ?? '—'}</span></td>
                     <td><span class="badge ${statusBadge[p.status] || 'badge-secondary'}">${statusLabel(p.status, p.needsReview)}</span></td>
-                    <td class="col-timeline">${p.startDate ?? '—'} &rarr; ${p.endDate ?? '—'}</td>
+                    <td class="col-timeline">${p.startDate ?? '—'} &rarr; ${p.endDate ?? '—'}${p.endDateExtended ? ` <span class="badge badge-warning" title="Originally ${p.originalEndDate}">Extended</span>` : ''}</td>
                     <td class="col-milestones">${p.milestoneCount}</td>
                     <td><a href="/projects/${p.id}" class="btn btn-secondary btn-sm view-link" title="View project" aria-label="View project" onclick="event.stopPropagation()">&rarr;</a></td>
                 </tr>
@@ -132,7 +132,7 @@
                 document.getElementById('stat-total').textContent = projects.length;
                 document.getElementById('stat-inprogress').textContent = projects.filter(p => p.status === 'IN_PROGRESS').length;
                 document.getElementById('stat-delayed').textContent = projects.filter(p => p.status === 'DELAYED').length;
-                document.getElementById('stat-completed').textContent = projects.filter(p => p.status === 'COMPLETED').length;
+                document.getElementById('stat-completed').textContent = projects.filter(p => p.status === 'COMPLETED' || p.status === 'COMPLETED_LATE').length;
 
                 renderProjects(projects);
                 makeSortable(document.getElementById('projects-table'), () => projects, renderProjects);

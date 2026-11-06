@@ -31,6 +31,8 @@ public class Project {
     private LocalDate startDate;
     @Column(name = "end_date")
     private LocalDate endDate;
+    @Column(name = "original_end_date")
+    private LocalDate originalEndDate;
     private String location;
     private Double latitude;
     private Double longitude;
@@ -54,7 +56,7 @@ public class Project {
 
 
     public enum Status {
-        PLANNED, IN_PROGRESS, DELAYED, COMPLETED, CANCELLED
+        PLANNED, IN_PROGRESS, DELAYED, COMPLETED, COMPLETED_LATE, CANCELLED
     }
 
     /** Tracks whether {@link #location} has been turned into map coordinates yet. */
@@ -88,6 +90,14 @@ public class Project {
 
     public LocalDate getEndDate() {
         return this.endDate;
+    }
+
+    public LocalDate getOriginalEndDate() {
+        return this.originalEndDate;
+    }
+
+    public void setOriginalEndDate(final LocalDate originalEndDate) {
+        this.originalEndDate = originalEndDate;
     }
 
     public String getLocation() {

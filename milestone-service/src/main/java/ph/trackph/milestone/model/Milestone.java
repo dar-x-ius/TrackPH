@@ -31,6 +31,8 @@ public class Milestone {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Status status = Status.PENDING;
+    @Enumerated(EnumType.STRING)
+    private Claim claim;
     @Column(name = "sequence_order")
     private int sequenceOrder = 0;
     @OneToMany(mappedBy = "milestone")
@@ -53,7 +55,12 @@ public class Milestone {
 
 
     public enum Status {
-        PENDING, IN_PROGRESS, COMPLETED, OVERDUE
+        PENDING, IN_PROGRESS, COMPLETED, COMPLETED_LATE, OVERDUE
+    }
+
+    /** What the agency says the milestone's state is. Only meaningful while a live proof exists. */
+    public enum Claim {
+        IN_PROGRESS, COMPLETED
     }
 
     public Long getId() {
@@ -82,6 +89,14 @@ public class Milestone {
 
     public Status getStatus() {
         return this.status;
+    }
+
+    public Claim getClaim() {
+        return this.claim;
+    }
+
+    public void setClaim(final Claim claim) {
+        this.claim = claim;
     }
 
     public int getSequenceOrder() {

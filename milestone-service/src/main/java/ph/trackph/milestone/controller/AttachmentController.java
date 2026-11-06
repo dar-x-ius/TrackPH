@@ -12,6 +12,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import ph.trackph.milestone.dto.response.AttachmentResponse;
+import ph.trackph.milestone.model.Milestone;
 import ph.trackph.milestone.service.AttachmentService;
 import ph.trackph.milestone.util.ApiResponse;
 import java.io.IOException;
@@ -31,11 +32,11 @@ public class AttachmentController {
     }
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    @Operation(summary = "Upload a proof attachment (owning agency or ADMIN only)")
-    public ResponseEntity<ApiResponse<AttachmentResponse>> upload(@PathVariable Long milestoneId, @RequestParam("file") MultipartFile file, Authentication auth) throws IOException {
+    @Operation(summary = "Upload a proof attachment with a claim, IN_PROGRESS or COMPLETED (owning agency or ADMIN only)")
+    public ResponseEntity<ApiResponse<AttachmentResponse>> upload(@PathVariable Long milestoneId, @RequestParam("file") MultipartFile file, @RequestParam("claim") Milestone.Claim claim, Authentication auth) throws IOException {
         Long userId = (Long) auth.getPrincipal();
         boolean isAdmin = auth.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_ADMIN"));
-        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success("Attachment uploaded", attachmentService.upload(milestoneId, file, userId, isAdmin)));
+        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success("Attachment uploaded", attachmentService.upload(milestoneId, file, claim, userId, isAdmin)));
     }
 
     @GetMapping("/{attachmentId}/download")
@@ -58,7 +59,7 @@ public class AttachmentController {
     }
 
     @GetMapping("/archived")
-    @Operation(summary = "List soft-deleted attachments for a milestone (public — transparency over deletions, ADMIN only restores them)")
+    @Operation(summary = "List who deleted a proof and when (public: a trail of deletions without file names; ADMIN only restores them)")
     public ResponseEntity<ApiResponse<List<Map<String, Object>>>> archived(@PathVariable Long milestoneId) {
         return ResponseEntity.ok(ApiResponse.success(attachmentService.findArchivedByMilestone(milestoneId)));
     }
