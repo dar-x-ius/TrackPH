@@ -12,7 +12,6 @@ import ph.trackph.milestone.model.Project;
 import ph.trackph.milestone.repository.MilestoneRepository;
 import ph.trackph.milestone.repository.ProjectRepository;
 import ph.trackph.milestone.util.AuditContext;
-import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -21,6 +20,7 @@ public class MilestoneService {
     private final ProjectRepository projectRepository;
     private final AlertService alertService;
     private final AuditContext auditContext;
+    private final StatusService statusService;
 
     public List<MilestoneResponse> findByProject(Long projectId) {
         return milestoneRepository.findByProjectIdOrderBySequenceOrderAsc(projectId).stream().map(MilestoneResponse::from).toList();
@@ -37,7 +37,9 @@ public class MilestoneService {
         Milestone milestone = new Milestone();
         milestone.setProject(project);
         applyRequest(milestone, request);
-        MilestoneResponse created = MilestoneResponse.from(milestoneRepository.save(milestone));
+        Milestone saved = milestoneRepository.save(milestone);
+        statusService.refreshMilestone(saved.getId());
+        MilestoneResponse created = MilestoneResponse.from(saved);
         auditContext.recordChange("Milestone", created.id(), null, created);
         return created;
     }
@@ -47,12 +49,10 @@ public class MilestoneService {
         Milestone milestone = getOrThrow(id);
         requireOwnerOrAdmin(milestone.getProject(), requesterId, requesterIsAdmin);
         MilestoneResponse before = MilestoneResponse.from(milestone);
-        Milestone.Status previousStatus = milestone.getStatus();
         applyRequest(milestone, request);
-        if (request.status() != null && request.status() != previousStatus) {
-            alertService.createAlert(milestone.getProject(), milestone, Alert.AlertType.STATUS_CHANGE, "Milestone \'" + milestone.getTitle() + "\' changed to " + milestone.getStatus(), Alert.Severity.LOW);
-        }
-        MilestoneResponse after = MilestoneResponse.from(milestoneRepository.save(milestone));
+        Milestone saved = milestoneRepository.save(milestone);
+        statusService.refreshMilestone(saved.getId());
+        MilestoneResponse after = MilestoneResponse.from(saved);
         auditContext.recordChange("Milestone", id, before, after);
         return after;
     }
@@ -66,11 +66,10 @@ public class MilestoneService {
         requireOwnerOrAdmin(milestone.getProject(), requesterId, requesterIsAdmin);
         MilestoneResponse before = MilestoneResponse.from(milestone);
         applyRequest(milestone, request);
-        if (milestone.getStatus() == Milestone.Status.COMPLETED) {
-            milestone.setCompletedDate(LocalDate.now());
-        }
         alertService.createAlert(milestone.getProject(), milestone, Alert.AlertType.REPORT_SUBMITTED, "Progress report submitted for milestone \'" + milestone.getTitle() + "\'", Alert.Severity.LOW);
-        MilestoneResponse after = MilestoneResponse.from(milestoneRepository.save(milestone));
+        Milestone saved = milestoneRepository.save(milestone);
+        statusService.refreshMilestone(saved.getId());
+        MilestoneResponse after = MilestoneResponse.from(saved);
         auditContext.recordChange("Milestone", id, before, after);
         return after;
     }
@@ -80,8 +79,6 @@ public class MilestoneService {
         if (req.description() != null) milestone.setDescription(req.description());
         milestone.setDueDate(req.dueDate());
         milestone.setSequenceOrder(req.sequenceOrder());
-        if (req.status() != null) milestone.setStatus(req.status());
-        if (req.completedDate() != null) milestone.setCompletedDate(req.completedDate());
     }
 
     private void requireOwnerOrAdmin(Project project, Long requesterId, boolean requesterIsAdmin) {
@@ -94,10 +91,11 @@ public class MilestoneService {
         return milestoneRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Milestone", id));
     }
 
-    public MilestoneService(final MilestoneRepository milestoneRepository, final ProjectRepository projectRepository, final AlertService alertService, final AuditContext auditContext) {
+    public MilestoneService(final MilestoneRepository milestoneRepository, final ProjectRepository projectRepository, final AlertService alertService, final AuditContext auditContext, final StatusService statusService) {
         this.milestoneRepository = milestoneRepository;
         this.projectRepository = projectRepository;
         this.alertService = alertService;
         this.auditContext = auditContext;
+        this.statusService = statusService;
     }
 }

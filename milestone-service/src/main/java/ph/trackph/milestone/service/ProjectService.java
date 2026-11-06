@@ -31,6 +31,7 @@ public class ProjectService {
     private final MilestoneRepository milestoneRepository;
     private final AuditContext auditContext;
     private final JdbcTemplate jdbcTemplate;
+    private final StatusService statusService;
 
     public Page<ProjectResponse> findAll(Pageable pageable) {
         return projectRepository.findAll(pageable).map(ProjectResponse::from);
@@ -132,6 +133,8 @@ public class ProjectService {
         }
         milestoneRepository.restoreArchivedByProjectId(id);
         attachmentRepository.restoreArchivedByProjectId(id);
+        milestoneRepository.findByProjectIdOrderBySequenceOrderAsc(id).forEach(m -> statusService.refreshMilestone(m.getId()));
+        statusService.refreshProject(id);
         auditContext.recordChange("Project", id, null, findById(id));
     }
 
@@ -147,7 +150,6 @@ public class ProjectService {
         if (req.startDate() != null) project.setStartDate(req.startDate());
         if (req.endDate() != null) project.setEndDate(req.endDate());
         if (req.budget() != null) project.setBudget(req.budget());
-        if (req.status() != null) project.setStatus(req.status());
 
         boolean locationChanged = req.location() != null && !req.location().equals(project.getLocation());
         if (req.location() != null) project.setLocation(req.location());
@@ -166,7 +168,8 @@ public class ProjectService {
         return projectRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Project", id));
     }
 
-    public ProjectService(final ProjectRepository projectRepository, final UserRepository userRepository, final AttachmentRepository attachmentRepository, final MilestoneRepository milestoneRepository, final AuditContext auditContext, final JdbcTemplate jdbcTemplate) {
+    public ProjectService(final ProjectRepository projectRepository, final UserRepository userRepository, final AttachmentRepository attachmentRepository, final MilestoneRepository milestoneRepository, final AuditContext auditContext, final JdbcTemplate jdbcTemplate, final StatusService statusService) {
+        this.statusService = statusService;
         this.projectRepository = projectRepository;
         this.userRepository = userRepository;
         this.attachmentRepository = attachmentRepository;

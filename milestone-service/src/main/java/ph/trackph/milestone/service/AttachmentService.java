@@ -34,6 +34,7 @@ public class AttachmentService {
     private final FileStorageService fileStorageService;
     private final AuditContext auditContext;
     private final JdbcTemplate jdbcTemplate;
+    private final StatusService statusService;
 
     public record FileDownload(byte[] content, String contentType, String filename) {
     }
@@ -67,6 +68,7 @@ public class AttachmentService {
         attachment.setContentType(file.getContentType());
         attachment.setFileSize(file.getSize());
         AttachmentResponse created = AttachmentResponse.from(attachmentRepository.save(attachment));
+        statusService.refreshMilestone(milestoneId);
         auditContext.recordChange("Attachment", created.id(), null, created);
         return created;
     }
@@ -92,6 +94,7 @@ public class AttachmentService {
         AttachmentResponse snapshot = AttachmentResponse.from(attachment);
         attachment.setDeletedAt(LocalDateTime.now());
         attachmentRepository.save(attachment);
+        statusService.refreshMilestone(milestoneId);
         auditContext.recordDeletion("Attachment", attachmentId, snapshot);
     }
 
@@ -108,6 +111,7 @@ public class AttachmentService {
         if (attachmentRepository.restoreById(attachmentId, milestoneId) == 0) {
             throw new ResourceNotFoundException("Attachment", attachmentId);
         }
+        statusService.refreshMilestone(milestoneId);
         auditContext.recordChange("Attachment", attachmentId, null, AttachmentResponse.from(getOrThrow(milestoneId, attachmentId)));
     }
 
@@ -126,7 +130,8 @@ public class AttachmentService {
         return originalFilename.substring(originalFilename.lastIndexOf('.') + 1).toLowerCase();
     }
 
-    public AttachmentService(final AttachmentRepository attachmentRepository, final MilestoneRepository milestoneRepository, final UserRepository userRepository, final FileStorageService fileStorageService, final AuditContext auditContext, final JdbcTemplate jdbcTemplate) {
+    public AttachmentService(final AttachmentRepository attachmentRepository, final MilestoneRepository milestoneRepository, final UserRepository userRepository, final FileStorageService fileStorageService, final AuditContext auditContext, final JdbcTemplate jdbcTemplate, final StatusService statusService) {
+        this.statusService = statusService;
         this.attachmentRepository = attachmentRepository;
         this.milestoneRepository = milestoneRepository;
         this.userRepository = userRepository;

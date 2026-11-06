@@ -38,7 +38,7 @@ public class MilestoneController {
     }
 
     @PutMapping("/api/v1/milestones/{id}")
-    @Operation(summary = "Update milestone status or details (owning agency or ADMIN only)")
+    @Operation(summary = "Update milestone details (owning agency or ADMIN only)")
     public ResponseEntity<ApiResponse<MilestoneResponse>> update(@PathVariable Long id, @Valid @RequestBody MilestoneRequest request, Authentication auth) {
         return ResponseEntity.ok(ApiResponse.success("Updated", milestoneService.update(id, request, (Long) auth.getPrincipal(), isAdmin(auth))));
     }
