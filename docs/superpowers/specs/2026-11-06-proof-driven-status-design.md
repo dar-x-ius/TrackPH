@@ -122,6 +122,46 @@ This alone fixes the contradiction the user found.
 - Proofs with no flag go to the normal queue, oldest first.
 - Deleting or restoring a verified proof recomputes status and is audit-logged. (Soft delete already exists.)
 
+## Revision: claimed status (phase 1b)
+
+Phase 1 shipped with the stand-in above: one attachment completes a milestone. In use that is too blunt, because a photo of half-finished work marks the milestone done and nobody can say "started". After phase 1 shipped, the user replaced the stand-in with a simpler idea. The agency says what state the milestone is in, but only with a proof attached, and the claim carries the asterisk until a human checks it. This section overrides the phase 1 stand-in, the "IN_PROGRESS can't be reached" limit and the project rules above. Phases 2 and 3 stay on the roadmap. How categories and review combine with claims gets decided when we reach them.
+
+### Milestone status
+
+- A proof is mandatory. A claim exists only while at least one live proof exists.
+- On upload the agency picks IN_PROGRESS or COMPLETED. The claim is stored on the milestone, one per milestone, and the latest upload sets it. It shows the asterisk until reviewed.
+- Evaluate top to bottom:
+  1. No proof: OVERDUE if the due date has passed, otherwise PENDING.
+  2. Claim COMPLETED: COMPLETED_LATE if the completion date is after the due date, otherwise COMPLETED.
+  3. Claim IN_PROGRESS: OVERDUE if the due date has passed, otherwise IN_PROGRESS.
+- COMPLETED_LATE keeps the word "completed" so a search for it still finds the milestone. Lists, stat tiles and the map count it as completed.
+- The completion date is the system date of the claim. Nobody can backdate it.
+- Deleting the last proof clears the claim and the status recalculates. Proofs are soft deleted. The milestone shows a plain note, such as "1 proof deleted on 12 Nov by the agency", with no file name and no content, since proofs can hold sensitive details.
+
+### Project status
+
+Evaluate top to bottom. A milestone counts as done when it is COMPLETED or COMPLETED_LATE.
+
+1. CANCELLED: only by a person, with a reason. Still the one manual status.
+2. PLANNED: no milestones.
+3. COMPLETED or COMPLETED_LATE: every milestone is done, and either the last milestone is due on or after the project end date or the end date has passed. It is COMPLETED_LATE when the latest completion is after the end date, or when any milestone is due after the end date.
+4. DELAYED: any milestone is OVERDUE, today is after the project end date, or any milestone is due after the end date.
+5. IN_PROGRESS: any milestone is IN_PROGRESS or done.
+6. PLANNED: anything else.
+
+A project whose late milestone was later completed shows IN_PROGRESS, since DELAYED means late now. The completion check comes first so a finished project never shows DELAYED. The last-milestone check stops a running project with one finished early milestone from counting as finished. Once the end date has passed no milestone can still be added in time, so finishing every milestone finishes the project. Without that second half, a project that finished everything early would read DELAYED for good. The asterisk stays derived, and a project has one when any milestone behind its status has one.
+
+### Milestones past the project end date
+
+A milestone may be due after the project end date. Saving it shows a caution: the project will show DELAYED and finish as COMPLETED_LATE, so extend the project end date instead if the delay is real.
+
+### Extended end dates
+
+- The project stores its original end date once, at creation. Existing projects start with their current end date.
+- When the current end date differs, the pages show the original date beside it with an "extended" flag. This stops an agency from pushing the date forward each time DELAYED gets close.
+- Editing the end date recalculates the project status.
+- Phase 1c, a separate change: the owner applies for an extension and an ADMIN approves or rejects it. Until then the direct edit stays, and the flag makes it visible.
+
 ## Constraints from the existing code
 
 - Audit logging happens in `AuditInterceptor` for `/api/**` mutations. Status changes made by the midnight job aren't covered, same as OVERDUE today. The STATUS_CHANGE alert is the record there.

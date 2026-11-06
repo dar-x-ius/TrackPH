@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1620" height="840" viewBox="0 0 1620 840" font-family="Segoe UI, Arial, sans-serif">
+  <defs>
+    <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#475569"/>
+    </marker>
+    <style>
+      .t { font-size: 15px; font-weight: 600; fill: #0f172a; }
+      .s { font-size: 13px; fill: #334155; }
+      .m { font-size: 12px; fill: #64748b; }
+      .h { font-size: 13px; font-weight: 600; fill: #64748b; letter-spacing: .08em; }
+      .box { stroke-width: 1.5; }
+      .a { stroke: #475569; stroke-width: 1.6; fill: none; marker-end: url(#arr); }
+    </style>
+  </defs>
+
+  <rect width="1620" height="840" fill="#ffffff"/>
+  <text x="30" y="40" font-size="24" font-weight="700" fill="#0f172a">TrackPH: how status is worked out now</text>
+  <text x="30" y="62" class="s">Nobody types a status. An agency claims a state, but only by attaching a proof. Milestones, dates and the end date decide the rest.</text>
+
+  <text x="30" y="92" class="h">WHAT TRIGGERS IT</text>
+  <text x="410" y="92" class="h">THE ONE WRITER</text>
+  <text x="800" y="92" class="h">THE RULES</text>
+  <text x="1260" y="92" class="h">WHAT COMES OUT</text>
+
+  <!-- triggers -->
+  <g>
+    <rect class="box" x="30" y="100" width="300" height="90" rx="10" fill="#eff6ff" stroke="#93c5fd"/>
+    <text class="t" x="46" y="126">Proof uploaded with a claim,</text>
+    <text class="t" x="46" y="146">or deleted, or restored</text>
+    <text class="m" x="46" y="170">AttachmentService</text>
+
+    <rect class="box" x="30" y="210" width="300" height="90" rx="10" fill="#eff6ff" stroke="#93c5fd"/>
+    <text class="t" x="46" y="236">Milestone created, edited,</text>
+    <text class="t" x="46" y="256">or progress report submitted</text>
+    <text class="m" x="46" y="280">MilestoneService</text>
+
+    <rect class="box" x="30" y="320" width="300" height="90" rx="10" fill="#eff6ff" stroke="#93c5fd"/>
+    <text class="t" x="46" y="346">Project restored from the archive</text>
+    <text class="m" x="46" y="368">ProjectService</text>
+
+    <rect class="box" x="30" y="430" width="300" height="90" rx="10" fill="#eff6ff" stroke="#93c5fd"/>
+    <text class="t" x="46" y="456">Midnight job</text>
+    <text class="s" x="46" y="476">Finds milestones that just went overdue</text>
+    <text class="m" x="46" y="500">AlertScheduler</text>
+
+    <rect class="box" x="30" y="540" width="300" height="90" rx="10" fill="#eff6ff" stroke="#93c5fd"/>
+    <text class="t" x="46" y="566">App startup</text>
+    <text class="s" x="46" y="586">Catches a missed midnight, then backfills</text>
+    <text class="m" x="46" y="610">StatusBackfillRunner</text>
+  </g>
+
+  <!-- trigger arrows -->
+  <path class="a" d="M330,145 L410,285"/>
+  <path class="a" d="M330,255 L410,320"/>
+  <path class="a" d="M330,365 L410,365"/>
+  <path class="a" d="M330,475 L410,410"/>
+  <path class="a" d="M330,585 L410,445"/>
+
+  <!-- StatusService -->
+  <rect class="box" x="410" y="220" width="300" height="280" rx="12" fill="#f5f3ff" stroke="#a78bfa"/>
+  <text class="t" x="428" y="248" font-size="17">StatusService</text>
+  <text class="m" x="428" y="268">The only code that writes status or completed date</text>
+  <text class="s" x="428" y="304">1. Check for a live proof. No proof, no claim</text>
+  <text class="s" x="428" y="330">2. Set completed date on the first COMPLETED</text>
+  <text class="s" x="428" y="348">    claim, clear it in every other case</text>
+  <text class="s" x="428" y="374">3. Work out the milestone status</text>
+  <text class="s" x="428" y="400">4. Work out the project status, using its</text>
+  <text class="s" x="428" y="418">    milestones and its end date</text>
+  <text class="s" x="428" y="444">5. Save, and raise an alert if the status</text>
+  <text class="s" x="428" y="462">    changed</text>
+
+  <!-- service to rules -->
+  <path class="a" d="M710,300 L800,195"/>
+  <path class="a" d="M710,420 L800,480"/>
+
+  <!-- milestone rules -->
+  <rect class="box" x="800" y="100" width="370" height="210" rx="12" fill="#ecfdf5" stroke="#6ee7b7"/>
+  <text class="t" x="818" y="128">Milestone status</text>
+  <text class="s" x="818" y="154">No proof: OVERDUE if past due, else PENDING</text>
+  <text class="s" x="818" y="178">Claim COMPLETED: COMPLETED, or COMPLETED_LATE</text>
+  <text class="s" x="818" y="196">    if finished after the due date</text>
+  <text class="s" x="818" y="220">Claim IN_PROGRESS: IN_PROGRESS, or OVERDUE</text>
+  <text class="s" x="818" y="238">    if past due</text>
+  <text class="m" x="818" y="266">A claim only counts while a live proof backs it.</text>
+  <text class="m" x="818" y="284">Deleting the last proof withdraws the claim.</text>
+
+  <!-- milestone to project -->
+  <path class="a" d="M985,310 L985,350"/>
+  <text class="m" x="997" y="335">milestone statuses</text>
+
+  <!-- project rules -->
+  <rect class="box" x="800" y="350" width="370" height="290" rx="12" fill="#ecfdf5" stroke="#6ee7b7"/>
+  <text class="t" x="818" y="378">Project status</text>
+  <text class="s" x="818" y="404">CANCELLED stays CANCELLED</text>
+  <text class="s" x="818" y="428">No milestones: PLANNED</text>
+  <text class="s" x="818" y="452">All done, and the last is due on or after the end</text>
+  <text class="s" x="818" y="470">    date or the end date passed: COMPLETED, or</text>
+  <text class="s" x="818" y="488">    COMPLETED_LATE if finished past the end date</text>
+  <text class="s" x="818" y="512">Any OVERDUE, end date passed, or a milestone</text>
+  <text class="s" x="818" y="530">    due after the end date: DELAYED</text>
+  <text class="s" x="818" y="554">Any started or done: IN_PROGRESS</text>
+  <text class="s" x="818" y="578">Otherwise: PLANNED</text>
+  <text class="m" x="818" y="610">Rules live in StatusDeriver, a pure class, no database.</text>
+
+  <!-- manual cancel -->
+  <rect class="box" x="410" y="540" width="300" height="110" rx="12" fill="#fff7ed" stroke="#fdba74"/>
+  <text class="t" x="428" y="568">The one manual status: Cancel project</text>
+  <text class="s" x="428" y="592">Project owner or admin only</text>
+  <text class="s" x="428" y="612">A reason is required and is shown on the page</text>
+  <text class="m" x="428" y="636">POST /api/v1/projects/{id}/cancel, audit logged</text>
+  <path class="a" d="M710,595 L800,540"/>
+
+  <!-- rules to outputs -->
+  <path class="a" d="M1170,150 L1260,150"/>
+  <path class="a" d="M1170,230 L1260,290"/>
+  <path class="a" d="M1170,495 L1260,490"/>
+
+  <!-- outputs -->
+  <rect class="box" x="1260" y="100" width="320" height="100" rx="12" fill="#f8fafc" stroke="#94a3b8"/>
+  <text class="t" x="1278" y="128">Saved in the database</text>
+  <text class="s" x="1278" y="152">Status, claim and completed date.</text>
+  <text class="s" x="1278" y="172">No status dropdowns on the pages.</text>
+
+  <rect class="box" x="1260" y="230" width="320" height="140" rx="12" fill="#fef2f2" stroke="#fca5a5"/>
+  <text class="t" x="1278" y="258">Alerts</text>
+  <text class="s" x="1278" y="284">Milestone turns OVERDUE  →  DEADLINE_MISSED</text>
+  <text class="s" x="1278" y="306">Any other change  →  STATUS_CHANGE</text>
+  <text class="s" x="1278" y="328">One alert per milestone and type, no repeats</text>
+  <text class="m" x="1278" y="352">The quiet backfill on startup raises none.</text>
+
+  <rect class="box" x="1260" y="400" width="320" height="250" rx="12" fill="#fefce8" stroke="#fde047"/>
+  <text class="t" x="1278" y="428">On screen</text>
+  <text class="s" x="1278" y="454">Status badge, with a * in front while no one</text>
+  <text class="s" x="1278" y="474">has checked the proof. Example: *COMPLETED</text>
+  <text class="m" x="1278" y="500">Applies to IN_PROGRESS, COMPLETED and</text>
+  <text class="m" x="1278" y="518">COMPLETED_LATE. Worked out per response,</text>
+  <text class="m" x="1278" y="536">never stored. A legend explains the *.</text>
+  <text class="s" x="1278" y="568">An Extended badge shows when the end date</text>
+  <text class="s" x="1278" y="588">was pushed past the original one, with the</text>
+  <text class="s" x="1278" y="608">original date beside it.</text>
+  <text class="m" x="1278" y="634">Deleted proofs show as a count, no file names.</text>
+
+  <!-- footer -->
+  <line x1="30" y1="710" x2="1590" y2="710" stroke="#e2e8f0" stroke-width="1.5"/>
+  <text class="s" x="30" y="738"><tspan font-weight="600">Next:</tspan> the owner applies for an end-date extension and an ADMIN approves it (phase 1c).</text>
+  <text class="s" x="30" y="760"><tspan font-weight="600">Later:</tspan> phase 2 adds proof categories and required proofs. Phase 3 adds public vote review, which clears the *.</text>
+  <text class="m" x="30" y="792">Source: milestone-service, service/StatusService.java and service/StatusDeriver.java. Updated 2026-11-06 (phase 1b).</text>
+</svg>
