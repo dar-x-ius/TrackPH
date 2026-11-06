@@ -15,9 +15,12 @@
             <span id="proj-status" class="badge"></span>
             <span id="proj-edited"></span>
             <button sec:authorize="hasAnyRole('AGENCY','ADMIN')" class="btn btn-secondary btn-sm" onclick="toggleEditProject()">Edit</button>
+            <button sec:authorize="hasAnyRole('AGENCY','ADMIN')" id="cancel-project-btn" class="btn btn-secondary btn-sm" onclick="cancelProject()">Cancel project</button>
             <button sec:authorize="hasAnyRole('AGENCY','ADMIN')" class="btn btn-secondary btn-sm" onclick="deleteProject()">Delete</button>
         </div>
         <p id="proj-desc" class="text-muted mt-2"></p>
+        <p id="proj-cancel-reason" class="text-muted mt-0"></p>
+        <p class="text-sm text-muted">* counted automatically, awaiting human check</p>
     </div>
 
     <form sec:authorize="hasAnyRole('AGENCY','ADMIN')" id="edit-project-form" class="card" style="display:none; max-width:600px; margin-bottom:1.5rem;" onsubmit="saveProject(event)">
@@ -50,16 +53,6 @@
         <div class="form-group">
             <label class="form-label" for="edit-budget">Budget</label>
             <input type="number" id="edit-budget" class="form-control" step="0.01"/>
-        </div>
-        <div class="form-group">
-            <label class="form-label" for="edit-status">Status</label>
-            <select id="edit-status" class="form-control">
-                <option value="PLANNED">PLANNED</option>
-                <option value="IN_PROGRESS">IN_PROGRESS</option>
-                <option value="DELAYED">DELAYED</option>
-                <option value="COMPLETED">COMPLETED</option>
-                <option value="CANCELLED">CANCELLED</option>
-            </select>
         </div>
         <button type="submit" class="btn btn-primary btn-sm">Save</button>
         <button type="button" class="btn btn-secondary btn-sm" onclick="toggleEditProject()">Cancel</button>
@@ -125,8 +118,12 @@
                     document.getElementById('proj-name').textContent = currentProject.name;
                     document.getElementById('proj-desc').textContent = currentProject.description ?? '';
                     const badge = document.getElementById('proj-status');
-                    badge.textContent = currentProject.status;
+                    badge.textContent = statusLabel(currentProject.status, currentProject.needsReview);
                     badge.className = 'badge ' + (statusBadge[currentProject.status] || 'badge-secondary');
+                    const cancelled = currentProject.status === 'CANCELLED';
+                    document.getElementById('proj-cancel-reason').textContent = cancelled && currentProject.cancelReason ? 'Cancelled: ' + currentProject.cancelReason : '';
+                    const cancelBtn = document.getElementById('cancel-project-btn');
+                    if (cancelBtn) cancelBtn.style.display = cancelled ? 'none' : '';
                     loadEditHistory('Project', currentProject.id, 'proj-edited');
                 });
         }
@@ -195,7 +192,6 @@
             document.getElementById('edit-startDate').value = p.startDate ?? '';
             document.getElementById('edit-endDate').value = p.endDate ?? '';
             document.getElementById('edit-budget').value = p.budget ?? '';
-            document.getElementById('edit-status').value = p.status;
             form.style.display = 'block';
             if (!editPickerInitialized) {
                 editPickerInitialized = true;
@@ -217,14 +213,25 @@
                     longitude: editPickedLng,
                     startDate: document.getElementById('edit-startDate').value || null,
                     endDate: document.getElementById('edit-endDate').value || null,
-                    budget: document.getElementById('edit-budget').value || null,
-                    status: document.getElementById('edit-status').value
+                    budget: document.getElementById('edit-budget').value || null
                 })
             })
                 .then(r => r.json().then(body => ({ ok: r.ok, body })))
                 .then(({ ok, body }) => {
                     if (!ok) throw new Error(body.message || 'Failed to update project');
                     document.getElementById('edit-project-form').style.display = 'none';
+                    loadProject();
+                })
+                .catch(err => alert(err.message));
+        }
+
+        function cancelProject() {
+            const reason = (prompt('Why is this project being cancelled?') || '').trim();
+            if (!reason) return;
+            fetch(`/api/v1/projects/${projectId}/cancel`, { method: 'POST', headers: jsonHeaders, body: JSON.stringify({ reason }) })
+                .then(r => r.json().then(body => ({ ok: r.ok, body })))
+                .then(({ ok, body }) => {
+                    if (!ok) throw new Error(body.message || 'Failed to cancel project');
                     loadProject();
                 })
                 .catch(err => alert(err.message));
@@ -258,13 +265,10 @@
                                 <div class="milestone-head">
                                     <strong>${m.title}</strong>
                                     <span id="ms-edited-${m.id}"></span>
-                                    <span class="badge ${msBadge[m.status] || 'badge-secondary'}">${m.status}</span>
+                                    <span class="badge ${msBadge[m.status] || 'badge-secondary'}">${statusLabel(m.status, m.needsReview)}</span>
                                     ${m.delayDays > 0 ? `<span class="badge badge-danger">${m.delayDays}d overdue</span>` : ''}
                                     ${canManageMilestones ? `
-                                    <select class="form-control" onchange="updateMilestoneStatus(${m.id}, this.value)" style="width:auto; margin-left:auto;">
-                                        ${Object.keys(msBadge).map(s => `<option value="${s}" ${s === m.status ? 'selected' : ''}>${s}</option>`).join('')}
-                                    </select>
-                                    <button class="btn btn-secondary btn-sm" onclick="toggleEditMilestone(${m.id})">Edit</button>
+                                    <button class="btn btn-secondary btn-sm" style="margin-left:auto;" onclick="toggleEditMilestone(${m.id})">Edit</button>
                                     <button class="btn btn-secondary btn-sm" onclick="toggleReportForm(${m.id})">Submit Report</button>
                                     ` : ''}
                                 </div>
@@ -337,31 +341,19 @@
                         title: document.getElementById(`edit-ms-title-${id}`).value,
                         description: document.getElementById(`edit-ms-description-${id}`).value,
                         dueDate: document.getElementById(`edit-ms-dueDate-${id}`).value,
-                        sequenceOrder: Number(document.getElementById(`edit-ms-sequenceOrder-${id}`).value) || 0,
-                        status: m.status, completedDate: m.completedDate
+                        sequenceOrder: Number(document.getElementById(`edit-ms-sequenceOrder-${id}`).value) || 0
                     };
                     return fetch(`/api/v1/milestones/${id}`, { method: 'PUT', headers: jsonHeaders, body: JSON.stringify(body) });
                 })
                 .then(r => r.json().then(b => ({ ok: r.ok, b })))
-                .then(({ ok, b }) => { if (!ok) throw new Error(b.message || 'Failed to save milestone'); loadMilestones(); })
+                .then(({ ok, b }) => { if (!ok) throw new Error(b.message || 'Failed to save milestone'); refreshStatuses(); })
                 .catch(err => alert(err.message));
         }
 
-        function updateMilestoneStatus(id, status) {
-            fetch(`/api/v1/milestones/${id}`, { headers })
-                .then(r => r.json())
-                .then(data => {
-                    const m = data.data;
-                    const body = {
-                        title: m.title, description: m.description, dueDate: m.dueDate,
-                        sequenceOrder: m.sequenceOrder, status,
-                        completedDate: status === 'COMPLETED' ? new Date().toISOString().slice(0, 10) : m.completedDate
-                    };
-                    return fetch(`/api/v1/milestones/${id}`, { method: 'PUT', headers: jsonHeaders, body: JSON.stringify(body) });
-                })
-                .then(r => r.json().then(b => ({ ok: r.ok, b })))
-                .then(({ ok, b }) => { if (!ok) throw new Error(b.message || 'Failed to update status'); loadMilestones(); })
-                .catch(err => alert(err.message));
+        // A proof, a due date or a new milestone can all move the project's status too, so reload both.
+        function refreshStatuses() {
+            loadProject();
+            loadMilestones();
         }
 
         function toggleReportForm(id) {
@@ -377,7 +369,7 @@
                     const m = data.data;
                     const body = {
                         title: m.title, description: document.getElementById(`report-desc-${id}`).value,
-                        dueDate: m.dueDate, sequenceOrder: m.sequenceOrder, status: m.status, completedDate: m.completedDate
+                        dueDate: m.dueDate, sequenceOrder: m.sequenceOrder
                     };
                     return fetch(`/api/v1/milestones/${id}/report`, { method: 'POST', headers: jsonHeaders, body: JSON.stringify(body) });
                 })
@@ -445,7 +437,7 @@
                 .then(({ ok, body }) => {
                     if (!ok) throw new Error(body.message || 'Failed to upload attachment');
                     input.value = '';
-                    loadAttachments(milestoneId);
+                    refreshStatuses();
                 })
                 .catch(err => alert(err.message));
         }
@@ -456,7 +448,7 @@
                 .then(r => r.json().then(body => ({ ok: r.ok, body })))
                 .then(({ ok, body }) => {
                     if (!ok) throw new Error(body.message || 'Failed to delete attachment');
-                    loadAttachments(milestoneId);
+                    refreshStatuses();
                 })
                 .catch(err => alert(err.message));
         }
@@ -493,7 +485,7 @@
                 .then(({ ok, body }) => {
                     if (!ok) throw new Error(body.message || 'Failed to restore attachment');
                     loadArchivedAttachments(milestoneId);
-                    loadAttachments(milestoneId);
+                    refreshStatuses();
                 })
                 .catch(err => alert(err.message));
         }
@@ -512,8 +504,7 @@
                     title: document.getElementById('ms-title').value,
                     description: document.getElementById('ms-description').value,
                     dueDate: document.getElementById('ms-dueDate').value,
-                    sequenceOrder: Number(document.getElementById('ms-sequenceOrder').value) || 0,
-                    status: 'PENDING'
+                    sequenceOrder: Number(document.getElementById('ms-sequenceOrder').value) || 0
                 })
             })
                 .then(r => r.json().then(body => ({ ok: r.ok, body })))
@@ -521,7 +512,7 @@
                     if (!ok) throw new Error(body.message || 'Failed to add milestone');
                     document.getElementById('add-milestone-form').reset();
                     document.getElementById('add-milestone-form').style.display = 'none';
-                    loadMilestones();
+                    refreshStatuses();
                 })
                 .catch(err => alert(err.message));
         }

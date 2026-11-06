@@ -50,6 +50,7 @@
         <div class="section-intro">
             <h2>Recently Tracked Projects</h2>
             <p>A live look at what's currently being monitored.</p>
+            <p class="text-sm text-muted">* counted automatically, awaiting human check</p>
         </div>
         <div class="project-preview-grid" id="recent-projects-grid">
             <div class="empty-state">Loading&hellip;</div>
@@ -88,7 +89,7 @@
                     <div class="project-preview-card">
                         <div class="ppc-head">
                             <h3>${p.name}</h3>
-                            <span class="badge ${statusBadge[p.status] || 'badge-secondary'}">${p.status.replace('_',' ')}</span>
+                            <span class="badge ${statusBadge[p.status] || 'badge-secondary'}">${statusLabel(p.status.replace('_',' '), p.needsReview)}</span>
                         </div>
                         <p class="ppc-agency">${p.agencyName ?? '—'}</p>
                         <p class="ppc-meta">${p.milestoneCount} milestone${p.milestoneCount === 1 ? '' : 's'} tracked</p>

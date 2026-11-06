@@ -65,6 +65,8 @@
         }
     </style>
 
+    <p class="text-sm text-muted">* counted automatically, awaiting human check</p>
+
     <div class="projects-split">
         <div class="card card-table">
             <table class="table" id="projects-table">
@@ -112,7 +114,7 @@
             tbody.innerHTML = projects.map(p => `
                 <tr id="project-row-${p.id}" onclick="focusProjectOnMap(${p.id})" style="cursor:pointer;">
                     <td><strong>${p.name}</strong><span class="agency-sub">${p.agencyName ?? '—'}</span></td>
-                    <td><span class="badge ${statusBadge[p.status] || 'badge-secondary'}">${p.status}</span></td>
+                    <td><span class="badge ${statusBadge[p.status] || 'badge-secondary'}">${statusLabel(p.status, p.needsReview)}</span></td>
                     <td class="col-timeline">${p.startDate ?? '—'} &rarr; ${p.endDate ?? '—'}</td>
                     <td class="col-milestones">${p.milestoneCount}</td>
                     <td><a href="/projects/${p.id}" class="btn btn-secondary btn-sm view-link" title="View project" aria-label="View project" onclick="event.stopPropagation()">&rarr;</a></td>
@@ -153,7 +155,7 @@
                 const geocoded = projects.filter(p => p.geocodeStatus === 'DONE' && p.latitude != null && p.longitude != null);
                 geocoded.forEach(p => {
                     const marker = L.marker([p.latitude, p.longitude]).addTo(map)
-                        .bindPopup(() => `<strong>${p.name}</strong><br>${p.location ?? ''}<br>${p.status}`
+                        .bindPopup(() => `<strong>${p.name}</strong><br>${p.location ?? ''}<br>${statusLabel(p.status, p.needsReview)}`
                             + (budgetById[p.id] != null ? `<br>Budget: ${shortMoney(budgetById[p.id])}` : ''));
                     marker.on('click', () => highlightRow(p.id));
                     markers[p.id] = marker;
