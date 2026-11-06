@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.web.bind.annotation.*;
+import ph.trackph.milestone.dto.request.CancelProjectRequest;
 import ph.trackph.milestone.dto.request.ProjectRequest;
 import ph.trackph.milestone.dto.response.HeatmapPointResponse;
 import ph.trackph.milestone.dto.response.ProjectResponse;
@@ -68,6 +69,12 @@ public class ProjectController {
     @Operation(summary = "Update a project (owning agency or ADMIN only)")
     public ResponseEntity<ApiResponse<ProjectResponse>> update(@PathVariable Long id, @Valid @RequestBody ProjectRequest request, Authentication auth) {
         return ResponseEntity.ok(ApiResponse.success("Updated", projectService.update(id, request, (Long) auth.getPrincipal(), isAdmin(auth))));
+    }
+
+    @PostMapping("/{id}/cancel")
+    @Operation(summary = "Cancel a project with a written reason (owning agency or ADMIN only)")
+    public ResponseEntity<ApiResponse<ProjectResponse>> cancel(@PathVariable Long id, @Valid @RequestBody CancelProjectRequest request, Authentication auth) {
+        return ResponseEntity.ok(ApiResponse.success("Cancelled", projectService.cancel(id, request.reason(), (Long) auth.getPrincipal(), isAdmin(auth))));
     }
 
     @DeleteMapping("/{id}")

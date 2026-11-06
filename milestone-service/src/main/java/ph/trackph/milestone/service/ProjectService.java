@@ -88,6 +88,22 @@ public class ProjectService {
         return after;
     }
 
+    /** The one status a person sets by hand. StatusService leaves CANCELLED alone from here on. */
+    @Transactional
+    public ProjectResponse cancel(Long id, String reason, Long requesterId, boolean requesterIsAdmin) {
+        Project project = getOrThrow(id);
+        requireOwnerOrAdmin(project, requesterId, requesterIsAdmin);
+        if (reason == null || reason.isBlank()) {
+            throw new IllegalArgumentException("A reason is required to cancel a project");
+        }
+        ProjectResponse before = ProjectResponse.from(project);
+        project.setStatus(Project.Status.CANCELLED);
+        project.setCancelReason(reason.trim());
+        ProjectResponse after = ProjectResponse.from(projectRepository.save(project));
+        auditContext.recordChange("Project", id, before, after);
+        return after;
+    }
+
     /**
      * Soft delete, cascaded by hand to milestones/attachments (the project→milestone JPA cascade
      * would otherwise still issue a real DELETE) — so the record and any attached evidence survive

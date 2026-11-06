@@ -118,6 +118,40 @@ class StatusWiringTest {
     }
 
     @Test
+    void cancelRecordsReasonAndSticksThroughRefresh() {
+        User agency = agency();
+        Project p = project(agency);
+        Milestone m = milestone(p, 30, 1);
+        attach(m, agency);
+
+        ProjectResponse cancelled = projectService.cancel(p.getId(), "Budget reallocated", agency.getId(), false);
+        statusService.refreshMilestone(m.getId());
+        statusService.refreshProject(p.getId());
+
+        assertEquals("CANCELLED", cancelled.status());
+        assertEquals("Budget reallocated", cancelled.cancelReason());
+        entityManager.flush();
+        entityManager.clear();
+        assertEquals(Project.Status.CANCELLED, projectRepository.findById(p.getId()).orElseThrow().getStatus());
+    }
+
+    @Test
+    void cancelNeedsAReason() {
+        User agency = agency();
+        Project p = project(agency);
+
+        assertThrows(IllegalArgumentException.class, () -> projectService.cancel(p.getId(), "  ", agency.getId(), false));
+    }
+
+    @Test
+    void cancelRejectsOtherAgencies() {
+        Project p = project(agency());
+        User other = agency();
+
+        assertThrows(UnauthorizedException.class, () -> projectService.cancel(p.getId(), "Not mine", other.getId(), false));
+    }
+
+    @Test
     void staleClientStatusFieldIsIgnored() {
         String json = "{\"title\":\"t\",\"dueDate\":\"2027-01-01\",\"sequenceOrder\":1,\"status\":\"COMPLETED\",\"completedDate\":\"2026-01-01\"}";
         assertDoesNotThrow(() -> objectMapper.readValue(json, MilestoneRequest.class));
