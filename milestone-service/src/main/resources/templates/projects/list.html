@@ -43,6 +43,8 @@
         @media (max-width: 1100px) { .projects-split { grid-template-columns: minmax(0, 1fr); } }
         .map-toggle { display: flex; gap: 0.4rem; margin-bottom: 0.75rem; }
         .map-toggle .btn[aria-pressed="true"] { background: var(--primary); color: var(--primary-text); }
+        .map-legend { font-size: 0.85rem; margin-bottom: 0.5rem; color: var(--text-muted, inherit); }
+        .budget-label { background: var(--surface, #fff); color: var(--text, #111); border: 1px solid var(--border, #ccc); font-weight: 600; font-size: 0.75rem; padding: 0 4px; box-shadow: none; }
         #projects-map { height: 420px; border-radius: var(--radius); background: var(--surface-raised); }
         #projects-table tbody tr.map-highlighted { background: var(--surface-raised); }
         /* Narrower columns for the split layout: Agency becomes a subtitle under Name, Start/End
@@ -87,6 +89,7 @@
                 <button type="button" class="btn btn-secondary btn-sm" data-metric="budget" aria-pressed="false" onclick="setHeatMetric('budget')">Budget</button>
                 <button type="button" class="btn btn-secondary btn-sm" data-metric="delays" aria-pressed="false" onclick="setHeatMetric('delays')">Delays</button>
             </div>
+            <div id="budget-legend" class="map-legend" hidden></div>
             <div id="projects-map"></div>
         </div>
     </div>
@@ -150,7 +153,8 @@
                 const geocoded = projects.filter(p => p.geocodeStatus === 'DONE' && p.latitude != null && p.longitude != null);
                 geocoded.forEach(p => {
                     const marker = L.marker([p.latitude, p.longitude]).addTo(map)
-                        .bindPopup(`<strong>${p.name}</strong><br>${p.location ?? ''}<br>${p.status}`);
+                        .bindPopup(() => `<strong>${p.name}</strong><br>${p.location ?? ''}<br>${p.status}`
+                            + (budgetById[p.id] != null ? `<br>Budget: ${shortMoney(budgetById[p.id])}` : ''));
                     marker.on('click', () => highlightRow(p.id));
                     markers[p.id] = marker;
                 });
@@ -159,14 +163,45 @@
             }).catch(() => TrackPHMaps.unavailable(mapEl));
         }
 
+        // 5,000,000 -> "5M", 400,000 -> "0.4M", 1,250,000,000 -> "1.25B", 50,000 -> "50K"
+        function shortMoney(n) {
+            const trim = v => String(+v.toFixed(2));
+            const abs = Math.abs(n);
+            let s;
+            if (abs >= 1e9) s = trim(n / 1e9) + 'B';
+            else if (abs >= 1e5) s = trim(n / 1e6) + 'M';
+            else if (abs >= 1e3) s = trim(n / 1e3) + 'K';
+            else s = String(n);
+            return '₱' + s;
+        }
+
+        const budgetById = {};
+
         function loadHeatLayer() {
             if (!heatLayer) return;
-            fetch('/api/v1/projects/heatmap?metric=' + currentMetric, { headers })
+            const metric = currentMetric;
+            fetch('/api/v1/projects/heatmap?metric=' + metric, { headers })
                 .then(r => r.json())
                 .then(data => {
-                    const points = (data.data ?? []).map(pt => [pt.latitude, pt.longitude, pt.weight]);
-                    heatLayer.setLatLngs(points);
+                    if (metric !== currentMetric) return; // user switched lens mid-request
+                    const pts = data.data ?? [];
+                    pts.forEach(pt => { if (pt.budget != null) budgetById[pt.projectId] = pt.budget; });
+                    heatLayer.setLatLngs(pts.map(pt => [pt.latitude, pt.longitude, pt.weight]));
+                    showBudgetLabels(metric === 'budget' ? pts : []);
                 });
+        }
+
+        function showBudgetLabels(pts) {
+            Object.values(markers).forEach(m => m.unbindTooltip());
+            const legend = document.getElementById('budget-legend');
+            const budgeted = pts.filter(pt => pt.budget != null);
+            legend.hidden = !budgeted.length;
+            if (!budgeted.length) return;
+            budgeted.forEach(pt => markers[pt.projectId]?.bindTooltip(shortMoney(pt.budget),
+                { permanent: true, direction: 'right', offset: [10, -20], className: 'budget-label' }));
+            const total = budgeted.reduce((sum, pt) => sum + pt.budget, 0);
+            const max = Math.max(...budgeted.map(pt => pt.budget));
+            legend.textContent = `Total ${shortMoney(total)} · Largest ${shortMoney(max)} · ${budgeted.length} mapped project${budgeted.length === 1 ? '' : 's'}`;
         }
 
         function setHeatMetric(metric) {

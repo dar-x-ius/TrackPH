@@ -52,7 +52,7 @@ public class ProjectService {
     public List<HeatmapPointResponse> findHeatmapPoints(String metric) {
         List<Project> geocoded = projectRepository.findByGeocodeStatusAndLatitudeIsNotNullAndLongitudeIsNotNull(Project.GeocodeStatus.DONE);
         return geocoded.stream()
-                .map(p -> new HeatmapPointResponse(p.getLatitude(), p.getLongitude(), weightFor(p, metric)))
+                .map(p -> new HeatmapPointResponse(p.getId(), p.getLatitude(), p.getLongitude(), weightFor(p, metric), p.getBudget()))
                 .filter(point -> point.weight() > 0)
                 .toList();
     }
