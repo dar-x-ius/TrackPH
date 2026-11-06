@@ -15,6 +15,16 @@
         })();
     </script>
     <title th:text="${pageTitle} + ' | ' + (${appName} ?: 'TrackPH')">TrackPH</title>
+    <link rel="icon" type="image/svg+xml" th:href="@{/images/favicon.svg}"/>
+    <link rel="apple-touch-icon" th:href="@{/images/apple-touch-icon.png}"/>
+    <meta name="description" content="Track the progress, milestones and budgets of Philippine government projects."/>
+    <meta property="og:type" content="website"/>
+    <meta property="og:site_name" content="TrackPH"/>
+    <meta property="og:title" th:content="${pageTitle} + ' | ' + (${appName} ?: 'TrackPH')" content="TrackPH"/>
+    <meta property="og:description" content="Track the progress, milestones and budgets of Philippine government projects."/>
+    <!-- Crawlers want absolute URLs: set app.public-url (e.g. https://trackph.example.ph) once the site is live -->
+    <meta property="og:image" th:content="${@environment.getProperty('app.public-url', '')} + @{/images/og-image.png}" content="/images/og-image.png"/>
+    <meta name="twitter:card" content="summary_large_image"/>
     <link rel="stylesheet" th:href="@{/css/theme.css}"/>
     <script th:src="@{/js/theme-toggle.js}"></script>
     <th:block th:replace="${extraHead} ?: ~{}"/>
