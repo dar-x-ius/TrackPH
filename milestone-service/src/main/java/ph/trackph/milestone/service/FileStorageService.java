@@ -5,7 +5,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.UUID;
@@ -13,6 +15,7 @@ import java.util.UUID;
 @Service
 public class FileStorageService {
     private static final Logger log = LoggerFactory.getLogger(FileStorageService.class);
+    private static final String SEED_PROOF_PREFIX = "seed-proof-";
     private final Path root;
 
     public String store(MultipartFile file, String extension) throws IOException {
@@ -22,6 +25,13 @@ public class FileStorageService {
     }
 
     public byte[] read(String storedFilename) throws IOException {
+        // Seeded demo rows (migration V13) point at files that were never uploaded, so they all share one bundled PDF.
+        if (storedFilename.startsWith(SEED_PROOF_PREFIX)) {
+            try (InputStream in = FileStorageService.class.getResourceAsStream("/seed/placeholder-proof.pdf")) {
+                if (in == null) throw new FileNotFoundException("seed/placeholder-proof.pdf is missing from the classpath");
+                return in.readAllBytes();
+            }
+        }
         return Files.readAllBytes(root.resolve(storedFilename));
     }
 

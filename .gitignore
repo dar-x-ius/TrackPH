@@ -8,6 +8,8 @@ bin/
 # Milestone attachments live under uploads/ (already ignored separately), so this never
 # touches anything the app itself stores or serves.
 *.pdf
+# ...except the bundled placeholder proof that seeded demo attachments (migration V13) point at.
+!milestone-service/src/main/resources/seed/*.pdf
 
 .settings/
 .vscode/
